@@ -1111,15 +1111,31 @@ export default function Home() {
       </div>
       {/* CTA moved to Bottom Right in Hero, but kept in nav for scroll utility */}
       {/* CTA and Auth Buttons */}
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
         <a href="#contact" className="nav-cta">DIVENTA PARTNER</a>
         <SignedOut>
-          <SignInButton mode="modal">
-            <button className="nav-cta" style={{ background: 'transparent', border: '1px solid #C5A059' }}>ACCEDI</button>
-          </SignInButton>
-          <SignUpButton mode="modal">
-            <button className="nav-cta">REGISTRATI</button>
-          </SignUpButton>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <SignInButton mode="modal">
+              <button className="nav-cta" style={{ 
+                background: 'rgba(197, 160, 89, 0.1)', 
+                border: '1px solid #C5A059', 
+                color: '#C5A059',
+                padding: '0.5rem 1.2rem'
+              }}>
+                <span style={{ color: '#C5A059' }}>ACCEDI</span>
+              </button>
+            </SignInButton>
+            <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 'bold' }}>oppure</span>
+            <SignUpButton mode="modal">
+              <button className="nav-cta" style={{ 
+                background: 'transparent', 
+                border: '1px solid rgba(255,255,255,0.3)',
+                padding: '0.5rem 1.2rem'
+              }}>
+                <span style={{ color: '#fff' }}>REGISTRATI</span>
+              </button>
+            </SignUpButton>
+          </div>
         </SignedOut>
         <SignedIn>
           <UserButton />
