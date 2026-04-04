@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html class="dark" lang="it">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>GSA Hotels - Registrazione</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#f2ca50",
+              "background": "#0d1322",
+              "surface": "#191f2f",
+            },
+            fontFamily: {
+              "body": ["Plus Jakarta Sans"],
+            },
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-white font-body flex items-center justify-center min-h-screen p-4">
+    <div class="w-full max-w-md bg-surface p-8 rounded-2xl border border-white/5 shadow-2xl">
+        <div class="text-center mb-10">
+            <h1 class="text-2xl font-bold text-primary tracking-widest uppercase mb-1">GSA Hotels</h1>
+            <p class="text-slate-500 text-sm italic">Crea il tuo Account Partner</p>
+        </div>
+        
+        <form id="registerForm" class="space-y-6">
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Nome Struttura</label>
+                <input type="text" id="name" required class="w-full bg-background border border-white/10 rounded-lg px-4 py-3 outline-none focus:border-primary transition-colors text-sm">
+            </div>
+            
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Email</label>
+                <input type="email" id="email" required class="w-full bg-background border border-white/10 rounded-lg px-4 py-3 outline-none focus:border-primary transition-colors text-sm">
+            </div>
+            
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Password</label>
+                <input type="password" id="password" required class="w-full bg-background border border-white/10 rounded-lg px-4 py-3 outline-none focus:border-primary transition-colors text-sm">
+            </div>
+            
+            <button type="submit" class="w-full py-4 bg-primary text-black font-bold rounded-lg hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-primary/20">
+                REGISTRATI
+            </button>
+        </form>
+        
+        <div class="mt-8 text-center text-sm">
+            <p class="text-slate-500">Hai già un account? <a href="login.html" class="text-primary hover:underline">Accedi</a></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.0"></script>
+    <script>
+        const { Client, Account, ID } = Appwrite;
+        const client = new Client();
+        
+        client
+            .setEndpoint('https://cloud.appwrite.io/v1') 
+            .setProject('YOUR_PROJECT_ID'); 
+
+        const account = new Account(client);
+
+        document.getElementById('registerForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                // Create user
+                await account.create(ID.unique(), email, password, name);
+                
+                // Login immediately
+                await account.createEmailPasswordSession(email, password);
+                
+                // Redirect to dashboard (default is FREE tier on first login)
+                window.location.href = 'dashboard.html';
+            } catch (err) {
+                alert('Errore: ' + err.message);
+            }
+        };
+    </script>
+</body>
+</html>

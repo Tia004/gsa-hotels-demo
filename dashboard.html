@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html class="dark" lang="it">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>GSA Hotels - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.0"></script>
+    <style>
+        .loader {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid #f2ca50;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-[#0d1322] text-white font-body flex items-center justify-center min-h-screen">
+    <div id="loader" class="flex flex-col items-center space-y-4">
+        <div class="loader"></div>
+        <p class="text-slate-500 text-sm tracking-widest uppercase animate-pulse">Caricamento Dashboard...</p>
+    </div>
+
+    <script>
+        const { Client, Account } = Appwrite;
+        const client = new Client();
+        
+        client
+            .setEndpoint('https://cloud.appwrite.io/v1') 
+            .setProject('YOUR_PROJECT_ID'); 
+
+        const account = new Account(client);
+
+        async function init() {
+            try {
+                // Check session
+                const user = await account.get();
+                
+                // Get tier from preferences (Appwrite doesn't have custom metadata by default, we use 'prefs')
+                const prefs = await account.getPrefs();
+                const tier = prefs.tier || 'free';
+                
+                // Redirect or Load the specific dashboard
+                if (tier === 'gold') {
+                    window.location.replace('dashboard-gold.html');
+                } else if (tier === 'standard') {
+                    window.location.replace('dashboard-standard.html');
+                } else {
+                    window.location.replace('dashboard-free.html');
+                }
+            } catch (err) {
+                // Not logged in or error -> redirect to login
+                window.location.replace('login.html');
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

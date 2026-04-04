@@ -1,0 +1,5043 @@
+/* Global Design System - Kinetic Luxury (Jesko Style) */
+@import url("https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;500;600;700;800;900&family=Manrope:wght@200;300;400;500;600;700;800&family=Inter:wght@300;400;500;600&family=DM+Serif+Text:ital@0;1&display=swap");
+
+:root {
+  /* TYPOGRAPHY SYSTEM (Luxury Editorial) */
+  /* TYPOGRAPHY SYSTEM (Luxury Editorial) */
+  --font-display: 'Cormorant Garamond', serif;
+  /* Per Titoli Grandi e Parole Chiave */
+  --font-body: 'Montserrat', sans-serif;
+  /* Per paragrafi e UI */
+
+  --primary-color: #0a0a0a;
+  --accent-color: #C5A059;
+  --gold-accent: #C5A059;
+  /* Gold */
+  --text-color: #e0e0e0;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+
+  /* Spacing */
+  --container-width: 92vw;
+  --section-spacing: 15vh;
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --bg-dark: #0a0a0a;
+}
+
+/* Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-dim);
+}
+
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  font-family: var(--font-body);
+  /* Montserrat */
+  letter-spacing: 0.01em;
+  /* Montserrat è geometrico, tracking normale */
+  overflow-x: hidden;
+  /* Removed global overflow-y: hidden so site can scroll after load */
+  cursor: none !important;
+}
+
+/* INITIAL STATE FOR REVEAL ANIMATIONS */
+.reveal {
+  opacity: 0;
+  transform: translateY(60px);
+}
+
+/* QUESTO BLOCCA LO SCROLL SOLO DURANTE L'ANIMAZIONE DI CARICAMENTO */
+html.loading,
+body.loading {
+  overflow: hidden !important;
+  height: 100vh !important;
+  touch-action: none;
+}
+
+/* Force Hide Default Cursor on ALL Interactive Elements */
+*,
+*::before,
+*::after,
+a,
+button,
+input,
+textarea,
+select,
+.custom-select-trigger,
+.custom-option {
+  cursor: none !important;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  /* Cormorant Garamond */
+  font-weight: 500;
+  /* Cormorant è sottile, 500/600 è meglio */
+  letter-spacing: -0.01em;
+  /* Cormorant ha bisogno di meno tracking negativo di Bodoni */
+  margin: 0;
+}
+
+p {
+  font-family: var(--font-body);
+  font-weight: 300;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.btn,
+button {
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  /* Spaziatura ampia nei bottoni */
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  cursor: none;
+  /* Custom cursor handles this */
+}
+
+/* LAYER 2: GLASS WRAPPER (Il guscio trasparente) */
+#cursor-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000000;
+  pointer-events: none;
+}
+
+/* Stile Base del Cursore - Lente Fisheye (Rifrazione Fisica) */
+.cursor-dot {
+  /* Rimuovi fixed perché ora sono nel wrapper, ma fixed va bene se posizionati via JS su viewport */
+  /* Mantieni fixed per semplicità JS esistente */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  /* z-index: 9999; -> gestito dal wrapper */
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  /* Background per Metaball: deve avere abbastanza alpha per il contrasto */
+  /* Background: TRASPARENTE (Vetro puro) */
+  background: #d6ab0f80;
+
+  /* 3. Estetica del Vetro */
+  border: 1px solid rgba(214, 171, 15, 0.1);
+  box-shadow:
+    inset 0 0 20px #d6ab0f33,
+    inset 5px 5px 10px #d6ab0f33,
+    0 10px 40px rgba(0, 0, 0, 0.3);
+
+  transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+    height 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  -webkit-backdrop-filter: url(#lensFilter) url(#kill) blur(4px);
+  backdrop-filter: url(#lensFilter) url(#kill) blur(4px);
+  -webkit-mask-image: radial-gradient(circle, transparent 30%, black 60%);
+  mask-image: radial-gradient(circle, transparent 30%, black 60%);
+}
+
+/* Hover State: Lente che "esplode" */
+body.hover-active .cursor-dot {
+  width: 120px;
+  height: 120px;
+  background: #d6ab0f80;
+  /* Più trasparente quando grande */
+  box-shadow:
+    inset 0 0 30px #d6ab0f33,
+    0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+/* La bolla piccola sparisce o resta piccola in hover? Resta piccola per contrasto */
+
+/* Aggiustamento Maschera in Hover */
+body.hover-active .cursor-dot::before {
+  -webkit-mask-image: radial-gradient(circle, transparent 35%, black 80%);
+  mask-image: radial-gradient(circle, transparent 35%, black 80%);
+}
+
+#webgl-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  pointer-events: none;
+  background: transparent;
+  mix-blend-mode: normal;
+}
+
+/* Navbar "Floating Capsule" */
+/* Navbar "Floating Capsule" */
+img {
+  max-width: 100%;
+  display: block;
+  /* Prevent image dragging */
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.nav-wrapper {
+  position: fixed;
+  top: 2rem;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  /* Visual gap for content */
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* Luxury Contact Form (Golden Bokeh Storm) */
+.luxury-form-section {
+  position: relative;
+  padding: 120px 0;
+  /* Deep Radial Gradient Base */
+  background: radial-gradient(circle at center, #111 0%, #000 70%);
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* CONTAINER PARTICELLE */
+.embers-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* BASE PARTICLE */
+.ember {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+/* VARIANT 1: BOKEH (Background) */
+.ember.bokeh {
+  background: #C5A059;
+  filter: blur(20px);
+  opacity: 0;
+  animation: float 30s infinite alternate ease-in-out;
+  mix-blend-mode: screen;
+}
+
+/* VARIANT 2: STAR (Midground) */
+.ember.star {
+  background: white;
+  box-shadow: 0 0 10px #C5A059;
+  animation: rise 15s linear infinite;
+}
+
+/* VARIANT 3: SPARK (Foreground) */
+.ember.spark {
+  background: #ffd700;
+  animation: rise 8s linear infinite, twinkle 1s infinite alternate;
+}
+
+/* ANIMATIONS */
+@keyframes float {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: var(--max-opacity);
+  }
+
+  80% {
+    opacity: var(--max-opacity);
+  }
+
+  100% {
+    transform: translate(var(--move-x), var(--move-y));
+    opacity: 0;
+  }
+}
+
+@keyframes rise {
+  0% {
+    transform: translateY(100vh) scale(0.5);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: var(--max-opacity, 0.6);
+  }
+
+  50% {
+    transform: translateY(50vh) scale(1.1);
+    /* Slight wobble size */
+  }
+
+  90% {
+    opacity: var(--max-opacity, 0.6);
+  }
+
+  100% {
+    transform: translateY(-20vh) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* Ensure content is above the overlays */
+.luxury-form-container {
+  position: relative;
+  z-index: 5;
+  background: transparent;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 80px;
+}
+
+/* GOO FILTER CONTAINER */
+.goo-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  filter: url('#goo');
+  /* The SVG Filter */
+  z-index: -1;
+  /* Behind content */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.goo-base {
+  /* BACKGROUND BLOB (Black) */
+  width: 580px;
+  /* Fixed match */
+  height: 55px;
+  background: #000000;
+  border-radius: 100px;
+  position: absolute;
+}
+
+.goo-cursor {
+  /* LOGO BLOB (Black) */
+  width: 55px;
+  height: 55px;
+  background: #000000;
+  border-radius: 100%;
+  position: absolute;
+  transform: translateX(-400px);
+  /* Tucked inside left edge (Center - 290 + padding) */
+}
+
+/* Spotlight Content (Sharp, Transparent BG, WITH BORDER) */
+.nav-logo.spotlight-mode {
+  width: 55px;
+  height: 55px;
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  /* Restore Border */
+  /* Border radius handled by blob shape usually, but here we need it on content */
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: -27.5px;
+  margin-left: -27.5px;
+
+  /* Initial: Merged */
+  transform: translateX(-400px);
+  pointer-events: auto;
+  opacity: 0;
+  transition: none;
+  /* Controlled by animation */
+  box-sizing: border-box;
+}
+
+.nav-logo.spotlight-mode img {
+  height: 30px;
+  width: auto;
+  filter: none;
+}
+
+/* --- KEYFRAMES (Root Level) --- */
+@keyframes blob-reveal {
+  0% {
+    transform: translateX(-370px) scale(1);
+  }
+
+  35% {
+    transform: translateX(-390px) scale(0.5);
+  }
+
+  70% {
+    transform: translateX(-480px) scale(1.1);
+  }
+
+  100% {
+    transform: translateX(-470px) scale(1);
+  }
+}
+
+@keyframes blob-hide {
+  0% {
+    transform: translateX(-470px) scale(1);
+  }
+
+  35% {
+    transform: translateX(-390px) scale(0.5);
+  }
+
+  100% {
+    transform: translateX(-350px) scale(1);
+  }
+}
+
+/* CONTENT ANIMATION (SYNCED SCALING) */
+@keyframes content-reveal {
+  0% {
+    transform: translateX(-350px) scale(1);
+    opacity: 0;
+  }
+
+  35% {
+    transform: translateX(-310px) scale(0.5);
+    /* Match Blob Pinch */
+    opacity: 1;
+    /* Fade in during pinch */
+  }
+
+  70% {
+    transform: translateX(-480px) scale(1.1);
+    /* Match Blob Overshoot */
+  }
+
+  100% {
+    transform: translateX(-470px) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes content-hide {
+  0% {
+    transform: translateX(-440px) scale(1);
+    opacity: 1;
+  }
+
+  35% {
+    transform: translateX(-390px) scale(0.5);
+  }
+
+  100% {
+    transform: translateX(-370px) scale(1);
+    opacity: 0;
+  }
+}
+
+/* --- ANIMATION TRIGGERS --- */
+.nav-wrapper.active .goo-cursor {
+  animation: blob-reveal 0.8s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+}
+
+.nav-wrapper.active .nav-logo.spotlight-mode {
+  animation: content-reveal 0.8s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+}
+
+.nav-wrapper:not(.active) .goo-cursor {
+  animation: blob-hide 0.8s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+}
+
+.nav-wrapper:not(.active) .nav-logo.spotlight-mode {
+  animation: content-hide 0.8s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+}
+
+.goo-cursor {
+  transition: none !important;
+  /* Ensure Animation takes over */
+}
+
+/* Main Capsule Content (Sharp, Transparent BG, WITH BORDER) */
+.nav-capsule {
+  pointer-events: auto;
+  min-width: 600px;
+  /* Force match with blob */
+  height: 55px;
+  background: black !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  /* Restore Border */
+  border-radius: 100px;
+  box-shadow: none !important;
+  box-sizing: border-box;
+
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Center links in fixed width */
+  gap: 40px;
+  /* Unified Gap between all 3 items */
+}
+
+.nav-links {
+  display: contents;
+  /* Remove wrapper influence on layout */
+}
+
+.nav-link {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-color);
+  transition: color 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-link span {
+  display: inline-block;
+  transition: transform 0.3s var(--ease-out-expo);
+}
+
+.nav-link:hover span {
+  transform: translateY(-100%);
+}
+
+.nav-link::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  transform: translateY(0);
+  transition: transform 0.3s var(--ease-out-expo);
+  color: var(--accent-color);
+}
+
+.nav-link:hover::after {
+  transform: translateY(-100%);
+}
+
+.nav-cta {
+  background: transparent;
+  border: 0.5px solid #fff;
+  padding: 0.6rem 1.4rem;
+  border-radius: 100px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: 0.3s var(--ease-out-expo);
+}
+
+.nav-cta:hover {
+  transform: scale(1.05);
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: #000;
+}
+
+/* Hero Section */
+.hero {
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 4rem var(--container-width);
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120%;
+  /* For parallax */
+  -o-object-fit: cover;
+  object-fit: cover;
+  z-index: -1;
+  opacity: 0.6;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, var(--primary-color) 10%, transparent 60%), linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, transparent 40%);
+  /* Extra dark overlay */
+  z-index: -1;
+}
+
+/* HERO TYPOGRAPHY (Editorial Style) */
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  width: 100%;
+  /* Ensure full width for centering */
+}
+
+.hero-title-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Allineato a sinistra come richiesto o center se necessario */
+  line-height: 1;
+}
+
+/* 1. La parte superiore: "L'ARTE DELL'" */
+.hero-supra-title {
+  font-family: var(--font-body);
+  /* Sans Serif - Montserrat */
+  font-size: clamp(0.4rem, 1vw, 0.8rem);
+  /* Reduced Size as requested */
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  /* Tracking slightly reduced for wider font */
+  font-weight: 500;
+  color: white;
+  margin-bottom: 20px;
+  margin-left: 5px;
+  display: block;
+}
+
+/* 2. La parola chiave: "ACCOGLIENZA" */
+.hero-main-title {
+  font-family: var(--font-display);
+  /* Cormorant Garamond */
+  font-size: clamp(4rem, 12vw, 11rem);
+  font-weight: 600;
+  /* Cormorant Italic Bold is beautiful */
+  font-style: italic;
+  color: #C5A059;
+  mix-blend-mode: overlay;
+  opacity: 0.9;
+  letter-spacing: -0.02em;
+  /* Less aggressive tracking for Cormorant */
+  line-height: 0.9;
+
+  background: linear-gradient(135deg, #FFE5A0 0%, #C5A059 50%, #8A6E3E 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  /* Standard property added */
+  -webkit-text-fill-color: transparent;
+  display: block;
+}
+
+
+/* Hero Jesko Layout - CENTERED */
+.hero-jesko-layout {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 4vw;
+  text-align: left;
+  width: 90%;
+  z-index: 5;
+}
+
+.hero-headline {
+  font-size: clamp(3rem, 10vw, 8rem);
+  /* GIANT Text */
+  line-height: 0.9;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  color: #FFF;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.hero-headline {
+  font-size: 7vw;
+  /* Adjusted size */
+  line-height: 1.1;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  color: #FFF;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  text-align: center;
+  /* Center alignment */
+  /* For reveal */
+}
+
+/* Typography Mix */
+.font-solid {
+  font-family: var(--font-body);
+  font-weight: 800;
+}
+
+.font-elegant {
+  font-family: var(--font-display);
+  /* Or a serif if available, using secondary for now */
+  font-weight: 300;
+  font-style: italic;
+  color: var(--accent-color);
+}
+
+.hero-intro {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* Center Content Wrapper */
+.center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  z-index: 2;
+}
+
+.hero-headline .char {
+  display: inline-block;
+  /* For animation */
+}
+
+.hero-sub {
+  font-family: var(--font-body);
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 400px;
+  margin-left: 0.5rem;
+  position: relative;
+  padding-left: 20px;
+}
+
+.hero-sub::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 2px;
+  height: 70%;
+  background: var(--accent-color);
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 3rem;
+  right: 4rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.scroll-line {
+  width: 40px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* Section Common */
+.section {
+  padding: var(--section-spacing) 0;
+  position: relative;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  text-transform: uppercase;
+  font-weight: 300;
+  margin-bottom: 4rem;
+  padding-left: 4vw;
+}
+
+/* I Pilastri Section */
+.pillars-section {
+  padding: 10vh 0;
+  background: var(--primary-color);
+  position: relative;
+  z-index: 10;
+}
+
+.container {
+  width: var(--container-width);
+  margin: 0 auto;
+}
+
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4rem;
+  text-align: center;
+}
+
+.pillar-card {
+  padding: 2rem;
+  opacity: 0.9;
+  transition: opacity 0.3s;
+}
+
+.pillar-card:hover {
+  opacity: 1;
+}
+
+.pillar-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1.5rem;
+  color: var(--accent-color);
+}
+
+.gold-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.pillar-card h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #fff;
+  font-family: var(--font-display);
+}
+
+.pillar-card p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Dark Glass Contact Form (Redesign) */
+/* Dark Glass Contact Form (Redesign) */
+.contact-glass-container {
+  max-width: 1200px;
+  margin: 5vh auto;
+  background: rgba(137, 95, 16, 0.088);
+  /* Gold tint, high transparency */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  padding: 5rem;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  position: relative;
+  /* Context for gold accent */
+  font-family: var(--font-body);
+  /* Enforce Sans-Serif */
+}
+
+/* Gold Accent Dot */
+.contact-glass-container::before {
+  content: '';
+  position: absolute;
+  top: 4rem;
+  left: 4rem;
+  width: 12px;
+  height: 12px;
+  background: var(--accent-color);
+  border-radius: 50%;
+  box-shadow: 0 0 15px var(--accent-color);
+}
+
+.contact-form-section {
+  background: var(--primary-color);
+  /* Solid Black Background - Covers Video */
+  position: relative;
+  z-index: 50;
+  /* Ensure it sits on top */
+  padding: 5vh 0;
+}
+
+.contact-header-mobile {
+  text-align: center;
+  margin-bottom: 4rem;
+  color: #fff;
+}
+
+.form-headline {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  /* Increased margin for better spacing */
+  color: #fff;
+  font-family: var(--font-body);
+  /* Force Sans-Serif */
+  letter-spacing: -0.02em;
+  /* Tighter for modern look */
+}
+
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+}
+
+/* Form Styles */
+.glass-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.input-group input,
+.input-group textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.2rem;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.input-group input::placeholder,
+.input-group textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-submit-glass {
+  align-self: flex-start;
+  padding: 1rem 2.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  /* Dark Glass Button */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-submit-glass:hover {
+  background: var(--accent-color);
+  color: #000;
+}
+
+/* Info Column & Cards */
+.info-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.info-card {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: rgba(137, 95, 16, 0.088);
+  /* Slightly darker cards */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 2rem;
+  transition: 0.3s;
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+  background: rgba(137, 95, 16, 0.1);
+}
+
+.icon-box {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  /* White Icon as per ref */
+}
+
+.info-text h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #fff;
+  font-family: var(--font-body);
+}
+
+.info-text p {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+}
+
+/* Mobile Responsive */
+@media (max-width: 900px) {
+  .contact-glass-container {
+    padding: 2rem;
+    width: 100%;
+    border-radius: 0;
+    background: rgba(20, 5, 5, 0.9);
+    /* Solid dark on mobile */
+  }
+
+  .contact-layout {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .form-headline {
+    font-size: 2rem;
+  }
+}
+
+/* I Pilastri Section */
+.pillars-section {
+  padding: 10vh 0;
+  background: var(--primary-color);
+  position: relative;
+  z-index: 10;
+}
+
+.container {
+  width: var(--container-width);
+  margin: 0 auto;
+}
+
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4rem;
+  text-align: center;
+}
+
+.pillar-card {
+  padding: 2rem;
+  opacity: 0.9;
+  transition: opacity 0.3s;
+}
+
+.pillar-card:hover {
+  opacity: 1;
+}
+
+.pillar-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1.5rem;
+  color: var(--accent-color);
+}
+
+.gold-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.pillar-card h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #fff;
+  font-family: var(--font-display);
+}
+
+.pillar-card p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Fleet Vertical Stack */
+.hotel-section {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hotel-bg-wrapper {
+  position: absolute;
+  top: -30%;
+  left: 0;
+  width: 100%;
+  height: 160%;
+  /* For parallax - Increased to prevent top gap/flicker */
+  z-index: 0;
+  will-change: transform;
+}
+
+.hotel-bg {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+  object-fit: cover;
+  filter: brightness(0.7);
+  /* Performance fix */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.hotel-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* KEEP TOP GRADIENT ONLY FOR DUCHESSA ISABELLA (FIRST HOTEL) - REMOVED AS REQUESTED */
+#fleet .hotel-section:first-child .hotel-overlay {
+  background: transparent;
+}
+
+.hotel-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  color: #fff;
+  mix-blend-mode: normal;
+  /* Reset mismatch from slide */
+}
+
+.hotel-location {
+  /* Glass Pill Style for Location */
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 600;
+
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  margin-bottom: 2rem;
+
+  /* Glass Effect */
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  /* Text Color - Clean White/Black mix as requested */
+  color: #FFFFFF;
+  /* Fallback since user asked for 'black text' but usually on dark bg white is better. 
+     Wait, user said: "colore bianco con testo nero". Let's try that. */
+  background: rgba(255, 255, 255, 0.85);
+  /* Milky white glass */
+  color: #000000;
+  border: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.hotel-name {
+  font-size: 8vw;
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 0.9;
+  margin-bottom: 3rem;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.btn-explore {
+  display: inline-block;
+  padding: 1rem 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.8rem;
+  background: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.btn-explore:hover {
+  background: #fff;
+  color: #000;
+}
+
+/* Deprecated Horizontal Slider Styles (Kept if needed references, but hidden/unused) */
+/* .slider-container ... .slide ... */
+/* Philosophy Section */
+.philosophy-section {
+  background-image: url("assets/marble_bg.png");
+  background-color: #111;
+  background-blend-mode: overlay;
+  color: #FFF;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  position: relative;
+}
+
+.philo-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  /* Darken marble */
+  z-index: 1;
+}
+
+.philo-content {
+  grid-column: 1;
+  padding: 6rem;
+  z-index: 2;
+}
+
+.philo-image-wrapper {
+  grid-column: 2;
+  height: 80vh;
+  z-index: 2;
+  overflow: hidden;
+  border-left: 1px solid var(--accent-color);
+}
+
+.philo-image {
+  width: 100%;
+  height: 120%;
+  /* Parallax */
+  -o-object-fit: cover;
+  object-fit: cover;
+}
+
+.philo-text {
+  font-size: 2.5rem;
+  font-weight: 300;
+  line-height: 1.4;
+  margin-bottom: 3rem;
+}
+
+.text-gold {
+  color: var(--accent-color);
+  font-weight: 500;
+}
+
+/* Footer */
+.footer {
+  background: #000;
+  padding: 10rem 0 4rem;
+  text-align: center;
+  overflow: hidden;
+}
+
+.footer-brand {
+  font-size: 18vw;
+  font-weight: 800;
+  line-height: 0.8;
+  color: #111;
+  -webkit-text-stroke: 1px #333;
+  white-space: nowrap;
+  margin-bottom: 4rem;
+  display: block;
+  position: relative;
+  z-index: 10;
+}
+
+/* Footer Form */
+.footer-form-container {
+  max-width: 500px;
+  margin: 0 auto 6rem;
+  text-align: center;
+  position: relative;
+  z-index: 20;
+}
+
+.form-title {
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent-color);
+  margin-bottom: 2rem;
+}
+
+.minimal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(197, 160, 89, 0.3);
+  /* Dim gold */
+  padding: 1rem 0;
+  color: #fff;
+  font-size: 1.1rem;
+  font-family: var(--font-body);
+  transition: border-color 0.3s;
+  outline: none;
+  text-align: center;
+}
+
+.form-group input:focus {
+  border-color: var(--accent-color);
+}
+
+.btn-submit-minimal {
+  margin-top: 1rem;
+  background: transparent;
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
+  padding: 0.8rem 2rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s;
+  align-self: center;
+}
+
+.btn-submit-minimal:hover {
+  background: var(--accent-color);
+  color: #000;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-bottom: 4rem;
+}
+
+.footer-link {
+  color: #FFF;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+}
+
+/* Page Transition */
+.transition-curtain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 99999;
+  transform: translateY(100%);
+}
+
+/* Mobile Tweaks */
+@media (max-width: 768px) {
+  .nav-capsule {
+    padding: 0.8rem 1.5rem;
+    gap: 1rem;
+    bottom: 2rem;
+    /* Move to bottom on mobile */
+    top: auto;
+  }
+
+  .nav-links {
+    display: none;
+    /* Simplify for mobile, maybe just burger */
+  }
+
+  .hero-headline {
+    font-size: 14vw;
+  }
+
+  .slider-container {
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+  }
+
+  .slide {
+    width: 100%;
+    height: 70vh;
+  }
+
+  .philosophy-section {
+    grid-template-columns: 1fr;
+  }
+
+  .philo-content {
+    padding: 3rem;
+  }
+
+  .philo-image-wrapper {
+    height: 60vh;
+    grid-column: 1;
+    border-left: none;
+    border-top: 1px solid var(--accent-color);
+  }
+}
+
+/* =========================================
+   SENIOR DEV REPAIR: STRICT JESKO HERO
+   ========================================= */
+.jesko-hero-final {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: block;
+}
+
+/* BACKGROUND LAYER */
+.jesko-bg-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.jesko-bg-img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+  object-fit: cover;
+  -o-object-position: center;
+  object-position: center;
+  transform: scale(1.1);
+}
+
+.jesko-overlay-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Darken content for legibility - STATIC & UNIFORM as requested */
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* UI LAYER */
+.jesko-ui-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.jesko-ui-layer>* {
+  pointer-events: auto;
+}
+
+/* 1. TOP LEFT: LOGO */
+.j-logo-container {
+  position: absolute;
+  top: 5vh;
+  left: 5vw;
+  height: 60px;
+  /* Match mobile-toggle height for alignment */
+  display: flex;
+  align-items: center;
+}
+
+.j-logo {
+  width: 140px;
+  height: auto;
+}
+
+/* 2. CENTER LEFT: HEADLINE */
+.j-headline-container {
+  position: absolute;
+  top: 50%;
+  left: 5vw;
+  transform: translateY(-50%);
+  width: 80%;
+}
+
+.j-headline {
+  font-size: clamp(4rem, 9vw, 10rem);
+  line-height: 0.9;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.03em;
+  font-family: var(--font-body);
+}
+
+.j-italic {
+  font-family: serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--gold-accent);
+}
+
+/* 3. BOTTOM LEFT: INFO */
+.j-info-container {
+  position: absolute;
+  bottom: 50px;
+  left: 5vw;
+  max-width: 450px;
+  text-align: left;
+}
+
+.j-separator {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+  margin-bottom: 25px;
+}
+
+.j-subhead {
+  font-size: 1.8rem;
+  color: #fff;
+  font-weight: 400;
+  margin-bottom: 10px;
+  font-family: var(--font-primary);
+}
+
+.j-desc {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+/* 4. BOTTOM RIGHT: CTA */
+.j-cta-container {
+  position: absolute;
+  bottom: 50px;
+  right: 5vw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 30px;
+}
+
+.j-scroll-in {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: #fff;
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.j-line {
+  width: 50px;
+  height: 1px;
+  background: #fff;
+}
+
+.j-btn {
+  background: #fff;
+  color: #000;
+  padding: 18px 45px;
+  border-radius: 100px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.j-btn:hover {
+  transform: scale(1.05);
+  background: var(--gold-accent);
+}
+
+/* Added Video/* Nascondi i controlli nativi di iOS che potrebbero apparire */
+.jesko-bg-video::-webkit-media-controls {
+  display: none !important;
+}
+
+.jesko-bg-video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+/* Background Layer */
+.jesko-bg-layer {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+  object-fit: cover;
+  -o-object-position: center;
+  object-position: center;
+  transform: scale(1.1);
+}
+
+/* Window Reveal Effect */
+.jesko-bg-layer {
+  /* Initial Window State */
+  -webkit-clip-path: inset(12vh 12vw round 40px);
+  clip-path: inset(12vh 12vw round 40px);
+  transition: -webkit-clip-path 0.1s linear;
+  transition: clip-path 0.1s linear;
+  transition: clip-path 0.1s linear, -webkit-clip-path 0.1s linear;
+  /* Smoothness for scrub */
+}
+
+.jesko-bg-video {
+  filter: brightness(0.5) blur(5px);
+}
+
+/* GLOBAL BACKGROUND FIX */
+.jesko-bg-layer {
+  position: fixed;
+  /* Global Wallpaper */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: -1;
+}
+
+/* Make Sections Transparent to Reveal Video */
+.jesko-hero-final {
+  background: transparent !important;
+}
+
+.pillars-section {
+  background: transparent !important;
+}
+
+.jesko-bg-video {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+  object-fit: cover;
+}
+
+/* RESTORE BLACK CONTENT BACKGROUND */
+.pillars-section {
+  background: var(--bg-dark) !important;
+  position: relative;
+  z-index: 20;
+  /* Slide OVER the fixed video */
+}
+
+/* Ensure subsequent sections also cover the video */
+.fleet-section,
+.philosophy-section,
+.contact-form-section,
+.footer {
+  position: relative;
+  z-index: 20;
+  background: var(--bg-dark);
+  /* Fallback */
+}
+
+/* EMERGENCY FIX: Force Visibility */
+.pillar-card {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+
+/* JESKO TEXT STATEMENT */
+.jesko-statement-container {
+  max-width: 90vw;
+  margin: 0 auto;
+  margin-bottom: 70vh;
+  padding: 0;
+  font-family: var(--font-primary);
+  /* Reset padding, let flexbox center it */
+}
+
+.jesko-statement {
+  font-style: italic;
+  /* Serif Font (Vision Title Style) */
+  font-size: clamp(2rem, 5vw, 4.5rem);
+  /* Slightly bumped min size for readability of Serif */
+  line-height: 1.2;
+  /* Better breathing room for serif italics */
+  font-weight: 800;
+  /* Lighter weight is more elegant for italics */
+  color: rgba(255, 255, 255, 0.2);
+  /* Dimmed default */
+  text-transform: none;
+  /* Sentence case looks closer to ref */
+  font-family: var(--font-primary);
+}
+
+.reveal-word {
+  display: inline-block;
+  color: rgba(255, 255, 255, 0.2);
+  transition: color 0.1s;
+}
+
+/* Revert Pillars BG to Transparent to show video */
+.pillars-section {
+  background: transparent !important;
+  min-height: 100vh;
+  /* More space */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Center Vertically (Halfway) */
+  padding-bottom: 10vh;
+  /* Push hotels down slightly */
+}
+
+/* Ensure proper spacing for the next black section */
+#fleet {
+  position: relative;
+  z-index: 30;
+  background: var(--bg-dark);
+  margin-top: 0;
+  /* Remove black band */
+}
+
+/* FIX: Ensure Hotel Sections have Black Background to cover Video */
+.hotel-section {
+  background-color: var(--primary-color) !important;
+  /* Use primary color directly */
+  position: relative;
+  z-index: 20;
+  margin-top: -5vh;
+  /* Force overlap to hide gaps as requested */
+}
+
+
+.hotel-section:first-child {
+  margin-top: 0;
+  background-color: transparent !important;
+}
+
+/* --- BUGATTI STYLE VISION SECTION --- */
+.vision-section-bugatti {
+  position: relative;
+  padding: 180px 0;
+  background-color: #000000;
+  /* Nero Assoluto */
+  overflow: hidden;
+  color: white;
+}
+
+/* Watermark Sfondo (Parallax statico) */
+.bg-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Bodoni Moda', serif;
+  /* Bodoni Explicit */
+  font-size: 100vw;
+  /* Gigantesco */
+  font-weight: 900;
+  color: #d6ab0f15;
+  /* Appena percettibile */
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.vision-container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 100px;
+}
+
+/* --- COLONNA TESTO --- */
+.vision-content {
+  flex: 1;
+  max-width: 550px;
+}
+
+.vision-kicker {
+  display: block;
+  font-family: var(--font-body);
+  /* Inter Tight */
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  color: #D4AF37;
+  /* Oro Bugatti */
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.vision-headline {
+  font-family: 'Bodoni Moda', serif;
+  /* Bodoni Explicit */
+  font-size: 6rem;
+  /* Enorme ed elegante */
+  font-weight: 400;
+  /* Thin ed elegante */
+  line-height: 0.9;
+  margin-bottom: 10px;
+  letter-spacing: -0.04em;
+  color: white;
+}
+
+.vision-divider {
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, #D4AF37, transparent);
+  margin: 40px 0;
+}
+
+.vision-body {
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.75);
+  /* Grigio caldo */
+  font-weight: 300;
+  margin-bottom: 50px;
+}
+
+.vision-body strong {
+  color: white;
+  font-weight: 500;
+}
+
+/* Bottone Minimalista High-End */
+/* Bottone Minimalista High-End (Restyled Rounded) */
+.btn-bugatti {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 40px;
+  background-color: #000;
+  border: 1px solid white;
+  border-radius: 50px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-bugatti .btn-text {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
+  color: white;
+  text-transform: uppercase;
+  margin-bottom: 0;
+  transition: color 0.3s ease;
+  font-weight: 600;
+}
+
+.btn-bugatti .btn-line,
+.btn-bugatti .btn-line::after {
+  display: none !important;
+}
+
+.btn-bugatti:hover {
+  background-color: #C5A059;
+  border-color: #C5A059;
+}
+
+.btn-bugatti:hover .btn-text {
+  color: #000;
+}
+
+/* --- COLONNA VISUAL --- */
+.vision-visual {
+  flex: 1;
+  position: relative;
+}
+
+.visual-frame {
+  position: relative;
+  width: 100%;
+  height: 700px;
+  /* Molto alto e slanciato */
+  overflow: hidden;
+}
+
+.visual-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Filtro Caldo: Abbassiamo saturazione ma teniamo i toni caldi */
+  filter: sepia(20%) contrast(1.1) brightness(0.7);
+  transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Effetto Bordo "Precisione" */
+.frame-border {
+  position: absolute;
+  inset: 20px;
+  /* Bordo interno */
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  /* Oro sottilissimo */
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Hover Effect sull'immagine */
+.vision-section-bugatti:hover .visual-frame img {
+  transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .vision-container {
+    flex-direction: column;
+    gap: 50px;
+  }
+
+  .vision-headline {
+    font-size: 4rem;
+  }
+
+  .visual-frame {
+    height: 500px;
+  }
+
+  .j-logo {
+    width: 60px;
+    height: auto;
+  }
+}
+
+/* =========================================================================
+   8. LUXURY CONTACT FORM - PRIVATE OFFICE STYLE
+   ========================================================================= */
+
+/* Container Generale */
+.luxury-form-section {
+  padding: 150px 0;
+  background-color: #050505;
+  color: white;
+  position: relative;
+  z-index: 20;
+}
+
+.luxury-form-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 100px;
+  align-items: start;
+  width: var(--container-width);
+  margin: 0 auto;
+}
+
+/* --- COLONNA SX: Intro --- */
+.form-title {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  font-weight: 400;
+  margin: 20px 0 40px;
+  line-height: 1.1;
+  color: white;
+}
+
+.form-desc {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.7;
+  margin-bottom: 60px;
+  max-width: 450px;
+}
+
+.contact-direct-info {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 40px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-family: var(--font-body);
+}
+
+.info-label {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: #C5A059;
+  /* Oro */
+}
+
+.info-value {
+  font-size: 1rem;
+  color: white;
+}
+
+.info-value.link {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.info-value.link:hover {
+  color: #C5A059;
+}
+
+/* --- COLONNA DX: Il Form --- */
+.minimal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  /* Molto spazio tra i campi */
+}
+
+.input-group {
+  position: relative;
+  width: 100%;
+}
+
+/* L'Input nudo e crudo */
+/* =========================================================================
+   8. LIQUID GLASS CONTACT FORM (Redesign)
+   ========================================================================= */
+
+/* Pill Input Style (Hyper-Liquid Glass) */
+.minimal-input {
+  width: 100%;
+  padding: 15px 25px;
+  padding-left: 90px;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: white;
+
+  /* Advanced Glass / Lens Simulation */
+  background: rgba(255, 255, 255, 0.001) !important;
+
+  /* Mimic "Kill" (Decay/Richness) via Saturation */
+  backdrop-filter: blur(5px) saturate(180%);
+  -webkit-backdrop-filter: blur(5px) saturate(180%);
+
+  /* Mimic "Lens" (Curvature) via Lighting */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  /* Shadow on bottom */
+
+  border-radius: 50px !important;
+  outline: none;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+
+  /* Inner depth */
+  box-shadow:
+    inset 0 4px 15px rgba(255, 255, 255, 0.03),
+    /* Inner highlight */
+    0 10px 30px rgba(0, 0, 0, 0.1);
+  /* Drop shadow */
+}
+
+.minimal-input:focus {
+  border-color: rgba(197, 160, 89, 0.5) !important;
+  border-top-color: rgba(197, 160, 89, 0.8) !important;
+  background: rgba(197, 160, 89, 0.05) !important;
+  box-shadow:
+    inset 0 0 20px rgba(197, 160, 89, 0.1),
+    /* Inner Gold Glow */
+    0 0 25px rgba(197, 160, 89, 0.2);
+  /* Outer Gold Glow */
+}
+
+/* Fix Placeholder/Input Text Alignment */
+.minimal-input::placeholder {
+  color: transparent;
+}
+
+/* Select Styling (Native Hidden) */
+.minimal-select {
+  display: none;
+  /* Hide original if present */
+}
+
+/* CUSTOM SELECT STYLES (Liquid Dropdown) */
+.custom-select-wrapper {
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.custom-select-trigger {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-family: var(--font-body);
+  /* Standard Sans font as requested */
+  font-size: 1rem;
+  /* Adjust size to match body text */
+  color: rgba(255, 255, 255, 0.5);
+  padding-left: 40px;
+  height: 60px;
+  /* Increased to 60px to give 1em gap from checkmark */
+}
+
+.custom-select-trigger::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 25px;
+  /* Match padding right */
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid rgba(255, 255, 255, 0.5);
+  transition: 0.3s ease;
+}
+
+.custom-select-wrapper.open .custom-select-trigger::after {
+  transform: translateY(-50%) rotate(180deg);
+  border-top-color: #C5A059;
+}
+
+/* Dropdown Container */
+.custom-options {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  background: rgba(10, 10, 10, 0.95);
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  border-radius: 20px;
+  overflow: hidden;
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(20px);
+}
+
+.custom-select-wrapper.open .custom-options {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Option Items */
+.custom-option {
+  padding: 15px 25px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.custom-option:last-child {
+  border-bottom: none;
+}
+
+.custom-option:hover {
+  background: rgba(197, 160, 89, 0.1);
+  color: #C5A059;
+  padding-left: 35px;
+  /* Slide effect */
+}
+
+.custom-option.selected {
+  background: #C5A059;
+  color: #050505;
+  /* Black text on Gold bg */
+  font-weight: 500;
+}
+
+/* Checkmark Icon */
+.checkmark-icon {
+  position: absolute;
+  left: 20px;
+  /* Position in the whitespace */
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: #C5A059;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+/* CUSTOM SELECT LABEL STATES (Refactored to ::before) */
+
+/* Base Label Style (Placeholder) */
+.custom-select-trigger::before {
+  content: attr(data-label);
+  position: absolute;
+  top: 50%;
+  left: 25px;
+  /* Align with padding */
+  transform: translateY(-50%);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  transition: 0.3s ease all;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: transparent;
+  padding: 0 5px;
+  white-space: nowrap;
+}
+
+/* Active State (Common Position) - When Open OR Filled */
+.custom-select-wrapper.open .custom-select-trigger::before,
+.custom-select-trigger.filled::before {
+  top: 0;
+  left: 30px;
+  font-size: 0.7rem;
+  padding: 0 10px;
+  border-radius: 10px;
+  background: rgba(5, 5, 5, 0.6);
+  backdrop-filter: blur(5px) saturate(180%);
+  -webkit-backdrop-filter: blur(5px) saturate(180%);
+  transform: translateY(-50%);
+}
+
+/* Color: OPEN (Focus) -> GOLD */
+.custom-select-wrapper.open .custom-select-trigger::before {
+  color: #C5A059;
+  border: 0.2px solid #C5A059;
+}
+
+/* Color: FILLED but NOT OPEN (Inactive) -> WHITE */
+.custom-select-trigger.filled::before {
+  color: rgba(255, 255, 255, 0.5);
+  border: 0.2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Specific Override: Ensure Open/Gold takes precedence over Filled */
+.custom-select-wrapper.open .custom-select-trigger.filled::before {
+  color: #C5A059;
+  border: 0.2px solid #C5A059;
+}
+
+/* Remove old line animation elements if present in HTML */
+.focus-border {
+  display: none;
+}
+
+/* Floating Label (Etichetta che si sposta) */
+.floating-label {
+  position: absolute;
+  top: 50%;
+  left: 25px;
+  /* Align with input text padding */
+  transform: translateY(-50%);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  transition: 0.3s ease all;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: transparent;
+  padding: 0 5px;
+}
+
+/* Active State for Label (Common Positioning) */
+.minimal-input:focus~.floating-label,
+.minimal-input:not(:placeholder-shown)~.floating-label {
+  top: 0;
+  left: 20px;
+  font-size: 0.7rem;
+  padding: 0 10px;
+  border-radius: 10px;
+  transform: translateY(-50%);
+  background: rgba(5, 5, 5, 0.1);
+  /* Low opacity background */
+  backdrop-filter: blur(5px) saturate(180%);
+  -webkit-backdrop-filter: blur(5px) saturate(180%);
+}
+
+/* Focused State (Gold) */
+.minimal-input:focus~.floating-label {
+  color: #C5A059;
+  border: 0.2px solid #C5A059;
+}
+
+/* Filled but Not Focused (White/Inactive) */
+.minimal-input:not(:focus):not(:placeholder-shown)~.floating-label {
+  color: rgba(255, 255, 255, 0.5);
+  /* Matching the selector's inactive state "bianchino" */
+  border: 0.2px solid rgba(255, 255, 255, 0.2);
+  /* Subtle white border */
+}
+
+/* Textarea Specific */
+textarea.minimal-input {
+  border-radius: 30px !important;
+  /* Less rounded for box */
+  padding-top: 20px;
+}
+
+textarea.minimal-input~.floating-label {
+  top: 30px;
+  /* Adjust start position for textarea */
+}
+
+textarea.minimal-input:focus~.floating-label,
+textarea.minimal-input:not(:placeholder-shown)~.floating-label {
+  top: 0px;
+  /* Same active top position */
+}
+
+/* Bottone Submit Lusso */
+.btn-submit-luxury {
+  margin-top: 30px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 20px 40px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  backdrop-filter: blur(5px) saturate(180%);
+  -webkit-backdrop-filter: blur(5px) saturate(180%);
+}
+
+.btn-submit-luxury:hover {
+  background: #C5A059;
+  border-color: #C5A059;
+  color: black;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .luxury-form-container {
+    grid-template-columns: 1fr;
+    gap: 60px;
+  }
+
+  .form-title {
+    font-size: 3rem;
+  }
+}
+
+/* =========================================================================
+   9. LUXURY FOOTER - THE FOUNDATION
+   ========================================================================= */
+
+/* Container Footer */
+.luxury-footer {
+  background-color: #050505;
+  color: white;
+  padding-top: 100px;
+  position: relative;
+  overflow: hidden;
+  /* FONDAMENTALE: Taglia tutto ciò che esce */
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Griglia Layout */
+/* Griglia Layout */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 0.8fr 0.8fr 1.5fr;
+  /* Brand wide, Links compact, Connect wide */
+  gap: 40px;
+  margin-bottom: 80px;
+}
+
+/* Tipografia Colonne */
+.footer-logo {
+  width: 80px;
+  /* Adatta al tuo logo */
+  margin-bottom: 30px;
+  filter: invert(1);
+  /* Se il logo è nero, lo rende bianco */
+}
+
+.footer-address,
+.footer-vat {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.footer-heading {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: #C5A059;
+  /* Oro */
+  margin-bottom: 25px;
+  text-transform: uppercase;
+}
+
+/* Link Styling */
+/* Link Styling */
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  /* Flexbox */
+  flex-direction: column;
+  /* Vertical Stack */
+  gap: 15px;
+  /* Spazio tra i link */
+}
+
+.footer-links li {
+  margin-bottom: 0;
+  /* Handled by gap */
+}
+
+.footer-links a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  transition: all 0.3s;
+  display: inline-block;
+  position: relative;
+}
+
+.footer-links a:hover {
+  color: white;
+  transform: translateX(5px);
+  /* Slide effect */
+}
+
+.footer-links a:hover {
+  color: #C5A059;
+}
+
+/* Social Buttons Minimal */
+.social-links {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.social-btn {
+  font-size: 0.8rem;
+  text-decoration: none;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 20px;
+  transition: all 0.3s;
+}
+
+.social-btn:hover {
+  border-color: #C5A059;
+  color: #C5A059;
+}
+
+.footer-mail {
+  display: block;
+  color: white;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  /* Base grey line */
+  padding-bottom: 5px;
+  width: fit-content;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.footer-mail::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  /* Cover the existing border */
+  left: 0;
+  width: 0%;
+  height: 1px;
+  background-color: #C5A059;
+  /* Gold */
+  transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.footer-mail:hover {
+  color: #C5A059;
+}
+
+.footer-mail:hover::after {
+  width: 100%;
+}
+
+/* Bottom Line (Copyright) */
+.footer-bottom-line {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 30px 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.footer-bottom-line a {
+  color: rgba(255, 255, 255, 0.3);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-bottom-line a:hover {
+  color: #C5A059;
+}
+
+/* --- THE SIGNATURE (La Scritta Gigante) --- */
+.footer-signature {
+  font-family: var(--font-display);
+  /* Bodoni Moda */
+  /* CALCOLO DIMENSIONE: 13.5vw significa il 13.5% della larghezza schermo. 
+       Questo assicura che il testo riempia la larghezza senza uscire. */
+  font-size: 13.5vw;
+  line-height: 0.8;
+  /* Schiaccia l'altezza per togliere spazio sotto */
+  text-align: center;
+  font-weight: 400;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.15);
+  /* Solo bordo sottile */
+  user-select: none;
+  pointer-events: none;
+  margin-bottom: -2%;
+  /* Taglia leggermente il sotto per effetto "fondamenta" */
+  width: 100%;
+  white-space: nowrap;
+  /* Impedisce che vada a capo */
+}
+
+/* Responsive Footer */
+@media (max-width: 1024px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    /* 2 colonne su tablet */
+    gap: 40px;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    /* 1 colonna su mobile */
+    gap: 40px;
+  }
+
+  .footer-signature {
+    font-size: 18vw;
+    /* Più grande su mobile */
+    margin-bottom: -15px;
+  }
+}
+
+/* =========================================================================
+   10. GOLDEN PARTICLES BACKGROUND
+   ========================================================================= */
+
+/* Container per lo sfondo particellare */
+.particles-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  /* Dietro a tutto */
+  opacity: 0.4;
+  /* Molto sottile, non deve disturbare la lettura */
+  pointer-events: none;
+  /* Lascia cliccare il form */
+}
+
+/* Assicurati che il contenuto del form stia sopra */
+.luxury-form-container {
+  position: relative;
+  z-index: 2;
+  /* Sopra le particelle */
+}
+
+/* Vignettatura per sfumare i bordi */
+.luxury-form-section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, transparent 20%, #050505 90%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Ensure section is relative */
+.luxury-form-section {
+  position: relative;
+  /* Maintain existing layout props */
+}
+
+/* ==============================================
+   MOBILE & TABLET ADAPTATION
+   (Max-Width: 1024px per Tablet / 768px per Mobile)
+   ============================================== */
+
+
+/* 2. ADATTAMENTO GENERALE MOBILE (Sotto 900px) */
+@media (max-width: 900px) {
+
+  /* Riduzione Padding Generali */
+  section,
+  .luxury-form-section,
+  .vision-section-bugatti {
+    padding: 80px 0 !important;
+    /* Meno spazio verticale */
+  }
+
+  .container,
+  .vision-container,
+  .luxury-form-container {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    width: 100% !important;
+  }
+
+  /* --- HERO SECTION MOBILE --- */
+  .hero-main-title {
+    /* Usiamo VW per scalare col device */
+    font-size: 14vw !important;
+    line-height: 1.1 !important;
+  }
+
+  .hero-supra-title {
+    font-size: 0.9rem !important;
+    letter-spacing: 0.2em !important;
+  }
+
+  .hero-content {
+    margin-top: 100px;
+    /* Spazio per la navbar mobile */
+  }
+
+  /* --- VISION SECTION (Bugatti Style) --- */
+  .vision-container {
+    flex-direction: column !important;
+    /* Impila Verticalmente */
+    gap: 50px !important;
+  }
+
+  .vision-headline {
+    font-size: 4rem !important;
+  }
+
+  .visual-frame {
+    height: 400px !important;
+    /* Meno alto su mobile */
+  }
+
+  .bg-watermark {
+    font-size: 40vw !important;
+    /* Adatta lo sfondo gigante */
+    top: 20%;
+  }
+
+  /* --- CONTACT FORM (Editorial Style) --- */
+  .luxury-form-container {
+    grid-template-columns: 1fr !important;
+    /* Una sola colonna */
+    gap: 60px !important;
+  }
+
+  .form-title {
+    font-size: 3rem !important;
+  }
+
+  /* Adatta gli input per essere più comodi col dito */
+  .minimal-input {
+    font-size: 1.2rem !important;
+  }
+
+  /* --- FOOTER (Architectural) --- */
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    /* Tutto in una colonna */
+    gap: 40px !important;
+    text-align: center;
+    /* Centra tutto su mobile */
+  }
+
+  .footer-col {
+    align-items: center;
+    /* Centra items flex */
+  }
+
+  .footer-brand {
+    margin: 0 auto;
+    /* Centra il brand */
+  }
+
+  .social-links {
+    justify-content: center;
+  }
+
+  .footer-mail {
+    margin: 0 auto;
+  }
+
+  /* La firma gigante finale */
+  .footer-signature {
+    font-size: 18vw !important;
+    /* Leggermente più grande su mobile */
+    margin-bottom: -5px !important;
+  }
+
+  .footer-bottom-line {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  /* --- NAVBAR PILL MOBILE FIX --- */
+  /* Assicura che la pillola non esca e abbia sfondo solido per leggibilità */
+  .nav-capsule {
+    max-width: 90% !important;
+    /* Previene overflow orizzontale */
+    background: #000 !important;
+    /* Nero Solido su mobile come richiesto */
+    backdrop-filter: none !important;
+  }
+
+  /* Se c'è un menu aperto con classe .active o simile */
+  .nav-wrapper.active .nav-capsule,
+  .nav-links.active {
+    background: #000 !important;
+  }
+}
+
+/* 3. FIX SPECIFICI PER SCHERMI MOLTO PICCOLI (Sotto 400px) */
+@media (max-width: 400px) {
+  .hero-main-title {
+    font-size: 16vw !important;
+    /* Ancora più grande per leggibilità */
+  }
+
+  .btn-bugatti,
+  .btn-submit-luxury {
+    width: 100% !important;
+    /* Bottoni full width */
+    justify-content: center;
+  }
+}
+
+
+/* ==============================================
+   URGENT MOBILE FIXES & HAMBURGER MENU
+   ============================================== */
+
+/* --- DESKTOP FIX: HIDE TOGGLE DEFAULT --- */
+.mobile-toggle {
+  display: none;
+}
+
+/* --- GLOBAL MOBILE FIXES --- */
+html,
+body {
+  overflow-x: hidden;
+  /* BLOCCA LO SCROLL LATERALE */
+  width: 100%;
+  position: relative;
+}
+
+/* =========================================
+   MOBILE FIXES - NAVBAR HIDING
+   ========================================= */
+
+/* Nascondi navbar su dispositivi touch */
+@media (hover: none) and (pointer: coarse) {
+
+  /* Nascondi TUTTO il sistema navbar su mobile */
+  .nav-wrapper,
+  .nav-capsule,
+  .nav-logo,
+  .spotlight-mode,
+  .goo-container,
+  .goo-cursor,
+  .goo-base,
+  #nav-svg-filter,
+  div.nav-wrapper.active {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+}
+
+
+/* 2. IMPLEMENTAZIONE HAMBURGER MENU (Mobile Only) */
+@media (max-width: 900px) {
+
+  /* 1. Reset della Navbar Pillola */
+  .navbar {
+    position: absolute;
+    /* Non più fixed fluttuante */
+    top: 0;
+    left: 0;
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 0;
+    background: transparent;
+    /* Sfondo trasparente */
+    padding: 20px;
+    justify-content: space-between;
+    display: none;
+  }
+
+  /* Nascondi i filtri vetro della pillola su mobile per pulizia */
+  .navbar .glass-filter,
+  .navbar .glass-overlay,
+  .navbar .glass-specular {
+    display: none;
+  }
+
+  /* 2. Nascondi i link desktop */
+  .nav-links {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000000;
+    /* Sfondo Nero Pieno */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    z-index: 9998;
+
+    /* Animazione entrata */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: all 0.4s ease;
+  }
+
+  /* Stato Attivo (Quando clicchi l'hamburger) */
+  .nav-menu.active .nav-links {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* Stile Link nel Menu Mobile */
+  .nav-links li a {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    /* Grandi */
+    color: white;
+  }
+
+  /* Fix per i link esistenti che sono <a> non <li> */
+  .nav-links a {
+    font-family: var(--font-display);
+    font-size: 2.5rem !important;
+    /* Force override */
+    color: white;
+    display: block;
+  }
+
+  /* 3. L'Hamburger Icon */
+  .mobile-toggle.McButton {
+    display: block !important;
+    position: fixed;
+    top: 2vh;
+    right: 5vw;
+
+    /* Stile cerchio nero perfetto - NO rugby ball */
+    background: #0A0A0A90 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 20001;
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transform: scale(1);
+  }
+
+
+  .McButton b {
+    position: absolute;
+    left: 50%;
+    margin-left: -16.5px;
+    /* Center 44px width */
+    width: 33px;
+    height: 3px;
+    background-color: white;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    opacity: 1;
+  }
+
+  .McButton b:nth-child(1) {
+    top: 18px;
+  }
+
+  .McButton b:nth-child(2) {
+    top: 30px;
+    margin-top: -1.5px;
+  }
+
+  .McButton b:nth-child(3) {
+    top: 42px;
+    margin-top: -3px;
+  }
+
+  /* ACTIVE STATE ANIMATION (Simulating Velocity sequence) */
+
+  /* 1. Collapse Top/Bottom bars to Center */
+  .McButton.active b:nth-child(1) {
+    top: 50%;
+    margin-top: -1.5px;
+    transition-delay: 0s;
+  }
+
+  .McButton.active b:nth-child(2) {
+    opacity: 0;
+    /* Middle bar fades out */
+  }
+
+  .McButton.active b:nth-child(3) {
+    top: 50%;
+    margin-top: -1.5px;
+    transform: rotate(90deg);
+    /* Rotate to form + with bar 1 */
+    transition: top 0.3s ease, transform 0.3s 0.2s ease;
+    /* Delay rotation */
+  }
+
+  /* 2. Rotate Container to form X */
+  .McButton.active {
+    transform: rotate(135deg);
+    transition-delay: 0.2s;
+  }
+
+  .j-logo-container {
+    position: absolute;
+    top: 0;
+    left: 5vw;
+  }
+
+  /* NASCONDI IL RESTO DELLA NAVBAR SU MOBILE */
+  .nav-logo,
+  .nav-cta,
+  .nav-capsule .nav-link {
+    display: none !important;
+  }
+
+  .nav-capsule,
+  .navbar {
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    border: none !important;
+    pointer-events: none;
+    /* Lascia cliccare sotto */
+  }
+
+  .mobile-toggle {
+    pointer-events: auto;
+    /* Styling handled in .mobile-toggle.McButton block */
+  }
+}
+
+/* 3. FIX TIPOGRAFIA E LAYOUT (Risolve "OSPIT ALITÀ") */
+@media (max-width: 768px) {
+
+  /* HERO SECTION FIX */
+  /* HERO SECTION FIX - FLEX STACK APPROACH */
+  /* Remove absolute chaos and stack elements vertically/centered */
+  .jesko-ui-layer {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding-top: 10vh !important;
+    /* Reduced dynamic padding */
+    height: 100dvh !important;
+    /* Dynamic Viewport Height */
+    overflow: hidden !important;
+    /* Enforce no scroll */
+  }
+
+  /* Reset all absolute containers to relative */
+  .j-headline-container,
+  .j-info-container,
+  .j-cta-container {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    text-align: center !important;
+    transform: none !important;
+    margin: 0 !important;
+  }
+
+  /* 2. HEADLINE */
+  .j-headline-container {
+    margin-bottom: 20px !important;
+    z-index: 10;
+  }
+
+  .hero-main-title {
+    font-size: 11vw !important;
+    line-height: 0.9 !important;
+    word-break: normal !important;
+    hyphens: manual;
+  }
+
+  /* Fix "IL <br> FUTURO" -> "IL FUTURO" */
+  .hero-main-title br {
+    display: none !important;
+  }
+
+  .j-headline span.j-italic {
+    display: block;
+    /* Manda "DELL'OSPITALITÀ" a capo pulito */
+    font-size: 12vw !important;
+    margin-top: 5px;
+  }
+
+  /* 3. INFO / DESC */
+  .j-info-container {
+    margin-bottom: 2vh !important;
+    /* Reduced from 30px */
+    padding: 0 5vw;
+    /* Slightly wider padding for safety */
+  }
+
+  .j-separator {
+    margin: 0 auto 15px auto !important;
+    /* Center separator */
+  }
+
+  .j-desc {
+    font-size: 0.9rem !important;
+    max-width: 90% !important;
+    margin: 0 auto !important;
+  }
+
+  /* 4. CTA / BUTTONS */
+  /* Restore "SCOPRI I VANTAGGI" below everything */
+  /* 4. CTA / BUTTONS */
+  .j-cta-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0;
+    /* Center align */
+    margin-top: 1vh !important;
+    /* Reduced from 20px */
+    width: 100%;
+  }
+
+  .j-scroll-in {
+    display: block !important;
+    margin-bottom: 15px !important;
+    transform: none !important;
+    color: white !important;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 1 !important;
+  }
+
+  .j-scroll-in .j-line {
+    display: none !important;
+    /* Hide decorative line on mobile */
+  }
+
+  .hero-supra-title {
+    font-size: 0.8rem !important;
+    margin-top: 100px;
+    /* Spazio aumentato per non finire sotto il logo */
+  }
+
+  /* VISION SECTION FIX (Il watermark causava lo scroll orizzontale) */
+  .vision-section-bugatti {
+    padding: 60px 0 !important;
+    overflow: hidden !important;
+    /* Taglia via il watermark che esce */
+  }
+
+  .bg-watermark {
+    font-size: 20vw !important;
+    /* Riduci grandezza sfondo */
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    /* Centrato perfettamente */
+    width: 100%;
+    text-align: center;
+  }
+
+  .visual-frame {
+    height: 350px !important;
+    /* Immagine più piccola */
+    margin: 0 -20px;
+    /* Full width edge-to-edge */
+    width: calc(100% + 40px);
+  }
+
+  /* FOOTER FIX (La firma gigante causava scroll) */
+  .footer-signature {
+    font-size: 15vw !important;
+    /* Più contenuto */
+    width: 100% !important;
+    overflow: hidden;
+  }
+
+  /* Container Padding */
+  .container,
+  .vision-container,
+  .luxury-form-container {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    box-sizing: border-box;
+  }
+
+  .j-logo-container {
+    position: absolute;
+    top: 0;
+    left: 5vw;
+    height: 60px;
+    /* Same height as mobile-toggle (60px) for centering */
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* --- MOBILE MENU OVERLAY (Nascosto su Desktop) --- */
+.mobile-overlay {
+  display: none;
+  /* Default nascosto */
+}
+
+/* --- VISIBILE SOLO SU MOBILE --- */
+@media (max-width: 900px) {
+
+  /* Stato Base (Chiuso) */
+  .mobile-overlay {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100dvh;
+    /* Force full screen (no more, no less) */
+    background-color: #000000;
+    z-index: 9998;
+    padding: 2vh 5vw;
+    /* Compressed padding */
+    box-sizing: border-box;
+
+    /* NO SCROLL */
+    overflow-y: hidden !important;
+    touch-action: none;
+
+    /* Animazione Uscita (Fade Out) */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Stato Attivo (Aperto) */
+  .mobile-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* HEADER MENU */
+  .mobile-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 0;
+    /* No margin needed if logo is absolute or handled by flex */
+    flex-shrink: 0;
+    height: 50px;
+    /* Placeholder spot */
+  }
+
+  .mobile-logo {
+    position: absolute;
+    top: 2vh;
+    left: 5vw;
+    height: 45px;
+    /* Ridotto per iPhone SE */
+  }
+
+  /* LINKS NAVIGATION */
+  .mobile-nav-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Center vertically */
+    align-items: flex-start;
+    overflow: hidden;
+    /* Lock content */
+  }
+
+  .mobile-links-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5vh;
+    /* Tight gap */
+  }
+
+  .mobile-link {
+    font-family: var(--font-display);
+    /* Bodoni Moda */
+    font-size: min(10vh, 10vw);
+    /* User requested size */
+    color: white;
+    text-decoration: none;
+    line-height: 1.0;
+    display: block;
+    margin-bottom: 0;
+    transition: color 0.3s;
+    white-space: nowrap;
+
+    /* Setup Animazione Staggered */
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.5s ease, transform 0.5s ease, color 0.3s;
+  }
+
+  .mobile-link:hover {
+    color: #C5A059;
+    font-style: italic;
+  }
+
+  /* ANIMAZIONE INGRESSO LINKS */
+  .mobile-overlay.active .mobile-link,
+  .mobile-overlay.active .mobile-cta-wrapper {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: var(--delay);
+  }
+
+  /* CTA LABEL */
+  .mobile-cta-label {
+    display: block;
+    color: #FFFFFF !important;
+    /* Forces White */
+    font-family: var(--font-body);
+    font-size: 2vh;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 3vh;
+    margin-bottom: 2vh;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* BOTTONE GOLD */
+  .btn-mobile-gold {
+    display: inline-block;
+    margin-top: 0;
+    /* Minimal spacing */
+    padding: 1.5vh 30px;
+    background: #C5A059;
+    color: black;
+    font-family: var(--font-body);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    border-radius: 0;
+    font-size: 0.9rem;
+
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+  }
+
+  /* FOOTER MENU */
+  .mobile-menu-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1.5vh;
+    padding-bottom: env(safe-area-inset-bottom);
+    /* iOS Bottom Bar */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    /* Always visible */
+    margin-top: auto;
+    /* Push to bottom if space remains */
+  }
+
+  .mobile-menu-footer a {
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+  }
+
+  .mobile-socials a {
+    margin-left: 20px;
+    color: white;
+  }
+
+  .nav-wrapper {
+    display: none;
+  }
+
+  .j-logo-container {
+    position: absolute;
+    top: 0;
+    left: 5vw;
+    height: 60px;
+    /* Match mobile-toggle height */
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* Stato Attivo (Aperto) */
+.mobile-overlay.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* HEADER MENU */
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 2vh;
+  /* Reduced margin */
+  flex-shrink: 0;
+}
+
+.mobile-logo {
+  height: 45px;
+  /* Logo normale ridotto per iPhone SE */
+}
+
+.mobile-close-btn {
+  display: none !important;
+  /* Hamburger acts as Close */
+}
+
+.mobile-close-btn {
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.3s;
+}
+
+/* LINKS NAVIGATION */
+.mobile-nav-content {
+  flex: 1;
+  /* Prende tutto lo spazio centrale */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  /* Allineato a sinistra per stile editoriale */
+  overflow: hidden;
+  /* Prevent internal scroll */
+}
+
+.mobile-links-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+  /* Dynamic gap */
+}
+
+.mobile-link {
+  font-family: var(--font-display);
+  /* Bodoni Moda */
+  font-size: min(10vh, 10vw);
+  /* SMART SCALING */
+  color: white;
+  text-decoration: none;
+  line-height: 1.1;
+  display: block;
+  margin-bottom: 0;
+  transition: color 0.3s;
+  white-space: nowrap;
+  /* Prevent wrapping */
+
+  /* --- CONTACT LIQUID GOLD BACKGROUND --- */
+  .luxury-form-section {
+    position: relative;
+    /* padding unchanged elsewhere or here */
+    padding: 150px 0;
+    background-color: #000;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  /* IL CONTENITORE DELLO SFONDO */
+  .contact-liquid-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    /* Deve stare DIETRO al form */
+    overflow: hidden;
+  }
+
+  /* LE SFERE DI COLORE (ORBS) */
+  .liquid-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    /* Il segreto: sfocatura estrema per fondere i colori */
+    opacity: 0.6;
+    animation: liquidMove 15s infinite alternate ease-in-out;
+  }
+
+  /* Sfera Oro */
+  .orb-gold {
+    background: #C5A059;
+    width: 60vw;
+    height: 60vw;
+    top: -20%;
+    left: -10%;
+    opacity: 0.4;
+    animation-duration: 20s;
+  }
+
+  /* Sfera Scura/Bluastra per contrasto */
+  .orb-dark {
+    background: #1a1a1a;
+    /* O un blu notte molto scuro */
+    width: 70vw;
+    height: 70vw;
+    bottom: -20%;
+    right: -10%;
+    opacity: 0.8;
+    animation-duration: 25s;
+    animation-direction: reverse;
+  }
+
+  /* ANIMAZIONE MOVIMENTO */
+  @keyframes liquidMove {
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+
+    50% {
+      transform: translate(30px, 50px) scale(1.1);
+    }
+
+    100% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+  }
+
+  /* TEXTURE OPZIONALE (Noise o Griglia) per dare materialità */
+  .liquid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  /* Stile Vetro per il contenitore del form per farlo staccare */
+  .luxury-form-container {
+    position: relative;
+    z-index: 2;
+    /* Optional: Add light glass effect to container if not applied to inner wrapper */
+  }
+
+  /* Adattamento Mobile */
+  @media (max-width: 768px) {
+    .liquid-orb {
+      opacity: 0.3;
+      /* Meno intenso su mobile per leggibilità */
+      filter: blur(50px);
+    }
+  }
+
+  cursor: pointer;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.3s;
+}
+
+/* LINKS NAVIGATION */
+.mobile-nav-content {
+  flex: 1;
+  /* Prende tutto lo spazio centrale */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  /* Allineato a sinistra per stile editoriale */
+}
+
+.mobile-links-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mobile-link {
+  font-family: var(--font-display);
+  /* Bodoni Moda */
+  /* ENORME */
+  color: white;
+  text-decoration: none;
+  line-height: 1.1;
+  display: block;
+  margin-bottom: 20px;
+  transition: color 0.3s;
+
+  /* Setup Animazione Staggered */
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.5s ease, transform 0.5s ease, color 0.3s;
+}
+
+.mobile-link:hover {
+  color: #C5A059;
+  /* Oro in hover (se toccano) */
+  font-style: italic;
+  /* Tocco di classe in hover */
+}
+
+/* ANIMAZIONE INGRESSO LINKS */
+.mobile-overlay.active .mobile-link,
+.mobile-overlay.active .mobile-cta-wrapper {
+  opacity: 1;
+  transform: translateY(0);
+  /* Usa la variabile --delay definita nell'HTML */
+  transition-delay: var(--delay);
+}
+
+/* BOTTONE GOLD */
+.btn-mobile-gold {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 15px 40px;
+  background: #C5A059;
+  color: black;
+  font-family: var(--font-body);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  border-radius: 0;
+  /* Squadrato per lusso */
+
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease;
+}
+
+/* FOOTER MENU */
+.mobile-menu-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+}
+
+.mobile-menu-footer a {
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+}
+
+.mobile-socials a {
+  margin-left: 20px;
+  color: white;
+}
+
+/* --- PRIVACY CONCIERGE (Cookie Banner) --- */
+.cookie-banner {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  max-width: 400px;
+  width: calc(100% - 60px);
+  padding: 30px;
+
+  /* Stile Vetro Scuro Luxury */
+  background: rgba(5, 5, 5, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+
+  /* Ombreggiatura profonda */
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  z-index: 9997;
+  /* Sopra a tutto */
+
+  /* Animazione Entrata */
+  opacity: 0;
+  transform: translateY(20px);
+  visibility: hidden;
+  transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.cookie-banner.visible {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+/* Tipografia */
+.cookie-title {
+  font-family: var(--font-display, serif);
+  /* Bodoni/Garamond */
+  font-size: 1.2rem;
+  color: white;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.cookie-text {
+  font-family: var(--font-body, sans-serif);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  margin-bottom: 25px;
+}
+
+.cookie-link {
+  color: var(--gold-accent);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(197, 160, 89, 0.3);
+  transition: 0.3s;
+}
+
+.cookie-link:hover {
+  color: white;
+  border-color: white;
+}
+
+/* Bottoni */
+.cookie-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-cookie-gold {
+  flex: 1;
+  background: var(--gold-accent);
+  color: #000;
+  border: none;
+  padding: 12px 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s;
+  border-radius: 4px;
+}
+
+.btn-cookie-gold:hover {
+  background: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+}
+
+.btn-cookie-ghost {
+  flex: 1;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 12px 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s;
+  border-radius: 4px;
+}
+
+.btn-cookie-ghost:hover {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .cookie-banner {
+    left: 20px;
+    bottom: 20px;
+    width: calc(100% - 40px);
+    max-width: none;
+    padding: 20px;
+  }
+
+  .cookie-actions {
+    flex-direction: column-reverse;
+    /* Accetta sopra, Rifiuta sotto */
+  }
+}
+
+/* --- LEGAL MODAL SYSTEM --- */
+
+.legal-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 200000;
+  /* Sopra menu mobile (9998) */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  /* Passa il click attraverso quando nascosto */
+
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  overflow: hidden;
+}
+
+.legal-modal.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  /* Abilita interazione quando visibile */
+}
+
+/* Sfondo Oscurante - Cliccabile per chiudere */
+.legal-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+  /* Mostra che è cliccabile */
+}
+
+/* Il Foglio del Documento */
+.legal-modal-content {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  height: 85vh;
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(30px) scale(0.95);
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.legal-modal.active .legal-modal-content {
+  transform: translateY(0) scale(1);
+}
+
+/* Header */
+.legal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 30px 40px;
+  /* Added padding for breathing room */
+}
+
+.legal-title {
+  font-family: var(--font-body);
+  /* Sans-serif invece di serif */
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--gold-accent);
+  margin: 0;
+}
+
+.legal-close-btn {
+  background: transparent;
+  border: none;
+  /* Rimosso bordo circolare */
+  color: white;
+  width: auto;
+  height: auto;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 1.5rem;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.legal-close-btn:hover {
+  color: var(--gold-accent);
+  transform: scale(1.1);
+}
+
+/* Corpo del Testo */
+.legal-body {
+  padding: 40px;
+  overflow-y: auto;
+  font-family: var(--font-body);
+  /* Sans-serif */
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.7;
+  cursor: text;
+  /* Cursore testo per leggibilità */
+
+  /* Nascondi scrollbar ma mantieni scroll */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge */
+}
+
+/* Nascondi scrollbar Webkit (Chrome, Safari) */
+.legal-body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Stili del testo legale */
+.legal-body h3 {
+  color: white;
+  font-size: 1.2rem;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  font-family: var(--font-body);
+  /* Sans-serif anche per i titoli */
+  font-weight: 600;
+}
+
+.legal-body h3:first-child {
+  margin-top: 0;
+}
+
+.legal-body p,
+.legal-body ul {
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+.legal-body a {
+  color: var(--gold-accent);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.legal-footer-note {
+  margin-top: 50px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+}
+
+/* Mobile - Safe Area Support */
+@media (max-width: 768px) {
+  .legal-modal-content {
+    height: 100vh;
+    height: 100dvh;
+    border-radius: 0;
+    max-width: 100%;
+  }
+
+  .legal-header {
+    padding-top: calc(env(safe-area-inset-top) + 60px);
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+    padding-bottom: 20px;
+  }
+
+  /* --- PERFORMANCE OPTIMIZATIONS --- */
+
+  /* Heavy sections: Skip rendering when off-screen */
+  .luxury-footer,
+  .luxury-form-section,
+  #features {
+    content-visibility: auto;
+    contain-intrinsic-size: 1000px;
+    /* Estimate height to prevent scroll jumps */
+  }
+
+  /* Animated Elements Hints */
+  .jesko-hero-final,
+  .hotel-section {
+    will-change: transform;
+    /* Hint GPU */
+    contain: paint;
+    /* Limit repaint scope */
+  }
+
+  .legal-body {
+    padding: 20px;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
+  }
+
+  .nav-wrapper {
+    display: none;
+  }
+}
+
+/* --- PRELOADER CONTAINER ("The Zoom-Through Reveal") --- */
+/* --- PRELOADER CONTAINER ("The Zoom-Through Reveal" - Cutout Mask) --- */
+.zoom-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 99999;
+  /* ISOLATION Needed for mix-blend-mode to cut only the overlay bg */
+  isolation: isolate;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+
+  transition: opacity 0.5s ease-out, visibility 0.5s;
+  pointer-events: all;
+}
+
+/* Sfondo Nero Separato (per essere bucato) */
+.zoom-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000000;
+  /* Nero Assoluto */
+  z-index: -1;
+  /* Dietro al contenuto */
+}
+
+.zoom-content {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Testo che flippa (Iniziale) */
+.shuffle-word {
+  font-family: var(--font-body);
+  /* Inter Tight */
+  font-size: 2rem;
+  font-weight: 300;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  position: absolute;
+  opacity: 1;
+  transition: opacity 0.1s;
+  z-index: 10;
+}
+
+/* --- LOGO LAYERS --- */
+.gsa-logo-layer {
+  font-family: var(--font-display);
+  /* Bodoni Moda */
+  font-size: 10vw;
+  /* Grande ma contenuto */
+  margin: 0;
+  line-height: 1;
+  position: absolute;
+  /* Sovrapposti esattamente */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+/* Layer 1: GOLD (Quello che vedi all'inizio) */
+.gold {
+  color: #C5A059;
+  /* Oro */
+  opacity: 0;
+  /* Nascosto fase 1 */
+  z-index: 2;
+}
+
+/* Layer 2: HOLE (Quello che buca il nero) */
+.hole {
+  color: black;
+  /* Il colore non importa, conta la forma */
+  opacity: 0;
+  /* Nascosto fase 1 */
+  z-index: 1;
+  /* QUESTO è IL TRUCCO: Buca il .zoom-bg sotto */
+  mix-blend-mode: destination-out;
+}
+
+
+/* CLASSI PER L'ANIMAZIONE */
+
+/* 1. Nascondi lo shuffle */
+.shuffle-word.hidden {
+  opacity: 0;
+  display: none;
+}
+
+/* 2. Mostra GSA (Entrambi i layer) */
+.gsa-logo-layer.visible {
+  transform: translate(-50%, -50%) scale(1);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Gestione opacità specifica per layer */
+.gold.visible {
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.hole.visible {
+  opacity: 1;
+  /* Il buco si "attiva" subito sotto al gold */
+  transition: opacity 0.2s;
+}
+
+
+/* 3. IL SUPER ZOOM (Cutout Effect) */
+.gsa-logo-layer.zoom-in {
+  /* Zooma 80x per far entrare l'utente nella lettera */
+  transform: translate(-50%, -50%) scale(80);
+  /* Ease-in: parte lento, finisce veloce */
+  transition: transform 1.2s cubic-bezier(0.7, 0, 0.84, 0), opacity 1s ease-in;
+}
+
+/* Quando parte lo zoom: */
+/* Il Gold DEVE sparire (opacity 0) per lasciare spazio al buco */
+.gold.zoom-in {
+  opacity: 0;
+}
+
+/* Il Hole resta visible e zooma */
+.hole.zoom-in {
+  opacity: 1;
+}
+
+
+/* 4. Nascondi Overlay e rimuovi */
+.zoom-overlay.finished {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* --- CUSTOM CONTEXT MENU --- */
+.context-menu {
+  position: fixed;
+  z-index: 999999;
+  /* Sopra a TUTTO */
+  width: 260px;
+  background: rgba(10, 10, 10, 0.95);
+  /* Quasi nero solido */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  /* Bordo Oro Sottile */
+  border-radius: 16px;
+  padding: 8px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+
+  /* Stato Iniziale: Nascosto */
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.9);
+  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+}
+
+/* Stato Attivo */
+.context-menu.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.context-menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: white;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.ctx-item:hover {
+  background: rgba(197, 160, 89, 0.15);
+  /* Hover Oro Sfumato */
+  color: #C5A059;
+}
+
+.ctx-icon {
+  color: #C5A059;
+  width: 20px;
+  text-align: center;
+}
+
+/* Gestione Visibilità Dinamica */
+.ctx-item.hidden {
+  display: none;
+}
+
+/* Separatore opzionale tra partner e azioni */
+#ctx-partner {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 5px;
+}
+
+/* Academy Button - Outline Style */
+.academy-content .btn-jesko {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 40px;
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+  font-family: var(--font-body);
+  /* Montserrat */
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 50px;
+  /* Pill shape */
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+.academy-content .btn-jesko:hover {
+  background: #C5A059;
+  border-color: #C5A059;
+  color: #000000;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(197, 160, 89, 0.3);
+}
+
+.academy-content .btn-jesko i {
+  transition: transform 0.3s ease;
+}
+
+.academy-content .btn-jesko:hover i {
+  transform: scale(1.01) translateY(-1px);
+}
+
+/* --- BESAFE RATE SECTION (Floating Glass Cards) --- */
+
+/* CONTAINER */
+.besafe-section {
+  position: relative;
+  padding: 150px 0;
+  background-color: #050505;
+  overflow: hidden;
+}
+
+.besafe-container {
+  display: flex;
+  align-items: flex-start;
+  /* Allinea in alto per sticky effect */
+  justify-content: space-between;
+  gap: 80px;
+  position: relative;
+  z-index: 2;
+}
+
+/* SFONDO GLOW (Luce soffusa dietro) */
+.besafe-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(circle, rgba(197, 160, 89, 0.08) 0%, transparent 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* COLONNA TESTO */
+.besafe-text-col {
+  flex: 1;
+  position: relative;
+  top: 150px;
+  /* Rimane ferma mentre scorri le card a destra */
+  position: -webkit-relative;
+  /* Ensure Safari compatibility explicitly */
+}
+
+.besafe-title {
+  font-family: var(--font-display);
+  font-size: 5rem;
+  color: white;
+  margin: 10px 0;
+  line-height: 1;
+  background: linear-gradient(45deg, #fff, #aaa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.besafe-subtitle {
+  font-family: var(--font-body);
+  font-size: 1.5rem;
+  color: #C5A059;
+  margin-bottom: 30px;
+  font-weight: 300;
+}
+
+.besafe-desc {
+  font-family: var(--font-body);
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.8;
+  font-size: 1.1rem;
+  max-width: 450px;
+  margin-bottom: 40px;
+}
+
+.besafe-seal {
+  display: inline-flex;
+  align-items: center;
+  gap: 15px;
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  padding: 10px 20px;
+  border-radius: 50px;
+  color: #C5A059;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+}
+
+/* COLONNA CARDS */
+.besafe-cards-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* LA CARTA DI VETRO */
+.safety-card {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  background: rgba(255, 255, 255, 0.03);
+  /* Vetro scuro */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 30px;
+  border-radius: 12px;
+  transition: all 0.4s ease;
+
+  /* Setup per GSAP (saranno invisibili all'inizio) */
+  opacity: 0;
+  transform: translateY(50px);
+}
+
+.safety-card:hover {
+  background: rgba(197, 160, 89, 0.1);
+  /* Tocco Oro in hover */
+  border-color: rgba(197, 160, 89, 0.3);
+  transform: translateX(10px);
+  /* Slitta leggermente a destra */
+}
+
+.card-icon {
+  font-size: 2rem;
+  color: #C5A059;
+  min-width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  border-radius: 50%;
+}
+
+.card-info h4 {
+  color: white;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  margin: 0 0 5px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card-info p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.95rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .besafe-container {
+    flex-direction: column;
+  }
+
+  .besafe-text-col {
+    position: static;
+    margin-bottom: 50px;
+  }
+
+  .besafe-title {
+    font-size: 3.5rem;
+  }
+}
+
+/* --- MEET THE FOUNDER SECTION (Editorial Style) --- */
+
+/* CONTAINER */
+.founder-section {
+  padding: 180px 0;
+  background-color: #050505;
+  position: relative;
+}
+
+.founder-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 100px;
+  align-items: center;
+}
+
+/* BIO COLUMN */
+.founder-name {
+  font-family: var(--font-display);
+  /* Bodoni */
+  font-size: 4.5rem;
+  color: white;
+  margin: 10px 0 5px;
+  line-height: 1;
+}
+
+.founder-role {
+  font-family: var(--font-body);
+  font-size: 1.2rem;
+  color: #C5A059;
+  /* Oro */
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+}
+
+.founder-text {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.8;
+  margin-bottom: 20px;
+  max-width: 500px;
+}
+
+/* Firma (Usa un font script se vuoi, o Bodoni Italic) */
+.founder-signature {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.3);
+  margin-top: 40px;
+}
+
+/* MEDIA COLUMN (VIDEO CARD) */
+.founder-media {
+  position: relative;
+}
+
+.video-preview-card {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 500px;
+  /* Verticale tipo ritratto */
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.video-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+  filter: grayscale(100%);
+  /* Inizia in B&N */
+}
+
+.video-preview-card:hover .video-thumbnail {
+  transform: scale(1.05);
+  filter: grayscale(0%);
+  /* Diventa a colori in hover */
+}
+
+.video-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1;
+  transition: background 0.3s;
+}
+
+.video-preview-card:hover .video-overlay {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Podcast Badge */
+.podcast-badge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  padding: 10px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.podcast-badge span {
+  display: block;
+  font-size: 0.6rem;
+  color: #C5A059;
+  letter-spacing: 0.2em;
+  margin-bottom: 3px;
+}
+
+.podcast-badge strong {
+  color: white;
+  font-family: var(--font-display);
+  font-size: 1rem;
+}
+
+/* PLAY BUTTON LUXURY */
+.play-btn-luxury {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.play-btn-luxury i {
+  color: white;
+  font-size: 1.5rem;
+  margin-left: 5px;
+  /* Visual fix per l'icona play */
+}
+
+.video-preview-card:hover .play-btn-luxury {
+  background: #C5A059;
+  border-color: #C5A059;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.play-btn-luxury:hover i {
+  color: black;
+}
+
+.video-caption {
+  margin-top: 15px;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: right;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .founder-container {
+    grid-template-columns: 1fr;
+    gap: 50px;
+  }
+
+  .founder-name {
+    font-size: 3.5rem;
+  }
+
+  .video-preview-card {
+    height: 400px;
+  }
+}
+
+/* --- GSA ACADEMY SECTION (Certificate of Excellence) --- */
+.academy-section {
+  padding: 150px 0;
+  background-color: #080808;
+  /* Leggermente diverso dal nero assoluto per stacco */
+  position: relative;
+  overflow: hidden;
+}
+
+.academy-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 80px;
+}
+
+.academy-content {
+  flex: 1;
+  padding-right: 40px;
+}
+
+/* Tipografia */
+.academy-title {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  color: white;
+  margin: 10px 0 30px;
+  line-height: 1.1;
+}
+
+.academy-desc {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.7;
+  margin-bottom: 40px;
+}
+
+/* Lista Punti Chiave */
+.academy-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 50px;
+}
+
+.academy-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 20px;
+  font-family: var(--font-body);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+}
+
+.academy-list i {
+  color: #C5A059;
+  /* Oro */
+  margin-top: 5px;
+}
+
+.academy-list strong {
+  color: white;
+  font-weight: 600;
+}
+
+/* Visual Column */
+.academy-visual {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.academy-image-wrapper {
+  width: 100%;
+  height: 600px;
+  position: relative;
+  overflow: hidden;
+  /* Maschera elegante (angolo tagliato o semplice) */
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  border-radius: 16px;
+}
+
+.academy-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%) contrast(1.1);
+  /* Look B&W Luxury */
+  transition: transform 1s ease;
+}
+
+.academy-image-wrapper:hover img {
+  transform: scale(1.05);
+}
+
+/* --- BADGE ROTANTE (The Seal) --- */
+.academy-badge {
+  position: absolute;
+  bottom: -50px;
+  left: -50px;
+  width: 180px;
+  height: 180px;
+  background: #000;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  z-index: 10;
+}
+
+.badge-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.badge-center img {
+  width: 45%;
+}
+
+/* Il testo SVG che gira */
+.rotating-text {
+  width: 100%;
+  height: 100%;
+  animation: rotateText 20s linear infinite;
+  fill: #C5A059;
+}
+
+@keyframes rotateText {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.badge-center {
+  position: absolute;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: white;
+  font-weight: 700;
+}
+
+/* --- GENERATIVE BACKGROUNDS --- */
+
+/* 1. ACADEMY: THE GOLDEN GRID */
+.academy-section {
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-academy-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.15;
+  /* Molto sottile */
+  /* Crea la griglia con gradienti lineari */
+  background-image:
+    linear-gradient(rgba(197, 160, 89, 0.6) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(197, 160, 89, 0.6) 1px, transparent 1px);
+  background-size: 60px 60px;
+  /* Dimensione quadrati */
+  /* Animazione scorrimento prospettico */
+  perspective: 500px;
+  transform-origin: top;
+  animation: gridMove 20s linear infinite;
+  pointer-events: none;
+}
+
+/* Vignettatura per sfumare i bordi nel nero */
+.academy-section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, transparent 40%, #050505 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.academy-container {
+  position: relative;
+  z-index: 2;
+  /* Content on top */
+}
+
+@keyframes gridMove {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(60px);
+  }
+}
+
+/* 2. BESAFE: THE SAFETY AURORA */
+.besafe-section {
+  position: relative;
+  overflow: hidden;
+  background: #050505;
+}
+
+.bg-besafe-aurora {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  filter: blur(80px);
+  /* Il segreto: sfocatura estrema */
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.4;
+  animation: floatOrb 10s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
+}
+
+.orb-1 {
+  top: -10%;
+  left: -10%;
+  width: 600px;
+  height: 600px;
+  background: #1a1a1a;
+  /* Grigio scuro base */
+}
+
+.orb-2 {
+  bottom: -10%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: #463b22;
+  /* Oro scuro spento */
+  animation-delay: -5s;
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(50px, 50px) scale(1.1);
+  }
+}
+
+/* 3. FOUNDER: CINEMATIC SPOTLIGHT */
+.founder-section {
+  position: relative;
+  overflow: hidden;
+  background: #000;
+}
+
+/* Il faretto di luce dietro */
+.bg-founder-spotlight {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(30, 30, 30, 1) 0%, rgba(0, 0, 0, 1) 70%);
+  z-index: 0;
+  transition: background 0.2s ease;
+  /* Per JS movement */
+  pointer-events: none;
+}
+
+/* Texture "Grana" (Noise) generata via CSS */
+.bg-noise {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.05;
+  /* Appena percettibile */
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Assicurati che il contenuto stia sopra */
+.founder-container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .academy-container {
+    flex-direction: column;
+    gap: 60px;
+  }
+
+  .academy-badge {
+    width: 140px;
+    height: 140px;
+    bottom: -30px;
+    left: auto;
+    right: -20px;
+    /* Spostalo a destra su mobile */
+  }
+
+  .academy-title {
+    font-size: 3rem;
+  }
+}
+
+/* --- CUSTOM CONTEXT MENU --- */
+.context-menu {
+  position: fixed;
+  z-index: 999999;
+  /* Sopra a TUTTO */
+  width: 260px;
+  background: rgba(10, 10, 10, 0.95);
+  /* Quasi nero solido */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  /* Bordo Oro Sottile */
+  border-radius: 16px;
+  padding: 8px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+
+  /* Stato Iniziale: Nascosto */
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.9);
+  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+}
+
+/* Stato Attivo */
+.context-menu.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.context-menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: white;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+.ctx-item:hover {
+  background: rgba(197, 160, 89, 0.15);
+  /* Hover Oro Sfumato */
+  color: #C5A059;
+}
+
+.ctx-icon {
+  color: #C5A059;
+  width: 20px;
+  text-align: center;
+}
+
+/* Gestione Visibilità Dinamica */
+.ctx-item.hidden {
+  display: none;
+}
+
+/* Separatore opzionale tra partner e azioni */
+#ctx-partner {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 5px;
+}

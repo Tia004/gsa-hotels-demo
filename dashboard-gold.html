@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html class="dark" lang="it">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GSA Hotels - Dashboard Gold</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-variant": "#2f3445",
+              "primary": "#f2ca50",
+              "surface-container-high": "#242a3a",
+              "surface-container": "#191f2f",
+              "background": "#0d1322",
+              "secondary-container": "#00eefc",
+            },
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .bg-grid {
+            background-image: linear-gradient(to right, rgba(212, 175, 55, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .glass-panel { background: rgba(25, 31, 47, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body min-h-screen">
+<div class="fixed inset-0 bg-grid pointer-events-none z-0"></div>
+<aside class="fixed left-0 top-0 h-full w-64 z-50 bg-[#0B1120] backdrop-blur-2xl flex flex-col py-8 px-4 space-y-8 shadow-[10px_0_30px_-15px_rgba(0,0,0,0.5)]">
+<div class="flex items-center space-x-3 mb-10 px-2">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-black" style="font-variation-settings: 'FILL' 1;">hotel</span>
+</div>
+<div>
+<h1 class="text-[#D4AF37] font-['Noto_Serif'] font-black uppercase tracking-widest leading-none text-sm">GSA Hotels</h1>
+<p class="text-[10px] text-slate-500 font-medium tracking-[0.2em] mt-1 uppercase">B2B Portal</p>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-white/5 text-[#00F0FF] border-r-2 border-[#00F0FF]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-500 hover:text-[#D4AF37]" href="#">
+<span class="material-symbols-outlined">handshake</span>
+<span class="text-sm font-medium">Partner</span>
+</a>
+</nav>
+<div class="mt-auto space-y-4">
+<div class="glass-panel p-4 rounded-xl border-secondary-container/20 border relative overflow-hidden group">
+<div class="flex items-center space-x-2 mb-3">
+<div class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></div>
+<span class="text-[10px] font-bold tracking-widest text-secondary-container uppercase">Aura AI Active</span>
+</div>
+<button class="w-full py-2.5 bg-surface-container-highest border border-secondary-container/30 text-secondary-container text-xs font-bold rounded-md hover:bg-secondary-container hover:text-black transition-all">Chatta con Aura</button>
+</div>
+<div class="pt-4 border-t border-white/5 space-y-1">
+<a class="flex items-center space-x-3 px-4 py-2 text-xs text-slate-500 hover:text-[#D4AF37]" href="#"><span class="material-symbols-outlined text-lg">settings</span><span>Impostazioni</span></a>
+<button id="logoutBtn" class="w-full flex items-center space-x-3 px-4 py-2 text-xs text-slate-500 hover:text-red-400 transition-colors"><span class="material-symbols-outlined text-lg">logout</span><span>Disconnetti</span></button>
+</div>
+</div>
+</aside>
+<header class="fixed top-0 right-0 left-64 h-16 flex items-center justify-between px-8 bg-[#0B1120]/80 backdrop-blur-xl border-b border-white/5 z-40">
+<div class="flex items-center space-x-2"><span class="text-[#D4AF37] font-['Noto_Serif'] italic font-bold text-xl">Neon Luxe</span></div>
+<div class="flex items-center space-x-2">
+<div class="text-right">
+<p id="userName" class="text-xs font-bold text-white">Guest</p>
+<p class="text-[10px] text-primary font-bold">Partner Gold</p>
+</div>
+<span class="material-symbols-outlined text-3xl text-slate-400">account_circle</span>
+</div>
+</header>
+<main class="ml-64 pt-24 px-8 pb-12 relative z-10">
+<section class="mb-12">
+<h2 class="text-4xl md:text-5xl font-headline font-bold text-white tracking-tight">Benvenuto, <span id="welcomeName" class="text-primary italic">Partner</span></h2>
+</section>
+<div class="grid grid-cols-12 gap-8">
+<div class="col-span-12 lg:col-span-8">
+<div class="glass-panel p-8 rounded-2xl relative overflow-hidden min-h-[220px] flex flex-col justify-center">
+<div class="relative z-10">
+<div class="flex items-center space-x-3 mb-6">
+<span class="material-symbols-outlined text-secondary-container text-3xl" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<h3 class="text-xl font-headline font-semibold">Chiedi ad Aura...</h3>
+</div>
+<div class="relative">
+<input id="aiInput" class="w-full bg-surface-container-low border-b-2 border-outline-variant focus:border-secondary-container px-4 py-4 text-lg outline-none transition-all placeholder:text-on-surface-variant/30 font-light" placeholder="Qual è l'andamento delle prenotazioni per il prossimo weekend?" type="text"/>
+<button id="sendBtn" class="absolute right-4 top-1/2 -translate-y-1/2 text-secondary-container hover:scale-110 transition-transform"><span class="material-symbols-outlined text-3xl">arrow_forward_ios</span></button>
+</div>
+<div id="aiResponse" class="mt-6 text-sm text-slate-300 hidden"><div class="p-4 bg-white/5 rounded-lg border border-white/10 italic" id="responseText">...</div></div>
+</div>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-4">
+<div class="glass-panel p-8 rounded-2xl flex flex-col h-full bg-gradient-to-br from-surface-container-high/80 to-surface-container-low/80">
+<p class="text-xs uppercase tracking-widest text-slate-500 mb-1">Occupancy Rate</p>
+<h4 class="text-4xl font-headline font-bold text-white">84.2%</h4>
+<div class="mt-auto h-2 w-full bg-white/5 rounded-full overflow-hidden mt-8">
+<div class="h-full bg-primary w-[84%] rounded-full shadow-[0_0_10px_rgba(242,202,80,0.5)]"></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.0"></script>
+<script>
+    const { Client, Account } = Appwrite;
+    const client = new Client();
+    client.setEndpoint('https://cloud.appwrite.io/v1').setProject('YOUR_PROJECT_ID');
+    const account = new Account(client);
+
+    async function checkAuth() {
+        try {
+            const user = await account.get();
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('welcomeName').textContent = user.name;
+            const prefs = await account.getPrefs();
+            if (prefs.tier !== 'gold') window.location.href = 'dashboard.html';
+        } catch (err) { window.location.href = 'login.html'; }
+    }
+
+    document.getElementById('logoutBtn').onclick = async () => {
+        await account.deleteSession('current');
+        window.location.href = 'login.html';
+    };
+
+    document.getElementById('sendBtn').onclick = async () => {
+        const input = document.getElementById('aiInput').value;
+        if(!input) return;
+        document.getElementById('aiResponse').classList.remove('hidden');
+        document.getElementById('responseText').textContent = "Sto elaborando la tua richiesta con OpenRouter...";
+        // Qui andrà la chiamata alla funzione backend (Supabase/Appwrite) che comunica con l'IA
+        setTimeout(() => {
+            document.getElementById('responseText').textContent = "Aura AI: Per il prossimo weekend prevediamo un'occupazione del 92%. Ti consiglio di alzare i prezzi del 10% per le ultime 5 camere disponibili.";
+        }, 1500);
+    };
+
+    checkAuth();
+</script>
+</body></html>
