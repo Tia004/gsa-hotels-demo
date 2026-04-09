@@ -766,12 +766,12 @@ export default function Home() {
                     openModal('privacy-modal');
                 });
             }
-        });
-        window.addEventListener('load', () => {
+
+
             // Blocca scroll
             document.body.style.overflow = 'hidden';
 
-            const overlay = document.getElementById('zoom-preloader');
+            const preloaderOverlay = document.getElementById('zoom-preloader');
             const shuffler = document.getElementById('shuffling-text');
             const logoGold = document.getElementById('logo-gold');
             const logoHole = document.getElementById('logo-hole');
@@ -821,7 +821,7 @@ export default function Home() {
                     // 3. FASE REVEAL (Pulizia finale)
                     // Aspetta la fine della transizione di zoom (1.2s)
                     setTimeout(() => {
-                        if (overlay) overlay.classList.add('finished');
+                        if (preloaderOverlay) preloaderOverlay.classList.add('finished');
                         document.body.style.overflow = ''; // Sblocca sito (CSS Fallback)
 
                         // UNLOCK LENIS (Resume Scroll)
@@ -840,7 +840,7 @@ export default function Home() {
 
                         // Rimuovi dal DOM per performance
                         setTimeout(() => {
-                            if (overlay) overlay.remove();
+                            if (preloaderOverlay) preloaderOverlay.remove();
                         }, 500);
 
                     }, 1000); // Timing sincronizzato col picco dello zoom
