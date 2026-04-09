@@ -5,17 +5,11 @@
 import React, { useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Lenis from '@studio-freight/lenis';
+import Lenis from 'lenis';
 import SplitType from 'split-type';
 import Link from 'next/link';
 import { SignInButton, SignUpButton, UserButton, useAuth } from '@clerk/nextjs';
 
-// Extend Window interface for Lenis global access
-declare global {
-  interface Window {
-    lenis?: any;
-  }
-}
 
 declare const particlesJS: any;
 
@@ -164,7 +158,7 @@ export default function Home() {
 
         // Initialize LOCKED (Wait for Preloader)
         lenis.stop();
-        window.lenis = lenis; // EXPOSE TO WINDOW FOR PRELOADER
+        (window as any).lenis = lenis; // EXPOSE TO WINDOW FOR PRELOADER
         window.scrollTo(0, 0); // Force top
 
         function raf(time: number) {
@@ -825,8 +819,8 @@ export default function Home() {
                         document.body.style.overflow = ''; // Sblocca sito (CSS Fallback)
 
                         // UNLOCK LENIS (Resume Scroll)
-                        if (window.lenis) {
-                            window.lenis.start();
+                        if ((window as any).lenis) {
+                            (window as any).lenis.start();
                         }
 
                         // REMOVE LOADING CLASS (CSS LOCK)
@@ -941,7 +935,7 @@ export default function Home() {
     // Cleanup function
     return () => {
       ScrollTrigger.getAll().forEach(t => t.kill());
-      if (window.lenis) window.lenis.destroy();
+      if ((window as any).lenis) (window as any).lenis.destroy();
     };
   }, []);
 
