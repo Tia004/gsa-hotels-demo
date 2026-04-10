@@ -163,55 +163,29 @@ a {
   pointer-events: none;
 }
 
-/* Stile Base del Cursore - Lente Fisheye (Rifrazione Fisica) */
+/* Stile Base del Cursore — Solo Ring (Expanding Circle) */
 .cursor-dot {
-  /* Rimuovi fixed perché ora sono nel wrapper, ma fixed va bene se posizionati via JS su viewport */
-  /* Mantieni fixed per semplicità JS esistente */
   position: fixed;
   top: 0;
   left: 0;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  /* z-index: 9999; -> gestito dal wrapper */
   pointer-events: none;
   transform: translate(-50%, -50%);
-  /* Background per Metaball: deve avere abbastanza alpha per il contrasto */
-  /* Background: TRASPARENTE (Vetro puro) */
-  background: #d6ab0f80;
-
-  /* 3. Estetica del Vetro */
-  border: 1px solid rgba(214, 171, 15, 0.1);
-  box-shadow:
-    inset 0 0 20px #d6ab0f33,
-    inset 5px 5px 10px #d6ab0f33,
-    0 10px 40px rgba(0, 0, 0, 0.3);
-
-  transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1),
-    height 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  -webkit-backdrop-filter: url(#lensFilter) url(#kill) blur(4px);
-  backdrop-filter: url(#lensFilter) url(#kill) blur(4px);
-  -webkit-mask-image: radial-gradient(circle, transparent 30%, black 60%);
-  mask-image: radial-gradient(circle, transparent 30%, black 60%);
+  background: transparent;
+  border: 1.5px solid rgba(197, 160, 89, 0.75);
+  transition:
+    width 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+    height 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+    border-color 0.3s ease;
 }
 
-/* Hover State: Lente che "esplode" */
+/* Hover State: Ring si espande */
 body.hover-active .cursor-dot {
-  width: 120px;
-  height: 120px;
-  background: #d6ab0f80;
-  /* Più trasparente quando grande */
-  box-shadow:
-    inset 0 0 30px #d6ab0f33,
-    0 20px 50px rgba(0, 0, 0, 0.4);
-}
-
-/* La bolla piccola sparisce o resta piccola in hover? Resta piccola per contrasto */
-
-/* Aggiustamento Maschera in Hover */
-body.hover-active .cursor-dot::before {
-  -webkit-mask-image: radial-gradient(circle, transparent 35%, black 80%);
-  mask-image: radial-gradient(circle, transparent 35%, black 80%);
+  width: 80px;
+  height: 80px;
+  border-color: rgba(197, 160, 89, 0.45);
 }
 
 #webgl-canvas {
@@ -236,7 +210,6 @@ img {
   -khtml-user-drag: none;
   -moz-user-drag: none;
   -o-user-drag: none;
-  user-drag: none;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -254,6 +227,56 @@ img {
   z-index: 1000;
   pointer-events: none;
 }
+
+/* AUTH BUTTONS \u2014 Floating a destra, separati dalla navbar */
+.nav-auth-floating {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: auto;
+}
+
+.auth-btn {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.45rem 1rem;
+  border-radius: 100px;
+  border: none;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  white-space: nowrap;
+}
+
+/* "Accedi" \u2014 testo sottile, solo bordino */
+.auth-btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.auth-btn-ghost:hover {
+  border-color: rgba(197, 160, 89, 0.6);
+  color: #C5A059;
+}
+
+/* "Registrati" \u2014 piccola pillola dorata piena */
+.auth-btn-gold {
+  background: rgba(197, 160, 89, 0.15);
+  border: 1px solid #C5A059;
+  color: #C5A059;
+}
+
+.auth-btn-gold:hover {
+  background: #C5A059;
+  color: #000;
+}
+
 
 /* Luxury Contact Form (Golden Bokeh Storm) */
 .luxury-form-section {
@@ -5041,6 +5064,7 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   margin-bottom: 5px;
 }
+
 /* --- GOLDEN GOOEY CURSOR STYLES --- */
 #cursor-goo-wrapper,
 #cursor-wrapper {
@@ -5073,31 +5097,27 @@ body {
   opacity: 0.7;
 }
 
-.cursor-dot {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  will-change: left, top;
-}
+/* cursor-fast è rimosso dal DOM — solo cursor-slow (ring) è attivo */
 
 #cursor-slow {
-  width: 40px;
-  height: 40px;
-  background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(2px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1.5px solid rgba(197, 160, 89, 0.75);
+  backdrop-filter: none;
+  transition:
+    width 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+    height 0.45s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 /* Hide on Mobile */
 @media (max-width: 1024px) {
+
   #cursor-goo-wrapper,
   #cursor-wrapper {
     display: none;
   }
+
   body {
     cursor: auto !important;
   }

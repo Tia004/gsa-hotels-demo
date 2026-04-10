@@ -1052,10 +1052,9 @@ export default function Home() {
     <div id="goo-fast" className="goo-blob"></div>
     <div id="goo-slow" className="goo-blob"></div>
   </div>
-  {/* LAYER 2: GLASS SHELL (Transparent, No Filter) */}
+  {/* LAYER 2: GLASS SHELL - solo il ring (cursor-slow) */}
   <div id="cursor-wrapper">
     <div id="cursors">
-      <div id="cursor-fast" className="cursor-dot" />
       <div id="cursor-slow" className="cursor-dot" />
     </div>
   </div>
@@ -1087,39 +1086,23 @@ export default function Home() {
         <a href="#founder" className="nav-link" data-text="La Mente"><span>La Mente</span></a>
         <a href="#philosophy" className="nav-link" data-text="Il Nostro DNA"><span>Il Nostro DNA</span></a>
       </div>
-      {/* CTA moved to Bottom Right in Hero, but kept in nav for scroll utility */}
-      {/* CTA and Auth Buttons */}
-      <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
-        <a href="#contact" className="nav-cta">DIVENTA PARTNER</a>
-        <SignedOut>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <SignInButton mode="modal">
-              <button className="nav-cta" style={{ 
-                background: 'rgba(197, 160, 89, 0.1)', 
-                border: '1px solid #C5A059', 
-                color: '#C5A059',
-                padding: '0.5rem 1.2rem'
-              }}>
-                <span style={{ color: '#C5A059' }}>ACCEDI</span>
-              </button>
-            </SignInButton>
-            <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 'bold' }}>oppure</span>
-            <SignUpButton mode="modal">
-              <button className="nav-cta" style={{ 
-                background: 'transparent', 
-                border: '1px solid rgba(255,255,255,0.3)',
-                padding: '0.5rem 1.2rem'
-              }}>
-                <span style={{ color: '#fff' }}>REGISTRATI</span>
-              </button>
-            </SignUpButton>
-          </div>
-        </SignedOut>
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
-      </div>
+      {/* CTA - solo Diventa Partner nella capsule */}
+      <a href="#contact" className="nav-cta">DIVENTA PARTNER</a>
     </nav>
+  </div>
+  {/* AUTH BUTTONS - Floating a destra, fuori dalla navbar capsule */}
+  <div className="nav-auth-floating">
+    <SignedOut>
+      <SignInButton mode="modal">
+        <button className="auth-btn auth-btn-ghost">Accedi</button>
+      </SignInButton>
+      <SignUpButton mode="modal">
+        <button className="auth-btn auth-btn-gold">Registrati</button>
+      </SignUpButton>
+    </SignedOut>
+    <SignedIn>
+      <UserButton />
+    </SignedIn>
   </div>
   {/* Main Content */}
   <main>
