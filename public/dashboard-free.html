@@ -153,6 +153,16 @@
                 <span class="text-xs font-medium uppercase tracking-wider">Disconnetti</span>
             </button>
         </div>
+        
+        <div class="mt-4 border-t border-white/5 pt-4">
+            <p class="text-[9px] text-slate-600 uppercase tracking-widest px-4 mb-2">Simula Piano Utente (Demo)</p>
+            <div class="flex flex-col gap-1 px-2">
+                <button onclick="localStorage.setItem('demoTier', 'free'); window.location.href='dashboard.html'" class="text-left px-3 py-1.5 rounded text-xs text-slate-400 hover:text-white hover:bg-white/5 transition-colors">Piano Free</button>
+                <button onclick="localStorage.setItem('demoTier', 'standard'); window.location.href='dashboard.html'" class="text-left px-3 py-1.5 rounded text-xs text-primary hover:text-white hover:bg-white/5 transition-colors">Piano Standard</button>
+                <button onclick="localStorage.setItem('demoTier', 'gold'); window.location.href='dashboard.html'" class="text-left px-3 py-1.5 rounded text-xs text-[#00F0FF] hover:text-white hover:bg-white/5 transition-colors">Piano Gold</button>
+                <button onclick="localStorage.removeItem('demoTier'); window.location.href='dashboard.html'" class="text-left px-3 py-1.5 rounded text-xs text-red-500 mt-2 hover:bg-red-500/10 hover:text-red-400 transition-colors">Reset Demo</button>
+            </div>
+        </div>
         <button
             class="w-full mt-4 py-3 px-4 bg-surface-container-highest border border-[#00F0FF]/30 text-[#00F0FF] rounded-lg text-xs font-bold tracking-tighter flex items-center justify-center gap-2 hover:bg-[#00F0FF]/5 transition-all">
             <span class="material-symbols-outlined text-sm"
@@ -320,7 +330,9 @@
                         document.getElementById('userName').textContent = name;
 
                         // Check tier upgrade
-                        const tier = clerk.user.publicMetadata?.tier || clerk.user.unsafeMetadata?.tier || 'free';
+                        const clerkTier = clerk.user.publicMetadata?.tier || clerk.user.unsafeMetadata?.tier || 'free';
+                        const demoTier = localStorage.getItem('demoTier');
+                        const tier = demoTier || clerkTier;
                         if (tier && tier !== 'free') {
                             window.location.replace('dashboard.html'); // Route to correct dashboard
                         }

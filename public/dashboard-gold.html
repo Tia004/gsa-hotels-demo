@@ -68,6 +68,15 @@
 <a class="flex items-center space-x-3 px-4 py-2 text-xs text-slate-500 hover:text-[#D4AF37]" href="#"><span class="material-symbols-outlined text-lg">settings</span><span>Impostazioni</span></a>
 <button id="logoutBtn" class="w-full flex items-center space-x-3 px-4 py-2 text-xs text-slate-500 hover:text-red-400 transition-colors"><span class="material-symbols-outlined text-lg">logout</span><span>Disconnetti</span></button>
 </div>
+<div class="pt-4 border-t border-white/5 space-y-1">
+<p class="text-[9px] text-slate-600 uppercase tracking-widest px-4 mb-2">Simula Piano Utente (Demo)</p>
+<div class="flex flex-col gap-1 px-2">
+<button onclick="localStorage.setItem('demoTier', 'free'); window.location.href='dashboard.html'" class="text-left px-3 py-1.5 rounded text-xs text-slate-400 hover:text-white hover:bg-white/5 transition-colors">Piano Free</button>
+<button onclick="localStorage.setItem('demoTier', 'standard'); window.location.href='dashboard.html'" class="text-left px-3 py-1.5 rounded text-xs text-primary hover:text-white hover:bg-white/5 transition-colors">Piano Standard</button>
+<button onclick="localStorage.setItem('demoTier', 'gold'); window.location.href='dashboard.html'" class="text-left px-3 py-1.5 rounded text-xs text-[#00F0FF] hover:text-white hover:bg-white/5 transition-colors">Piano Gold</button>
+<button onclick="localStorage.removeItem('demoTier'); window.location.href='dashboard.html'" class="text-left px-3 py-1.5 rounded text-xs text-red-500 mt-2 hover:bg-red-500/10 hover:text-red-400 transition-colors">Reset Demo</button>
+</div>
+</div>
 </div>
 </aside>
 <header class="fixed top-0 right-0 left-64 h-16 flex items-center justify-between px-8 bg-[#0B1120]/80 backdrop-blur-xl border-b border-white/5 z-40">
@@ -155,7 +164,9 @@
                         document.getElementById('welcomeName').textContent = name;
 
                         // Check tier upgrade
-                        const tier = clerk.user.publicMetadata?.tier || clerk.user.unsafeMetadata?.tier || 'free';
+                        const clerkTier = clerk.user.publicMetadata?.tier || clerk.user.unsafeMetadata?.tier || 'free';
+                        const demoTier = localStorage.getItem('demoTier');
+                        const tier = demoTier || clerkTier;
                         if (tier !== 'gold') {
                             window.location.replace('dashboard.html'); // Not gold -> redirect to router
                         }

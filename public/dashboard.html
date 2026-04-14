@@ -78,7 +78,9 @@
 
                     // Clerk users can have publicMetadata or unsafeMetadata storing their 'tier'
                     // By default, if not set, they are 'free'
-                    const tier = clerk.user.publicMetadata?.tier || clerk.user.unsafeMetadata?.tier || 'free';
+                    const clerkTier = clerk.user.publicMetadata?.tier || clerk.user.unsafeMetadata?.tier || 'free';
+                    const demoTier = localStorage.getItem('demoTier');
+                    const tier = demoTier || clerkTier;
 
                     if (tier === 'gold') {
                         window.location.replace('dashboard-gold.html');

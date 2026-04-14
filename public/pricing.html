@@ -83,6 +83,10 @@
     </style>
 </head>
 <body class="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- Back/Close Button -->
+<a href="javascript:history.back()" class="fixed top-6 right-6 z-50 w-10 h-10 bg-surface-container-high/50 hover:bg-surface-container-high backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 text-slate-400 hover:text-white transition-all shadow-xl">
+    <span class="material-symbols-outlined text-xl">close</span>
+</a>
 <!-- Background Layer: Blurred Dashboard Preview -->
 <div class="fixed inset-0 z-0 overflow-hidden select-none pointer-events-none">
 <!-- The Moving Cross Grid -->
@@ -279,10 +283,6 @@
 <button class="text-on-surface-variant hover:text-on-surface transition-colors text-sm flex items-center gap-2">
 <span class="material-symbols-outlined text-lg">contact_support</span>
                 Contatta il nostro Team Vendite
-            </button>
-<div class="hidden md:block w-px h-4 bg-outline-variant"></div>
-<button onclick="window.location.href='login.html'" class="text-on-surface-variant hover:text-on-surface transition-colors text-sm">
-                Torna al Login
             </button>
 </div>
 </div>
