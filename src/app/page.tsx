@@ -1093,15 +1093,14 @@ export default function Home() {
   {/* AUTH BUTTONS - Floating a destra, fuori dalla navbar capsule */}
   <div className="nav-auth-floating">
     <SignedOut>
-      <SignInButton mode="modal">
-        <button className="auth-btn auth-btn-ghost">Accedi</button>
-      </SignInButton>
-      <SignUpButton mode="modal">
-        <button className="auth-btn auth-btn-gold">Registrati</button>
-      </SignUpButton>
+      <Link href="/login.html" className="auth-btn auth-btn-ghost">Accedi</Link>
+      <Link href="/register.html" className="auth-btn auth-btn-gold">Registrati</Link>
     </SignedOut>
     <SignedIn>
-      <UserButton />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <UserButton />
+        <Link href="/dashboard.html" className="auth-btn auth-btn-gold">Entra</Link>
+      </div>
     </SignedIn>
   </div>
   {/* Main Content */}
