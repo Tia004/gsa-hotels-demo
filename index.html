@@ -185,7 +185,24 @@
             <!-- CTA moved to Bottom Right in Hero, but kept in nav for scroll utility -->
             <a href="#contact" class="nav-cta">DIVENTA PARTNER</a>
         </nav>
+
+        <!-- AUTH PILL (Right side) -->
+        <div class="nav-auth-pill" id="nav-auth-pill">
+            <!-- Logged OUT state (default) -->
+            <div class="nav-auth-logged-out" id="nav-auth-out">
+                <a href="login.html" class="btn-nav-auth ghost" id="btn-accedi">Accedi</a>
+                <a href="register.html" class="btn-nav-auth gold" id="btn-registrati">Registrati</a>
+            </div>
+            <!-- Logged IN state (hidden by default) -->
+            <div class="nav-auth-logged-in" id="nav-auth-in" style="display:none;">
+                <div class="nav-user-avatar" id="nav-user-avatar" title="">
+                    <span id="nav-user-initial">U</span>
+                </div>
+                <a href="dashboard.html" class="btn-nav-auth gold" id="btn-entra">Entra</a>
+            </div>
+        </div>
     </div>
+
 
     <!-- Main Content -->
     <main>
@@ -1775,7 +1792,57 @@
             }
         });
     </script>
+
+    <!-- CLERK AUTH CHECK (Nav Auth Pill) -->
+    <script>
+        (function () {
+            // ⚠️ Replace with your actual publishable key
+            const PUBLISHABLE_KEY = 'YOUR_CLERK_PUBLISHABLE_KEY';
+            
+            if (PUBLISHABLE_KEY.includes('YOUR_CLERK')) {
+                // Not configured, keep default (Accedi/Registrati)
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.setAttribute('data-clerk-publishable-key', PUBLISHABLE_KEY);
+            script.async = true;
+            script.src = 'https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js';
+            script.crossOrigin = 'anonymous';
+
+            script.onload = async () => {
+                try {
+                    const clerk = window.Clerk;
+                    await clerk.load();
+
+                    if (clerk.user) {
+                        // Logged in: swap UI
+                        const authOut = document.getElementById('nav-auth-out');
+                        const authIn = document.getElementById('nav-auth-in');
+                        const avatarEl = document.getElementById('nav-user-initial');
+                        const avatarTitle = document.getElementById('nav-user-avatar');
+
+                        if (authOut) authOut.style.display = 'none';
+                        if (authIn) authIn.style.display = 'flex';
+
+                        // Set initial letter
+                        const name = clerk.user.firstName || clerk.user.username || clerk.user.primaryEmailAddress?.emailAddress || 'U';
+                        if (avatarEl) {
+                            avatarEl.textContent = name.charAt(0).toUpperCase();
+                        }
+                        if (avatarTitle) {
+                            avatarTitle.setAttribute('title', name);
+                        }
+                    }
+                } catch (e) {
+                    // Clerk load failed, keep default
+                }
+            };
+            document.head.appendChild(script);
+        })();
+    </script>
 </body>
+
 
 
 </html>

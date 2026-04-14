@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html class="dark" lang="it">
+
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>GSA Hotels - Dashboard</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.0"></script>
     <style>
         .loader {
@@ -16,49 +18,72 @@
             height: 40px;
             animation: spin 1s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
+
 <body class="bg-[#0d1322] text-white font-body flex items-center justify-center min-h-screen">
     <div id="loader" class="flex flex-col items-center space-y-4">
         <div class="loader"></div>
         <p class="text-slate-500 text-sm tracking-widest uppercase animate-pulse">Caricamento Dashboard...</p>
     </div>
 
+    <!-- CLERK AUTH CHECK -->
     <script>
-        const { Client, Account } = Appwrite;
-        const client = new Client();
-        
-        client
-            .setEndpoint('https://cloud.appwrite.io/v1') 
-            .setProject('YOUR_PROJECT_ID'); 
+        (function () {
+            // ⚠️ Replace with your actual publishable key
+            const PUBLISHABLE_KEY = 'pk_test_Z3Jvd24temVicmEtMzguY2xlcmsuYWNjb3VudHMuZGV2JA';
 
-        const account = new Account(client);
-
-        async function init() {
-            try {
-                // Check session
-                const user = await account.get();
-                
-                // Get tier from preferences (Appwrite doesn't have custom metadata by default, we use 'prefs')
-                const prefs = await account.getPrefs();
-                const tier = prefs.tier || 'free';
-                
-                // Redirect or Load the specific dashboard
-                if (tier === 'gold') {
-                    window.location.replace('dashboard-gold.html');
-                } else if (tier === 'standard') {
-                    window.location.replace('dashboard-standard.html');
-                } else {
-                    window.location.replace('dashboard-free.html');
-                }
-            } catch (err) {
-                // Not logged in or error -> redirect to login
-                window.location.replace('login.html');
+            if (PUBLISHABLE_KEY.includes('YOUR_CLERK')) {
+                document.getElementById('loader').innerHTML = `
+                    <p class="text-error uppercase tracking-widest text-sm">Clerk non configurato</p>
+                    <p class="text-slate-500 text-xs mt-2">Sostituisci la chiave in dashboard.html</p>`;
+                return;
             }
-        }
 
-        init();
+            const script = document.createElement('script');
+            script.setAttribute('data-clerk-publishable-key', PUBLISHABLE_KEY);
+            script.async = true;
+            script.src = 'https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js';
+            script.crossOrigin = 'anonymous';
+
+            script.onload = async () => {
+                try {
+                    const clerk = window.Clerk;
+                    await clerk.load();
+
+                    if (!clerk.user) {
+                        window.location.replace('login.html');
+                        return;
+                    }
+
+                    // Clerk users can have publicMetadata or unsafeMetadata storing their 'tier'
+                    // By default, if not set, they are 'free'
+                    const tier = clerk.user.publicMetadata?.tier || clerk.user.unsafeMetadata?.tier || 'free';
+
+                    if (tier === 'gold') {
+                        window.location.replace('dashboard-gold.html');
+                    } else if (tier === 'standard') {
+                        window.location.replace('dashboard-standard.html');
+                    } else {
+                        window.location.replace('dashboard-free.html');
+                    }
+                } catch (e) {
+                    window.location.replace('login.html');
+                }
+            };
+            document.head.appendChild(script);
+        })();
     </script>
 </body>
+
 </html>

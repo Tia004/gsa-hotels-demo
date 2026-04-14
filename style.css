@@ -255,6 +255,99 @@ img {
   pointer-events: none;
 }
 
+/* ---- AUTH PILL (Right Side) ---- */
+.nav-auth-pill {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 100px;
+  padding: 0 14px;
+  pointer-events: auto;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 1001;
+  transition: opacity 0.3s ease;
+}
+
+.nav-auth-logged-out,
+.nav-auth-logged-in {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Ghost button (Accedi) */
+.btn-nav-auth.ghost {
+  color: rgba(255, 255, 255, 0.75);
+  background: transparent;
+  border: none;
+  padding: 0 12px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-nav-auth.ghost:hover {
+  color: #fff;
+}
+
+/* Gold button (Registrati / Entra) */
+.btn-nav-auth.gold {
+  color: #000;
+  background: #C5A059;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 100px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-nav-auth.gold:hover {
+  background: #d4b57a;
+  transform: scale(1.04);
+}
+
+/* User Avatar circle */
+.nav-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #C5A059, #8a6a2e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0;
+  flex-shrink: 0;
+  cursor: default;
+  text-transform: uppercase;
+}
+
+/* Hide auth pill on mobile when nav is killed */
+@media (hover: none) and (pointer: coarse) {
+  .nav-auth-pill { display: none; }
+}
+
+
 /* Luxury Contact Form (Golden Bokeh Storm) */
 .luxury-form-section {
   position: relative;
@@ -1647,15 +1740,17 @@ img {
   -webkit-appearance: none;
 }
 
-/* Background Layer */
-.jesko-bg-layer {
+/* Video fills layer absolutely, no transform on div */
+.jesko-bg-video {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   -o-object-fit: cover;
   object-fit: cover;
-  -o-object-position: center;
-  object-position: center;
-  transform: scale(1.1);
+  -o-object-position: center center;
+  object-position: center center;
 }
 
 /* Window Reveal Effect */
@@ -1682,6 +1777,7 @@ img {
   width: 100%;
   height: 100vh;
   z-index: -1;
+  overflow: hidden;
 }
 
 /* Make Sections Transparent to Reveal Video */
@@ -1693,12 +1789,7 @@ img {
   background: transparent !important;
 }
 
-.jesko-bg-video {
-  width: 100%;
-  height: 100%;
-  -o-object-fit: cover;
-  object-fit: cover;
-}
+/* (Video sizing already handled above) */
 
 /* RESTORE BLACK CONTENT BACKGROUND */
 .pillars-section {

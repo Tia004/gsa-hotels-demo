@@ -112,39 +112,71 @@
 </div>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.0"></script>
-<script>
-    const { Client, Account } = Appwrite;
-    const client = new Client();
-    client.setEndpoint('https://cloud.appwrite.io/v1').setProject('YOUR_PROJECT_ID');
-    const account = new Account(client);
+    <!-- CLERK AUTH -->
+    <script>
+        (function () {
+            // ⚠️ Replace with your actual publishable key
+            const PUBLISHABLE_KEY = 'pk_test_Z3Jvd24temVicmEtMzguY2xlcmsuYWNjb3VudHMuZGV2JA';
+            
+            if (PUBLISHABLE_KEY.includes('YOUR_CLERK')) {
+                document.getElementById('userName').innerHTML = '<span class="text-red-500">Key mancante</span>';
+                return;
+            }
 
-    async function checkAuth() {
-        try {
-            const user = await account.get();
-            document.getElementById('userName').textContent = user.name;
-            document.getElementById('welcomeName').textContent = user.name;
-            const prefs = await account.getPrefs();
-            if (prefs.tier !== 'gold') window.location.href = 'dashboard.html';
-        } catch (err) { window.location.href = 'login.html'; }
-    }
+            const script = document.createElement('script');
+            script.setAttribute('data-clerk-publishable-key', PUBLISHABLE_KEY);
+            script.async = true;
+            script.src = 'https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js';
+            script.crossOrigin = 'anonymous';
 
-    document.getElementById('logoutBtn').onclick = async () => {
-        await account.deleteSession('current');
-        window.location.href = 'login.html';
-    };
+            script.onload = async () => {
+                try {
+                    const clerk = window.Clerk;
+                    await clerk.load();
 
-    document.getElementById('sendBtn').onclick = async () => {
-        const input = document.getElementById('aiInput').value;
-        if(!input) return;
-        document.getElementById('aiResponse').classList.remove('hidden');
-        document.getElementById('responseText').textContent = "Sto elaborando la tua richiesta con OpenRouter...";
-        // Qui andrà la chiamata alla funzione backend (Supabase/Appwrite) che comunica con l'IA
-        setTimeout(() => {
-            document.getElementById('responseText').textContent = "Aura AI: Per il prossimo weekend prevediamo un'occupazione del 92%. Ti consiglio di alzare i prezzi del 10% per le ultime 5 camere disponibili.";
-        }, 1500);
-    };
+                    if (!clerk.user) {
+                        window.location.replace('login.html');
+                        return;
+                    }
 
-    checkAuth();
-</script>
+                    // Set user name
+                    const name = clerk.user.firstName || clerk.user.username || clerk.user.primaryEmailAddress?.emailAddress || 'Partner';
+                    document.getElementById('userName').textContent = name;
+                    document.getElementById('welcomeName').textContent = name;
+
+                    // Check tier upgrade
+                    const tier = clerk.user.publicMetadata?.tier || clerk.user.unsafeMetadata?.tier || 'free';
+                    if (tier !== 'gold') {
+                        window.location.replace('dashboard.html'); // Not gold -> redirect to router
+                    }
+
+                    // Handle logout
+                    const logoutBtn = document.getElementById('logoutBtn');
+                    if (logoutBtn) {
+                        logoutBtn.onclick = async (e) => {
+                            e.preventDefault();
+                            await clerk.signOut();
+                            window.location.replace('login.html');
+                        };
+                    }
+
+                } catch (e) {
+                    window.location.replace('login.html');
+                }
+            };
+            document.head.appendChild(script);
+
+            // Aura AI Chat demo
+            document.getElementById('sendBtn').onclick = async () => {
+                const input = document.getElementById('aiInput').value;
+                if(!input) return;
+                document.getElementById('aiResponse').classList.remove('hidden');
+                document.getElementById('responseText').textContent = "Sto elaborando la tua richiesta con OpenRouter...";
+                
+                setTimeout(() => {
+                    document.getElementById('responseText').textContent = "Aura AI: Per il prossimo weekend prevediamo un'occupazione del 92%. Ti consiglio di alzare i prezzi del 10% per le ultime 5 camere disponibili.";
+                }, 1500);
+            };
+        })();
+    </script>
 </body></html>
