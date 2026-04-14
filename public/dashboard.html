@@ -39,16 +39,19 @@
 
     <!-- CLERK AUTH CHECK -->
     <script>
-        (function () {
-            // ⚠️ Replace with your actual publishable key
-            const PUBLISHABLE_KEY = 'pk_test_Z3Jvd24temVicmEtMzguY2xlcmsuYWNjb3VudHMuZGV2JA';
+        (async function () {
+            try {
+                // Fetch the key dynamically from Vercel's environment variables
+                const res = await fetch('/api/clerk-key');
+                const data = await res.json();
+                const PUBLISHABLE_KEY = data.key;
 
-            if (PUBLISHABLE_KEY.includes('YOUR_CLERK')) {
-                document.getElementById('loader').innerHTML = `
-                    <p class="text-error uppercase tracking-widest text-sm">Clerk non configurato</p>
-                    <p class="text-slate-500 text-xs mt-2">Sostituisci la chiave in dashboard.html</p>`;
-                return;
-            }
+                if (!PUBLISHABLE_KEY) {
+                    document.getElementById('loader').innerHTML = `
+                        <p class="text-error uppercase tracking-widest text-sm">Clerk non configurato</p>
+                        <p class="text-slate-500 text-xs mt-2">Nessuna variabile NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY trovata su Vercel</p>`;
+                    return;
+                }
 
             const script = document.createElement('script');
             script.setAttribute('data-clerk-publishable-key', PUBLISHABLE_KEY);
@@ -82,6 +85,9 @@
                 }
             };
             document.head.appendChild(script);
+            } catch(error) {
+               console.error(error);
+            }
         })();
     </script>
 </body>

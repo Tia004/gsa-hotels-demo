@@ -114,69 +114,75 @@
 
     <!-- CLERK AUTH -->
     <script>
-        (function () {
-            // ⚠️ Replace with your actual publishable key
-            const PUBLISHABLE_KEY = 'pk_test_Z3Jvd24temVicmEtMzguY2xlcmsuYWNjb3VudHMuZGV2JA';
+        (async function () {
+            try {
+                // Fetch the key dynamically from Vercel's environment variables
+                const res = await fetch('/api/clerk-key');
+                const data = await res.json();
+                const PUBLISHABLE_KEY = data.key;
             
-            if (PUBLISHABLE_KEY.includes('YOUR_CLERK')) {
-                document.getElementById('userName').innerHTML = '<span class="text-red-500">Key mancante</span>';
-                return;
-            }
-
-            const script = document.createElement('script');
-            script.setAttribute('data-clerk-publishable-key', PUBLISHABLE_KEY);
-            script.async = true;
-            script.src = 'https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js';
-            script.crossOrigin = 'anonymous';
-
-            script.onload = async () => {
-                try {
-                    const clerk = window.Clerk;
-                    await clerk.load();
-
-                    if (!clerk.user) {
-                        window.location.replace('login.html');
-                        return;
-                    }
-
-                    // Set user name
-                    const name = clerk.user.firstName || clerk.user.username || clerk.user.primaryEmailAddress?.emailAddress || 'Partner';
-                    document.getElementById('userName').textContent = name;
-                    document.getElementById('welcomeName').textContent = name;
-
-                    // Check tier upgrade
-                    const tier = clerk.user.publicMetadata?.tier || clerk.user.unsafeMetadata?.tier || 'free';
-                    if (tier !== 'gold') {
-                        window.location.replace('dashboard.html'); // Not gold -> redirect to router
-                    }
-
-                    // Handle logout
-                    const logoutBtn = document.getElementById('logoutBtn');
-                    if (logoutBtn) {
-                        logoutBtn.onclick = async (e) => {
-                            e.preventDefault();
-                            await clerk.signOut();
-                            window.location.replace('login.html');
-                        };
-                    }
-
-                } catch (e) {
-                    window.location.replace('login.html');
+                if (!PUBLISHABLE_KEY) {
+                    document.getElementById('userName').innerHTML = '<span class="text-red-500">Clerk Key mancante su Vercel</span>';
+                    return;
                 }
-            };
-            document.head.appendChild(script);
 
-            // Aura AI Chat demo
-            document.getElementById('sendBtn').onclick = async () => {
-                const input = document.getElementById('aiInput').value;
-                if(!input) return;
-                document.getElementById('aiResponse').classList.remove('hidden');
-                document.getElementById('responseText').textContent = "Sto elaborando la tua richiesta con OpenRouter...";
-                
-                setTimeout(() => {
-                    document.getElementById('responseText').textContent = "Aura AI: Per il prossimo weekend prevediamo un'occupazione del 92%. Ti consiglio di alzare i prezzi del 10% per le ultime 5 camere disponibili.";
-                }, 1500);
-            };
+                const script = document.createElement('script');
+                script.setAttribute('data-clerk-publishable-key', PUBLISHABLE_KEY);
+                script.async = true;
+                script.src = 'https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js';
+                script.crossOrigin = 'anonymous';
+
+                script.onload = async () => {
+                    try {
+                        const clerk = window.Clerk;
+                        await clerk.load();
+
+                        if (!clerk.user) {
+                            window.location.replace('login.html');
+                            return;
+                        }
+
+                        // Set user name
+                        const name = clerk.user.firstName || clerk.user.username || clerk.user.primaryEmailAddress?.emailAddress || 'Partner';
+                        document.getElementById('userName').textContent = name;
+                        document.getElementById('welcomeName').textContent = name;
+
+                        // Check tier upgrade
+                        const tier = clerk.user.publicMetadata?.tier || clerk.user.unsafeMetadata?.tier || 'free';
+                        if (tier !== 'gold') {
+                            window.location.replace('dashboard.html'); // Not gold -> redirect to router
+                        }
+
+                        // Handle logout
+                        const logoutBtn = document.getElementById('logoutBtn');
+                        if (logoutBtn) {
+                            logoutBtn.onclick = async (e) => {
+                                e.preventDefault();
+                                await clerk.signOut();
+                                window.location.replace('login.html');
+                            };
+                        }
+
+                    } catch (e) {
+                        window.location.replace('login.html');
+                    }
+                };
+                document.head.appendChild(script);
+
+                // Aura AI Chat demo
+                document.getElementById('sendBtn').onclick = async () => {
+                    const input = document.getElementById('aiInput').value;
+                    if(!input) return;
+                    document.getElementById('aiResponse').classList.remove('hidden');
+                    document.getElementById('responseText').textContent = "Sto elaborando la tua richiesta con OpenRouter...";
+                    
+                    setTimeout(() => {
+                        document.getElementById('responseText').textContent = "Aura AI: Per il prossimo weekend prevediamo un'occupazione del 92%. Ti consiglio di alzare i prezzi del 10% per le ultime 5 camere disponibili.";
+                    }, 1500);
+                };
+            } catch (err) {
+                 console.error(err);
+            }
         })();
     </script>
 </body></html>

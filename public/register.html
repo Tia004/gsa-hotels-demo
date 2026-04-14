@@ -273,11 +273,13 @@
         });
 
         async function loadClerk() {
-            // ⚠️ Replace with your actual publishable key from dashboard.clerk.com
-            const PUBLISHABLE_KEY = 'pk_test_Z3Jvd24temVicmEtMzguY2xlcmsuYWNjb3VudHMuZGV2JA';
-
             try {
-                if (PUBLISHABLE_KEY.includes('YOUR_CLERK')) throw new Error('not configured');
+                // Fetch the key dynamically from Vercel's environment variables
+                const res = await fetch('/api/clerk-key');
+                const data = await res.json();
+                const PUBLISHABLE_KEY = data.key;
+
+                if (!PUBLISHABLE_KEY) throw new Error('not configured');
 
                 // Load Clerk SDK Script
                 const script = document.createElement('script');

@@ -161,12 +161,15 @@
 
     <!-- CLERK AUTH -->
     <script>
-            (function () {
-                // ⚠️ Replace with your actual publishable key
-                const PUBLISHABLE_KEY = 'pk_test_Z3Jvd24temVicmEtMzguY2xlcmsuYWNjb3VudHMuZGV2JA';
+        (async function () {
+            try {
+                // Fetch the key dynamically from Vercel's environment variables
+                const res = await fetch('/api/clerk-key');
+                const data = await res.json();
+                const PUBLISHABLE_KEY = data.key;
 
-                if (PUBLISHABLE_KEY.includes('YOUR_CLERK')) {
-                    document.getElementById('userName').innerHTML = '<span class="text-red-500 text-[10px]">Key mancante</span>';
+                if (!PUBLISHABLE_KEY) {
+                    document.getElementById('userName').innerHTML = '<span class="text-red-500 text-[10px]">Clerk Key mancante su Vercel</span>';
                     return;
                 }
 
@@ -211,7 +214,10 @@
                     }
                 };
                 document.head.appendChild(script);
-            })();
+            } catch (err) {
+                 console.error(err);
+            }
+        })();
     </script>
 </body>
 
