@@ -274,14 +274,12 @@
 
         async function loadClerk() {
             try {
-                // Fetch the key dynamically from Vercel's environment variables
                 const res = await fetch('/api/clerk-key');
                 const data = await res.json();
                 const PUBLISHABLE_KEY = data.key;
 
                 if (!PUBLISHABLE_KEY) throw new Error('not configured');
 
-                // Load Clerk SDK Script
                 const script = document.createElement('script');
                 script.setAttribute('data-clerk-publishable-key', PUBLISHABLE_KEY);
                 script.async = true;
@@ -291,17 +289,51 @@
                 script.onload = async () => {
                     try {
                         const clerk = window.Clerk;
-                        await clerk.load();
 
-                        // Already signed in → redirect
+                        // Localization for Italian
+                        const itLocalization = {
+                            signUp: {
+                                start: {
+                                    title: 'Registrati',
+                                    subtitle: 'Crea un nuovo account per iniziare',
+                                    actionLink: 'Accedi',
+                                    actionText: 'Hai già un account?'
+                                },
+                                emailCode: {
+                                    title: 'Verifica la tua email',
+                                    subtitle: 'Abbiamo inviato un codice a {{emailAddress}}',
+                                    formTitle: 'Codice di verifica',
+                                    formSubtitle: 'Inserisci il codice ricevuto'
+                                }
+                            },
+                            socialButtonsBlockButton: 'Registrati con {{provider|titleize}}',
+                            formButtonPrimary: 'Continua',
+                            formFieldLabel__emailAddress: 'Email',
+                            formFieldLabel__password: 'Password',
+                            formFieldLabel__firstName: 'Nome',
+                            formFieldLabel__lastName: 'Cognome',
+                            formFieldInputPlaceholder__emailAddress: 'nome@esempio.it',
+                            formFieldInputPlaceholder__password: 'La tua password',
+                            formFieldInputPlaceholder__firstName: 'Il tuo nome',
+                            formFieldInputPlaceholder__lastName: 'Il tuo cognome'
+                        };
+
+                        await clerk.load({ 
+                            localization: itLocalization
+                        });
+
                         if (clerk.user) {
                             window.location.href = 'dashboard.html';
                             return;
                         }
 
-                        clerk.mountSignUp(document.getElementById('clerk-sign-up'), {
-                            afterSignUpUrl: 'dashboard.html',
-                            afterSignInUrl: 'dashboard.html',
+                        const signUpContainer = document.getElementById('clerk-sign-up');
+
+                        clerk.mountSignUp(signUpContainer, {
+                            afterSignUpUrl: '/dashboard.html',
+                            afterSignInUrl: '/dashboard.html',
+                            signInUrl: '/login.html',
+                            signUpUrl: '/register.html',
                             appearance: {
                                 variables: {
                                     colorPrimary: '#C5A059',
@@ -314,12 +346,22 @@
                                     fontFamily: 'Montserrat, sans-serif',
                                 },
                                 elements: {
-                                    card: 'background: transparent; box-shadow: none; border: none;',
+                                    card: 'background: transparent; box-shadow: none; border: none; width: 100%;',
                                     headerTitle: 'display: none;',
                                     headerSubtitle: 'display: none;',
-                                    socialButtonsBlockButton: 'border: 1px solid rgba(197,160,89,0.3); background: rgba(197,160,89,0.05);',
-                                    formButtonPrimary: 'background: #C5A059; color: #000; font-weight: 700; letter-spacing: 0.08em;',
+                                    socialButtonsBlockButton: 'border: 1px solid rgba(197,160,89,0.3); background: rgba(197,160,89,0.05); color: white;',
+                                    socialButtonsBlockButtonText: 'font-weight: 500;',
+                                    // Fix for Apple icon and other social icons visibility
+                                    socialButtonsBlockButtonIcon: 'filter: brightness(0) invert(1);', 
+                                    formButtonPrimary: 'background: #C5A059; color: #000; font-weight: 700; letter-spacing: 0.08em; height: 48px;',
                                     footerActionLink: 'color: #C5A059;',
+                                    formFieldInput: 'background: rgba(255,255,255,0.05); border: 1px solid rgba(197,160,89,0.2); color: white;',
+                                    formFieldLabel: 'color: rgba(255,255,255,0.6); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;',
+                                    // Password eye icon fix
+                                    formFieldInputShowPasswordButton: 'color: #C5A059; opacity: 0.8;',
+                                    formFieldInputShowPasswordIcon: 'filter: brightness(1.5);',
+                                    identityPreviewText: 'color: white;',
+                                    identityPreviewEditButtonIcon: 'color: #C5A059;',
                                 }
                             }
                         });

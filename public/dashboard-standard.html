@@ -182,7 +182,14 @@
                 script.onload = async () => {
                     try {
                         const clerk = window.Clerk;
-                        await clerk.load();
+                        const itLocalization = {
+                            socialButtonsBlockButton: 'Accedi con {{provider|titleize}}',
+                            formButtonPrimary: 'Continua',
+                            formFieldLabel__emailAddress: 'Email',
+                            formFieldLabel__password: 'Password',
+                        };
+
+                        await clerk.load({ localization: itLocalization });
 
                         if (!clerk.user) {
                             window.location.replace('login.html');
