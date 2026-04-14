@@ -60,11 +60,11 @@
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 440px;
+            max-width: 500px;
             background: var(--bg-card);
             border: 1px solid rgba(197,160,89,0.18);
             border-radius: 20px;
-            padding: 48px 44px 40px;
+            padding: 56px 44px 48px;
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             box-shadow:
@@ -187,10 +187,6 @@
                 <span>Caricamento...</span>
             </div>
         </div>
-
-        <p class="card-footer">
-            Non hai un account? <a href="register.html">Registrati</a>
-        </p>
     </div>
 
     <!--
@@ -225,24 +221,24 @@
                     try {
                         const clerk = window.Clerk;
                         
-                        // Localization for Italian
+                        // Comprehensive Italian Localization
                         const itLocalization = {
+                            dividerText: 'oppure',
+                            formFieldHintText__optional: 'opzionale',
+                            formButtonPrimary: 'Continua',
+                            socialButtonsBlockButton: 'Accedi con {{provider|titleize}}',
+                            identityPreviewText__lastUsed: 'Ultimo accesso',
                             signIn: {
                                 start: {
                                     title: 'Accedi',
                                     subtitle: 'Inserisci i tuoi dati per continuare',
                                     actionLink: 'Registrati',
                                     actionText: 'Non hai un account?'
-                                },
-                                emailCode: {
-                                    title: 'Verifica la tua email',
-                                    subtitle: 'Abbiamo inviato un codice a {{emailAddress}}',
-                                    formTitle: 'Codice di verifica',
-                                    formSubtitle: 'Inserisci il codice ricevuto'
                                 }
                             },
-                            socialButtonsBlockButton: 'Accedi con {{provider|titleize}}',
-                            formButtonPrimary: 'Continua',
+                            userButton: {
+                                action__signOut: 'Esci'
+                            },
                             formFieldLabel__emailAddress: 'Email',
                             formFieldLabel__password: 'Password',
                             formFieldInputPlaceholder__emailAddress: 'nome@esempio.it',
@@ -259,6 +255,9 @@
                         }
 
                         const signInContainer = document.getElementById('clerk-sign-in');
+                        
+                        // Center and clear before mounting
+                        signInContainer.innerHTML = '';
                         
                         clerk.mountSignIn(signInContainer, {
                             afterSignInUrl: '/dashboard.html',
@@ -280,19 +279,21 @@
                                     card: 'background: transparent; box-shadow: none; border: none; width: 100%;',
                                     headerTitle: 'display: none;',
                                     headerSubtitle: 'display: none;',
-                                    socialButtonsBlockButton: 'border: 1px solid rgba(197,160,89,0.3); background: rgba(197,160,89,0.05); color: white;',
+                                    socialButtonsBlockButton: 'border: 1px solid rgba(197,160,89,0.3); background: rgba(255,255,255,0.03); color: white;',
                                     socialButtonsBlockButtonText: 'font-weight: 500;',
-                                    // Fix for Apple icon and other social icons visibility
-                                    socialButtonsBlockButtonIcon: 'filter: brightness(0) invert(1);', 
+                                    // Professional social icons visibility
+                                    socialButtonsBlockButtonIcon: 'filter: drop-shadow(0 0 1px rgba(255,255,255,0.5));', 
                                     formButtonPrimary: 'background: #C5A059; color: #000; font-weight: 700; letter-spacing: 0.08em; height: 48px;',
                                     footerActionLink: 'color: #C5A059;',
                                     formFieldInput: 'background: rgba(255,255,255,0.05); border: 1px solid rgba(197,160,89,0.2); color: white;',
                                     formFieldLabel: 'color: rgba(255,255,255,0.6); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;',
-                                    // Password eye icon fix
-                                    formFieldInputShowPasswordButton: 'color: #C5A059; opacity: 0.8;',
-                                    formFieldInputShowPasswordIcon: 'filter: brightness(1.5);',
+                                    // Fixed eye icon visibility
+                                    formFieldInputShowPasswordButton: 'color: #C5A059; opacity: 1;',
+                                    formFieldInputShowPasswordIcon: 'filter: invert(1) brightness(2); width: 20px; height: 20px;',
                                     identityPreviewText: 'color: white;',
                                     identityPreviewEditButtonIcon: 'color: #C5A059;',
+                                    dividerLine: 'background: rgba(197,160,89,0.2);',
+                                    dividerText: 'color: rgba(255,255,255,0.4); font-size: 0.65rem; text-transform: uppercase;',
                                 }
                             }
                         });
