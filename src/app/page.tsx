@@ -113,17 +113,17 @@ export default function Home() {
     {
       title: "Bologna: Centro Storico",
       desc: "Torri, piazze e i sapori autentici della tradizione bolognese.",
-      img: "https://images.unsplash.com/photo-1516483642775-9a3ac20c54ea?q=80&w=800&auto=format&fit=crop"
+      img: "/assets/esperienze/bologna/1.jpg"
     },
     {
       title: "Bologna: San Luca",
       desc: "Una camminata panoramica sotto il portico più lungo del mondo.",
-      img: "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?q=80&w=800&auto=format&fit=crop"
+      img: "/assets/esperienze/bologna/2.jpg"
     },
     {
       title: "Bologna: Alternativa",
       desc: "Arte contemporanea e angoli nascosti fuori dai circuiti classici.",
-      img: "https://images.unsplash.com/photo-1520175480921-4edfa0683a2f?q=80&w=800&auto=format&fit=crop"
+      img: "/assets/esperienze/bologna/3.jpg"
     }
   ];
 
@@ -131,32 +131,32 @@ export default function Home() {
     {
       title: "Ferrara: Icone Estensi",
       desc: "Un viaggio tra i simboli del Rinascimento ferrarese.",
-      img: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=800&auto=format&fit=crop"
+      img: "/assets/esperienze/ferrara/1.jpg"
     },
     {
       title: "Ferrara: Schifanoia",
       desc: "Il Salone dei Mesi e l'astrologia rinascimentale.",
-      img: "https://images.unsplash.com/photo-1548574906-7d46c503c457?q=80&w=800&auto=format&fit=crop"
+      img: "/assets/esperienze/ferrara/2.jpg"
     },
     {
       title: "Ferrara: Ombre e Luci",
       desc: "Atmosfere magiche tra i vicoli del ghetto e le mura.",
-      img: "https://images.unsplash.com/photo-1525874684015-58379d421a52?q=80&w=800&auto=format&fit=crop"
+      img: "/assets/esperienze/ferrara/3.jpg"
     },
     {
       title: "Ferrara: Comacchio",
       desc: "55km di natura incontaminata e silenzi d'acqua.",
-      img: "https://images.unsplash.com/photo-1552528148-03820ac188f5?q=80&w=800&auto=format&fit=crop"
+      img: "/assets/esperienze/ferrara/4.png"
     },
     {
       title: "Ferrara: Food Tour",
       desc: "Degustazione itinerante dei tesori gastronomici locali.",
-      img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=800&auto=format&fit=crop"
+      img: "/assets/esperienze/ferrara/5.png"
     },
     {
       title: "Ferrara: Bike Tour",
       desc: "La città delle biciclette vista da una prospettiva unica.",
-      img: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=800&auto=format&fit=crop"
+      img: "/assets/esperienze/ferrara/6.jpg"
     }
   ];
 
@@ -1326,7 +1326,6 @@ export default function Home() {
         {/* GOOEY BACKDROP */}
         <div className="goo-container">
           <div className="goo-cursor" id="goo-logo-blob" />
-          <div className="goo-base" id="goo-capsule-blob" />
         </div>
         {/* Spotlight Logo (Content) */}
         <a href="/" className="nav-logo spotlight-mode">
@@ -1341,7 +1340,26 @@ export default function Home() {
           <div className="nav-auth-inline" style={{ display: 'flex', alignItems: 'center' }}>
             <SignedOut>
               <Link href="/login" className="auth-icon-btn" title="Accedi">
-                <i className="far fa-user" />
+                <svg
+                  className="auth-icon-svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M20 21a8 8 0 0 0-16 0"
+                    stroke="currentColor"
+                    strokeWidth="1.25"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"
+                    stroke="currentColor"
+                    strokeWidth="1.25"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </Link>
             </SignedOut>
             <SignedIn>
@@ -1412,10 +1430,14 @@ export default function Home() {
 
         {/* Refined Corporate Spotlight Area */}
         <section className="corporate-spotlight-section">
+          <div className="spotlight-code-bg" aria-hidden="true" />
+          <div className="spotlight-gold-glow" aria-hidden="true" />
           <div className="container spotlight-container">
             <div className="spotlight-content reveal">
-              <span className="label-gold">CORPORATE VISION</span>
-              <h2 className="vision-headline">L'Eccellenza nell'Asset Management</h2>
+              <h2 className="vision-headline">
+                L'Eccellenza nell'
+                <span className="vision-accent">Asset Management</span>
+              </h2>
               <div className="vision-divider" />
               <p className="vision-body">
                 GSA Hotels non si limita alla gestione: noi eleviamo il potenziale di ogni struttura attraverso un'ingegneria dei processi impeccabile e una visione lungimirante che garantisce rendimenti superiori e un prestigio senza tempo.
@@ -1438,9 +1460,6 @@ export default function Home() {
                   />
                   <div className="play-btn-luxury">
                     <i className="fas fa-play" />
-                  </div>
-                  <div className="video-card-badge">
-                    WATCH FILM
                   </div>
                 </a>
               </div>
@@ -1504,11 +1523,11 @@ export default function Home() {
                 </div>
 
                 {/* Dots Pagination */}
-                <div className="academy-slider-dots">
+                <div className="slider-dots" aria-label="Seleziona slide GSA Academy">
                   {academyImages.map((_, index) => (
                     <div
                       key={index}
-                      className={`academy-dot ${index === activeAcademyImage ? 'active' : ''}`}
+                      className={`slider-dot ${index === activeAcademyImage ? 'active' : ''}`}
                       onClick={() => setActiveAcademyImage(index)}
                     />
                   ))}
@@ -1629,7 +1648,7 @@ export default function Home() {
                         <span className="exp-count">0{activeBologna + 1} / 03</span>
                         <h3>{bolognaExperiences[activeBologna].title}</h3>
                         <p>{bolognaExperiences[activeBologna].desc}</p>
-                        <a href="/esperienze" className="exp-link-btn">SCOPRI DI PIÙ <i className="fas fa-arrow-right" /></a>
+                        <a href="/esperienze/bologna" className="exp-link-btn">SCOPRI DI PIÙ <i className="fas fa-arrow-right" /></a>
                       </div>
                     </div>
 
@@ -1644,9 +1663,9 @@ export default function Home() {
                     </div>
                   </div>
                   {/* Dots */}
-                  <div className="exp-dots-pagination">
+                  <div className="slider-dots" aria-label="Seleziona esperienza Bologna">
                     {bolognaExperiences.map((_, i) => (
-                      <div key={i} className={`exp-dot ${i === activeBologna ? 'active' : ''}`} onClick={() => setActiveBologna(i)} />
+                      <div key={i} className={`slider-dot ${i === activeBologna ? 'active' : ''}`} onClick={() => setActiveBologna(i)} />
                     ))}
                   </div>
                 </div>
@@ -1671,7 +1690,7 @@ export default function Home() {
                         <span className="exp-count">0{activeFerrara + 1} / 06</span>
                         <h3>{ferraraExperiences[activeFerrara].title}</h3>
                         <p>{ferraraExperiences[activeFerrara].desc}</p>
-                        <a href="/esperienze" className="exp-link-btn">SCOPRI DI PIÙ <i className="fas fa-arrow-right" /></a>
+                        <a href="/esperienze/ferrara" className="exp-link-btn">SCOPRI DI PIÙ <i className="fas fa-arrow-right" /></a>
                       </div>
                     </div>
 
@@ -1686,18 +1705,21 @@ export default function Home() {
                     </div>
                   </div>
                   {/* Dots */}
-                  <div className="exp-dots-pagination">
+                  <div className="slider-dots" aria-label="Seleziona esperienza Ferrara">
                     {ferraraExperiences.map((_, i) => (
-                      <div key={i} className={`exp-dot ${i === activeFerrara ? 'active' : ''}`} onClick={() => setActiveFerrara(i)} />
+                      <div key={i} className={`slider-dot ${i === activeFerrara ? 'active' : ''}`} onClick={() => setActiveFerrara(i)} />
                     ))}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="experience-footer reveal" style={{ textAlign: 'center', marginTop: '60px' }}>
-              <a href="/esperienze" className="btn-jesko">
-                <i className="fas fa-map-marked-alt" /> ESPLORA TUTTE LE ESPERIENZE
+            <div className="experience-footer reveal" style={{ textAlign: 'center', marginTop: '60px', display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap' }}>
+              <a href="/esperienze/bologna" className="btn-jesko">
+                Bologna
+              </a>
+              <a href="/esperienze/ferrara" className="btn-jesko">
+                Ferrara
               </a>
             </div>
           </div>
