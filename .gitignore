@@ -23,6 +23,8 @@
 # misc
 .DS_Store
 *.pem
+*.db
+local.db
 
 # debug
 npm-debug.log*
@@ -44,3 +46,4 @@ next-env.d.ts
 /ESEMPI
 # clerk configuration (can include secrets)
 /.clerk/
+local.db

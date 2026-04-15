@@ -792,15 +792,21 @@ export default function Home() {
     const trigger = document.getElementById('menu-trigger'); // Main floating trigger (McButton)
     const closeTrigger = document.getElementById('menu-close-trigger'); // Close button inside overlay
     const glassLinks = document.querySelectorAll('.glass-link');
-    const previewImg = document.getElementById('glass-preview-img') as HTMLImageElement;
     const desktopTrigger = document.querySelector('.desktop-menu-trigger');
+    let menuScrollY = 0;
 
     // Simple Open/Close with Body Scroll Lock + GSAP Choreography
     const toggleMenu = (open: boolean) => {
       if (overlay) {
         if (open) {
           overlay.classList.add('active');
-          document.body.style.overflow = 'hidden';
+          // Full scroll lock (body + html) to prevent overflow-y while menu is open
+          menuScrollY = window.scrollY || window.pageYOffset || 0;
+          document.documentElement.style.overflowY = 'hidden';
+          document.body.style.overflowY = 'hidden';
+          document.body.style.position = 'fixed';
+          document.body.style.top = `-${menuScrollY}px`;
+          document.body.style.width = '100%';
 
           // GSAP Reveal for Links (Editorial Entrance)
           gsap.fromTo('.glass-link',
@@ -809,7 +815,13 @@ export default function Home() {
           );
         } else {
           overlay.classList.remove('active');
-          document.body.style.overflow = '';
+          // Unlock scroll + restore position
+          document.documentElement.style.overflowY = '';
+          document.body.style.overflowY = '';
+          document.body.style.position = '';
+          document.body.style.top = '';
+          document.body.style.width = '';
+          window.scrollTo(0, menuScrollY);
         }
       }
 
@@ -841,35 +853,20 @@ export default function Home() {
       closeTrigger.addEventListener('click', () => toggleMenu(false));
     }
 
-    // Dynamic Hover Preview System
-    glassLinks.forEach(link => {
-      link.addEventListener('mouseenter', () => {
-        const parent = link.closest('li');
-        const nextImg = parent?.getAttribute('data-img');
+    // Close menu upon navigation
+    glassLinks.forEach(link => link.addEventListener('click', () => toggleMenu(false)));
 
-        if (nextImg && previewImg) {
-          // Subtle Cross-fade for the high-end preview
-          gsap.to(previewImg, {
-            opacity: 0.2, // Quick dim before change
-            duration: 0.2,
-            onComplete: () => {
-              previewImg.src = nextImg;
-              gsap.to(previewImg, { opacity: 1, duration: 0.6, ease: 'power2.inOut' });
-              // Also add a slight scale effect for depth
-              gsap.fromTo(previewImg, { scale: 1.05 }, { scale: 1, duration: 1.5, ease: 'power2.out' });
-            }
-          });
-        }
-      });
+    // Close menu on ESC
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') toggleMenu(false);
+    };
+    document.addEventListener('keydown', onEsc);
 
-      // Close menu upon navigation
-      link.addEventListener('click', () => toggleMenu(false));
-    });
-
-    // SPOTLIGHT LOGO REVEAL (Apple Style)
+    // SPOTLIGHT LOGO REVEAL
+    // Show only after passing the static hero logo.
     ScrollTrigger.create({
-      trigger: ".jesko-hero-final", 
-      start: "bottom top", 
+      trigger: ".j-logo-container",
+      start: "bottom top",
       onEnter: () => {
         const navWrapper = document.querySelector('.nav-wrapper');
         if (navWrapper) navWrapper.classList.add('active');
@@ -1177,6 +1174,8 @@ export default function Home() {
 
     // Cleanup function
     return () => {
+      // Remove ESC handler for menu (defined above)
+      try { document.removeEventListener('keydown', onEsc as any); } catch (e) {}
       ScrollTrigger.getAll().forEach(t => t.kill());
       if ((window as any).lenis) (window as any).lenis.destroy();
     };
@@ -1335,11 +1334,11 @@ export default function Home() {
         </a>
         <nav className="nav-capsule navbar nav-menu" style={{ justifyContent: 'flex-end', marginLeft: 'auto', gap: '20px', paddingRight: '20px' }}>
 
-          {/* CTA - Contatti */}
-          <a href="#contact" className="nav-cta" style={{ order: 1 }}>CONTATTI</a>
+          {/* CONTATTI (left of ACCEDI) */}
+          <a href="#contact" className="nav-cta">CONTATTI</a>
 
-          {/* Login Auth Buttons */}
-          <div className="nav-auth-inline" style={{ order: 2, display: 'flex', alignItems: 'center' }}>
+          {/* ACCEDI (left of MENU) */}
+          <div className="nav-auth-inline" style={{ display: 'flex', alignItems: 'center' }}>
             <SignedOut>
               <Link href="/login" className="auth-icon-btn" title="Accedi">
                 <i className="far fa-user" />
@@ -1355,8 +1354,8 @@ export default function Home() {
             </SignedIn>
           </div>
 
-          {/* MODO MINIMALISTA - HAMBURGER SENZA TESTO */}
-          <div className="desktop-menu-trigger McButton" id="menu-trigger" style={{ order: 3, position: 'relative', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {/* MENU (right-most) - hamburger without text */}
+          <div className="desktop-menu-trigger McButton" id="menu-trigger" style={{ position: 'relative', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <b style={{ pointerEvents: 'none' }} />
             <b style={{ pointerEvents: 'none' }} />
             <b style={{ pointerEvents: 'none' }} />
@@ -2217,10 +2216,7 @@ export default function Home() {
               <div className="footer-col">
                 <h4 className="footer-heading">NAVIGAZIONE</h4>
                 <ul className="footer-links">
-                  <li><a href="#fleet">Soggiorni</a></li>
-                  <li><a href="#services">Servizi</a></li>
-                  <li><a href="#philosophy">Identità</a></li>
-                  <li><a href="#contact">Contatti</a></li>
+                  <li><a href=""></a></li>
                 </ul>
               </div>
             </div> {/* Closes footer-grid */}

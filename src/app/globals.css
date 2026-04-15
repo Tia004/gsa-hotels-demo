@@ -418,7 +418,8 @@ img {
   background: #000000;
   border-radius: 100%;
   position: absolute;
-  transform: translateX(-400px);
+  /* Hidden off-canvas by default (so it's never directly visible) */
+  transform: translateX(-120vw);
   /* Tucked inside left edge (Center - 290 + padding) */
 }
 
@@ -442,7 +443,8 @@ img {
   margin-left: -27.5px;
 
   /* Initial: Merged */
-  transform: translateX(-400px);
+  /* Hidden off-canvas by default (so it's never directly visible) */
+  transform: translateX(-120vw);
   pointer-events: auto;
   opacity: 0;
   transition: none;
@@ -459,15 +461,15 @@ img {
 /* --- KEYFRAMES (Root Level) --- */
 @keyframes blob-reveal {
   0% {
-    transform: translateX(-370px) scale(1);
+    transform: translateX(-120vw) scale(1);
   }
 
   35% {
-    transform: translateX(-390px) scale(0.5);
+    transform: translateX(-520px) scale(0.5);
   }
 
   70% {
-    transform: translateX(-480px) scale(1.1);
+    transform: translateX(-440px) scale(1.1);
   }
 
   100% {
@@ -481,30 +483,30 @@ img {
   }
 
   35% {
-    transform: translateX(-390px) scale(0.5);
+    transform: translateX(-520px) scale(0.5);
   }
 
   100% {
-    transform: translateX(-350px) scale(1);
+    transform: translateX(-120vw) scale(1);
   }
 }
 
 /* CONTENT ANIMATION (SYNCED SCALING) */
 @keyframes content-reveal {
   0% {
-    transform: translateX(-350px) scale(1);
+    transform: translateX(-120vw) scale(1);
     opacity: 0;
   }
 
   35% {
-    transform: translateX(-310px) scale(0.5);
+    transform: translateX(-520px) scale(0.5);
     /* Match Blob Pinch */
     opacity: 1;
     /* Fade in during pinch */
   }
 
   70% {
-    transform: translateX(-480px) scale(1.1);
+    transform: translateX(-440px) scale(1.1);
     /* Match Blob Overshoot */
   }
 
@@ -521,11 +523,11 @@ img {
   }
 
   35% {
-    transform: translateX(-390px) scale(0.5);
+    transform: translateX(-520px) scale(0.5);
   }
 
   100% {
-    transform: translateX(-370px) scale(1);
+    transform: translateX(-120vw) scale(1);
     opacity: 0;
   }
 }
@@ -4231,6 +4233,8 @@ body {
               radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.05), transparent 80%),
               #0a0a0a;
   color: white;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
 
   /* Initial State (Hidden) */
   clip-path: circle(0% at 95% 5%);
@@ -4252,7 +4256,10 @@ body {
 }
 
 .glass-logo img {
-  height: 50px;
+  height: 50px !important;
+  width: auto !important;
+  max-width: 220px;
+  object-fit: contain;
   opacity: 0.9;
 }
 
