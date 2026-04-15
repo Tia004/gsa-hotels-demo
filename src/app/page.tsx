@@ -1641,7 +1641,7 @@ export default function Home() {
                 <div className="exp-slider-luxury">
                   <div className="exp-image-wrapper">
                     <Image 
-                      src={`/${bolognaExperiences[activeBologna].img}`} 
+                      src={bolognaExperiences[activeBologna].img} 
                       alt={bolognaExperiences[activeBologna].title} 
                       key={`bo-${activeBologna}`} 
                       fill
@@ -1683,7 +1683,7 @@ export default function Home() {
                 <div className="exp-slider-luxury">
                   <div className="exp-image-wrapper">
                     <Image 
-                      src={`/${ferraraExperiences[activeFerrara].img}`} 
+                      src={ferraraExperiences[activeFerrara].img} 
                       alt={ferraraExperiences[activeFerrara].title} 
                       key={`fe-${activeFerrara}`} 
                       fill
@@ -1963,7 +1963,7 @@ export default function Home() {
                     {visionImages.length > 0 ? (
                       <Image
                         key={activeVisionImage}
-                        src={`/${visionImages[activeVisionImage]}`}
+                        src={visionImages[activeVisionImage]}
                         alt="Authenticity Highlight"
                         fill
                         className="vision-slide-img"
@@ -2278,7 +2278,7 @@ export default function Home() {
             <div className="lightbox-content">
               <div className="lightbox-image-container">
                 <Image
-                  src={`/${visionImages[activeVisionImage]}`}
+                  src={visionImages[activeVisionImage]}
                   alt="Vision Fullscreen"
                   fill
                   className="lightbox-img"
