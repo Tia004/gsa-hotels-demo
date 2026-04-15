@@ -4226,9 +4226,10 @@ body {
   display: flex;
   flex-direction: column;
   padding: 40px 60px;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(40px) saturate(200%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  background: radial-gradient(circle at 80% 20%, rgba(197, 160, 89, 0.15), transparent 40%),
+              radial-gradient(circle at 20% 80%, rgba(197, 160, 89, 0.1), transparent 50%),
+              radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.05), transparent 80%),
+              #0a0a0a;
   color: white;
 
   /* Initial State (Hidden) */
@@ -4258,11 +4259,9 @@ body {
 /* Split Content Layout */
 .glass-menu-content {
   flex: 1;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
   align-items: center;
-  gap: 40px;
-  padding-top: 40px;
+  justify-content: center;
 }
 
 /* Left: Editorial Links */
@@ -4270,12 +4269,17 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .editorial-links {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .editorial-links li {
@@ -4298,8 +4302,7 @@ body {
 
 .editorial-links li:hover .glass-link {
   opacity: 1;
-  transform: translateX(20px);
-  font-style: italic;
+  transform: translateY(-5px);
   color: #C5A059;
 }
 

@@ -832,7 +832,8 @@ export default function Home() {
     if (desktopTrigger) {
       desktopTrigger.addEventListener('click', (e) => {
         e.preventDefault();
-        toggleMenu(true);
+        const isActive = overlay?.classList.contains('active');
+        toggleMenu(!isActive);
       });
     }
 
@@ -867,15 +868,15 @@ export default function Home() {
 
     // SPOTLIGHT LOGO REVEAL (Apple Style)
     ScrollTrigger.create({
-      trigger: ".jesko-statement-container", // Trigger based on the TEXT section entering
-      start: "top bottom", // As soon as it enters the viewport (Early)
+      trigger: ".jesko-hero-final", 
+      start: "bottom top", 
       onEnter: () => {
-        const logo = document.querySelector('.spotlight-mode');
-        if (logo) logo.classList.add('visible');
+        const navWrapper = document.querySelector('.nav-wrapper');
+        if (navWrapper) navWrapper.classList.add('active');
       },
       onLeaveBack: () => {
-        const logo = document.querySelector('.spotlight-mode');
-        if (logo) logo.classList.remove('visible');
+        const navWrapper = document.querySelector('.nav-wrapper');
+        if (navWrapper) navWrapper.classList.remove('active');
       }
     });
 
@@ -1268,7 +1269,7 @@ export default function Home() {
       {/* LIQUID GLASS MENU OVERLAY (Editorial Full-Screen) */}
       <div id="liquid-glass-menu" className="glass-menu-overlay">
         <div className="glass-menu-header">
-          <Link href="/" className="glass-logo"><Image src="/assets/logo.png" alt="GSA Logo" width={120} height={40} /></Link>
+          <Link href="/" className="glass-logo"><Image src="/assets/logo.png" alt="GSA Logo" width={120} height={40} style={{ objectFit: 'contain' }} /></Link>
           <div className="glass-close-btn mobile-close-btn">
             <div className="McButton active" id="menu-close-trigger">
               <b /><b /><b />
@@ -1276,34 +1277,19 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="glass-menu-content">
+        <div className="glass-menu-content" style={{ justifyContent: 'center' }}>
           {/* LEFT: Navigation Links */}
-          <nav className="glass-nav-col">
-            <ul className="editorial-links">
+          <nav className="glass-nav-col" style={{ width: '100%', textAlign: 'center' }}>
+            <ul className="editorial-links" style={{ padding: 0 }}>
               <li data-img="assets/academy_white_glove.png"><a href="#services" className="glass-link">ACADEMY</a></li>
-              <li data-img="assets/BeSafe.png"><a href="#besafe" className="glass-link">BESAFE</a></li>
+              <li data-img="assets/besafe-logo.png"><a href="#besafe" className="glass-link">BESAFE</a></li>
               <li data-img="assets/duchessa_isabella.png"><a href="#experiences" className="glass-link">ESPERIENZE</a></li>
-              <li data-img="assets/BeSafe.png"><a href="#fleet-section" className="glass-link">PARTNER</a></li>
+              <li data-img="assets/besafe-logo.png"><a href="#fleet-section" className="glass-link">PARTNER</a></li>
               <li data-img="assets/duchessa_isabella.png"><a href="#founder" className="glass-link">STRATEGIA</a></li>
               <li data-img="assets/wellness.png"><a href="#career" className="glass-link">CARRIERE</a></li>
               <li data-img="assets/duchessa_isabella.png"><a href="#philosophy" className="glass-link">VISION</a></li>
             </ul>
           </nav>
-
-          {/* RIGHT: Luxury Preview Image */}
-          <div className="glass-preview-col">
-            <div className="preview-image-container">
-              <Image 
-                src="/assets/duchessa_isabella.png" 
-                alt="Preview" 
-                id="glass-preview-img" 
-                fill
-                style={{ objectFit: 'cover' }}
-                sizes="(max-width: 768px) 100vw, 33vw"
-              />
-              <div className="preview-overlay" />
-            </div>
-          </div>
         </div>
 
         <div className="glass-menu-footer">
@@ -1347,46 +1333,36 @@ export default function Home() {
         <a href="/" className="nav-logo spotlight-mode">
           <Image src="/assets/logo.png" alt="GSA" width={100} height={35} />
         </a>
-        <nav className="nav-capsule navbar nav-menu">
-          {/* MODO MINIMALISTA - SOLO LOGO E MENU PER ELIMINARE CLUTTER */}
-          <div className="desktop-menu-trigger">
-            <div className="hamburger-icon">
-              <span />
-              <span />
-              <span />
-            </div>
-            <span>MENU</span>
+        <nav className="nav-capsule navbar nav-menu" style={{ justifyContent: 'flex-end', marginLeft: 'auto', gap: '20px', paddingRight: '20px' }}>
+
+          {/* CTA - Contatti */}
+          <a href="#contact" className="nav-cta" style={{ order: 1 }}>CONTATTI</a>
+
+          {/* Login Auth Buttons */}
+          <div className="nav-auth-inline" style={{ order: 2, display: 'flex', alignItems: 'center' }}>
+            <SignedOut>
+              <Link href="/login" className="auth-icon-btn" title="Accedi">
+                <i className="far fa-user" />
+              </Link>
+            </SignedOut>
+            <SignedIn>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <UserButton />
+                <Link href="/dashboard" className="auth-icon-btn" title="Dashboard">
+                  <i className="fas fa-columns" />
+                </Link>
+              </div>
+            </SignedIn>
           </div>
 
-          <div className="nav-links">
-            <a href="#services" className="nav-link" data-text="ACADEMY"><span>ACADEMY</span></a>
-            <a href="#besafe" className="nav-link" data-text="BESAFE"><span>BESAFE</span></a>
-            <a href="#experiences" className="nav-link" data-text="ESPERIENZE"><span>ESPERIENZE</span></a>
-            <a href="#founder" className="nav-link" data-text="STRATEGIA"><span>STRATEGIA</span></a>
-            <a href="#fleet-section" className="nav-link" data-text="PARTNER"><span>PARTNER</span></a>
-            <a href="#career" className="nav-link" data-text="CARRIERE"><span>CARRIERE</span></a>
-            <a href="#philosophy" className="nav-link" data-text="VISION"><span>VISION</span></a>
-            <Link href="/blog" className="nav-link" data-text="BLOG"><span>BLOG</span></Link>
+          {/* MODO MINIMALISTA - HAMBURGER SENZA TESTO */}
+          <div className="desktop-menu-trigger McButton" id="menu-trigger" style={{ order: 3, position: 'relative', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <b style={{ pointerEvents: 'none' }} />
+            <b style={{ pointerEvents: 'none' }} />
+            <b style={{ pointerEvents: 'none' }} />
           </div>
-          {/* CTA - solo Diventa Partner nella capsule */}
-          <a href="#contact" className="nav-cta">CONTATTI</a>
+
         </nav>
-      </div>
-      {/* AUTH BUTTONS - Floating a destra, fuori dalla navbar capsule */}
-      <div className="nav-auth-floating">
-        <SignedOut>
-          <Link href="/login" className="auth-icon-btn" title="Accedi">
-            <i className="far fa-user" />
-          </Link>
-        </SignedOut>
-        <SignedIn>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <UserButton />
-            <Link href="/dashboard" className="auth-icon-btn" title="Dashboard">
-              <i className="fas fa-columns" />
-            </Link>
-          </div>
-        </SignedIn>
       </div>
       {/* Main Content */}
       <main>
@@ -1454,11 +1430,11 @@ export default function Home() {
               <div className="video-preview-wrapper-luxury">
                 <a href="https://www.youtube.com/watch?v=MFyef0yMQsY" target="_blank" rel="noopener noreferrer" className="video-preview-card">
                   <div className="video-overlay" />
-                  <Image 
-                    src="https://img.youtube.com/vi/MFyef0yMQsY/maxresdefault.jpg" 
-                    alt="GSA Corporate Video" 
+                  <Image
+                    src="https://img.youtube.com/vi/MFyef0yMQsY/maxresdefault.jpg"
+                    alt="GSA Corporate Video"
                     fill
-                    className="video-thumbnail" 
+                    className="video-thumbnail"
                     style={{ objectFit: 'cover' }}
                   />
                   <div className="play-btn-luxury">
@@ -1509,10 +1485,10 @@ export default function Home() {
             <div className="academy-visual reveal">
               <div className="academy-slider-wrapper">
                 <div className="academy-image-wrapper">
-                  <Image 
-                    src={`/${academyImages[activeAcademyImage]}`} 
-                    alt="GSA Academy Highlight" 
-                    key={activeAcademyImage} 
+                  <Image
+                    src={`/${academyImages[activeAcademyImage]}`}
+                    alt="GSA Academy Highlight"
+                    key={activeAcademyImage}
                     fill
                     className="academy-slide-img"
                     style={{ objectFit: 'cover' }}
@@ -1566,12 +1542,12 @@ export default function Home() {
             <div className="besafe-text-col">
               <span className="label-gold">PREMIUM PROTECTION</span>
               <div className="besafe-header-flex" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '10px' }}>
-                <Image 
-                  src="/assets/BeSafe.png" 
-                  alt="BeSafe Rate" 
-                  width={150} 
-                  height={45} 
-                  style={{ height: '45px', width: 'auto', filter: 'brightness(1.2)' }} 
+                <Image
+                  src="/assets/besafe-logo.png"
+                  alt="BeSafe Rate"
+                  width={150}
+                  height={45}
+                  style={{ height: '45px', width: 'auto', filter: 'brightness(1.2)' }}
                 />
                 <h2 className="besafe-title" style={{ margin: 0 }}>BeSafe Rate</h2>
               </div>
@@ -1629,7 +1605,7 @@ export default function Home() {
               <h2 className="vision-headline">Esperienze Memorabili</h2>
               <div className="vision-divider" style={{ margin: '20px auto' }} />
               <p className="vision-body" style={{ maxWidth: '800px', margin: '0 auto' }}>
-                Dalle torri medievali di Bologna al fascino rinascimentale di Ferrara. 
+                Dalle torri medievali di Bologna al fascino rinascimentale di Ferrara.
                 Abbiamo selezionato percorsi esclusivi per farvi vivere l'anima più autentica dei nostri territori.
               </p>
             </div>
@@ -1640,10 +1616,10 @@ export default function Home() {
                 <div className="exp-city-label">BOLOGNA</div>
                 <div className="exp-slider-luxury">
                   <div className="exp-image-wrapper">
-                    <Image 
-                      src={bolognaExperiences[activeBologna].img} 
-                      alt={bolognaExperiences[activeBologna].title} 
-                      key={`bo-${activeBologna}`} 
+                    <Image
+                      src={bolognaExperiences[activeBologna].img}
+                      alt={bolognaExperiences[activeBologna].title}
+                      key={`bo-${activeBologna}`}
                       fill
                       className="exp-slide-img"
                       style={{ objectFit: 'cover' }}
@@ -1657,7 +1633,7 @@ export default function Home() {
                         <a href="/esperienze" className="exp-link-btn">SCOPRI DI PIÙ <i className="fas fa-arrow-right" /></a>
                       </div>
                     </div>
-                    
+
                     {/* Internal Controls */}
                     <div className="exp-controls-internal">
                       <button onClick={() => setActiveBologna((prev) => (prev - 1 + bolognaExperiences.length) % bolognaExperiences.length)} className="exp-arrow-btn">
@@ -1682,10 +1658,10 @@ export default function Home() {
                 <div className="exp-city-label">FERRARA</div>
                 <div className="exp-slider-luxury">
                   <div className="exp-image-wrapper">
-                    <Image 
-                      src={ferraraExperiences[activeFerrara].img} 
-                      alt={ferraraExperiences[activeFerrara].title} 
-                      key={`fe-${activeFerrara}`} 
+                    <Image
+                      src={ferraraExperiences[activeFerrara].img}
+                      alt={ferraraExperiences[activeFerrara].title}
+                      key={`fe-${activeFerrara}`}
                       fill
                       className="exp-slide-img"
                       style={{ objectFit: 'cover' }}
@@ -1699,7 +1675,7 @@ export default function Home() {
                         <a href="/esperienze" className="exp-link-btn">SCOPRI DI PIÙ <i className="fas fa-arrow-right" /></a>
                       </div>
                     </div>
-                    
+
                     {/* Internal Controls */}
                     <div className="exp-controls-internal">
                       <button onClick={() => setActiveFerrara((prev) => (prev - 1 + ferraraExperiences.length) % ferraraExperiences.length)} className="exp-arrow-btn">
@@ -1756,9 +1732,9 @@ export default function Home() {
                 <div className="slider-video-container">
                   <a href={videos[activeVideo].url} target="_blank" className="video-preview-card">
                     <div className="video-overlay" />
-                    <Image 
-                      src={`https://img.youtube.com/vi/${videos[activeVideo].id}/maxresdefault.jpg`} 
-                      alt={videos[activeVideo].title} 
+                    <Image
+                      src={`https://img.youtube.com/vi/${videos[activeVideo].id}/maxresdefault.jpg`}
+                      alt={videos[activeVideo].title}
                       fill
                       className="video-thumbnail"
                       style={{ objectFit: 'cover' }}
@@ -1814,14 +1790,14 @@ export default function Home() {
             {/* Duchessa Isabella */}
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
-                <Image 
-                  src="/assets/duchessa_isabella.png" 
-                  alt="Hotel Duchessa Isabella" 
-                  fill 
-                  className="hotel-bg" 
+                <Image
+                  src="/assets/duchessa_isabella.png"
+                  alt="Hotel Duchessa Isabella"
+                  fill
+                  className="hotel-bg"
                   style={{ objectFit: 'cover' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  loading="lazy" 
+                  loading="lazy"
                 />
               </div>
               <div className="hotel-overlay" />
@@ -1834,14 +1810,14 @@ export default function Home() {
             {/* Hotel Blumen */}
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
-                <Image 
-                  src="/assets/hotel_blumen.jpg" 
-                  alt="Hotel Blumen" 
-                  fill 
-                  className="hotel-bg" 
+                <Image
+                  src="/assets/hotel_blumen.jpg"
+                  alt="Hotel Blumen"
+                  fill
+                  className="hotel-bg"
                   style={{ objectFit: 'cover' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  loading="lazy" 
+                  loading="lazy"
                 />
               </div>
               <div className="hotel-overlay" />
@@ -1854,14 +1830,14 @@ export default function Home() {
             {/* Hotel Sant'Orsola */}
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
-                <Image 
-                  src="/assets/santorsola.png" 
-                  alt="Hotel Sant'Orsola" 
-                  fill 
-                  className="hotel-bg" 
+                <Image
+                  src="/assets/santorsola.png"
+                  alt="Hotel Sant'Orsola"
+                  fill
+                  className="hotel-bg"
                   style={{ objectFit: 'cover' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  loading="lazy" 
+                  loading="lazy"
                 />
               </div>
               <div className="hotel-overlay" />
@@ -1874,14 +1850,14 @@ export default function Home() {
             {/* Oasi Isabella Wellness SPA */}
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
-                <Image 
-                  src="/assets/wellness.png" 
-                  alt="Oasi Isabella Wellness SPA" 
-                  fill 
-                  className="hotel-bg" 
+                <Image
+                  src="/assets/wellness.png"
+                  alt="Oasi Isabella Wellness SPA"
+                  fill
+                  className="hotel-bg"
                   style={{ objectFit: 'cover' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  loading="lazy" 
+                  loading="lazy"
                 />
               </div>
               <div className="hotel-overlay" />
@@ -1895,14 +1871,14 @@ export default function Home() {
             {/* Duchessa Isabella Eventi */}
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
-                <Image 
-                  src="/assets/eventi.jpg" 
-                  alt="Duchessa Isabella Eventi" 
-                  fill 
-                  className="hotel-bg" 
+                <Image
+                  src="/assets/eventi.jpg"
+                  alt="Duchessa Isabella Eventi"
+                  fill
+                  className="hotel-bg"
                   style={{ objectFit: 'cover' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  loading="lazy" 
+                  loading="lazy"
                 />
               </div>
               <div className="hotel-overlay" />
@@ -2167,8 +2143,8 @@ export default function Home() {
                 </div>
                 <div className="input-group custom-select-wrapper" id="customSelectWrapper">
                   <input type="hidden" id="interesse" name="interesse" value={formData.interesse} />
-                  <div 
-                    className={`minimal-input custom-select-trigger ${formData.interesse ? 'has-value' : ''}`} 
+                  <div
+                    className={`minimal-input custom-select-trigger ${formData.interesse ? 'has-value' : ''}`}
                     tabIndex={0}
                   >
                     <span className="selected-text">{formData.interesse}</span>

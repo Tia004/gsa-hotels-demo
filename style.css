@@ -472,24 +472,21 @@ img {
 }
 
 .goo-base {
-  /* BACKGROUND BLOB (Black) */
-  width: 580px;
-  /* Fixed match */
-  height: 55px;
-  background: #000000;
-  border-radius: 100px;
-  position: absolute;
+  /* Hide the large black background blob since navbar is minimal right now */
+  display: none;
 }
 
 .goo-cursor {
-  /* LOGO BLOB (Black) */
+  /* LOGO BLOB (Gold/Yellow dot) */
   width: 55px;
   height: 55px;
-  background: #000000;
+  background: #C5A059;
   border-radius: 100%;
   position: absolute;
-  transform: translateX(-400px);
-  /* Tucked inside left edge (Center - 290 + padding) */
+  left: 2rem;
+  top: 50%;
+  margin-top: -27.5px;
+  transform: translateX(-150vw);
 }
 
 /* Spotlight Content (Sharp, Transparent BG, WITH BORDER) */
@@ -506,17 +503,15 @@ img {
   align-items: center;
   justify-content: center;
   position: absolute;
-  left: 50%;
+  left: 2rem;
   top: 50%;
   margin-top: -27.5px;
-  margin-left: -27.5px;
 
   /* Initial: Merged */
-  transform: translateX(-400px);
+  transform: translateX(-150vw);
   pointer-events: auto;
   opacity: 0;
-  transition: none;
-  /* Controlled by animation */
+  transition: opacity 0.3s;
   box-sizing: border-box;
 }
 
@@ -527,94 +522,48 @@ img {
 }
 
 /* --- KEYFRAMES (Root Level) --- */
-@keyframes blob-reveal {
+/* --- KEYFRAMES (Root Level) --- */
+@keyframes bounce-in-left {
   0% {
-    transform: translateX(-370px) scale(1);
+    transform: translateX(-15vw);
   }
-
-  35% {
-    transform: translateX(-390px) scale(0.5);
+  60% {
+    transform: translateX(10px);
   }
-
-  70% {
-    transform: translateX(-480px) scale(1.1);
+  80% {
+    transform: translateX(-5px);
   }
-
   100% {
-    transform: translateX(-470px) scale(1);
+    transform: translateX(0);
   }
 }
 
-@keyframes blob-hide {
+@keyframes bounce-out-left {
   0% {
-    transform: translateX(-470px) scale(1);
+    transform: translateX(0);
   }
-
-  35% {
-    transform: translateX(-390px) scale(0.5);
-  }
-
   100% {
-    transform: translateX(-350px) scale(1);
-  }
-}
-
-/* CONTENT ANIMATION (SYNCED SCALING) */
-@keyframes content-reveal {
-  0% {
-    transform: translateX(-350px) scale(1);
-    opacity: 0;
-  }
-
-  35% {
-    transform: translateX(-310px) scale(0.5);
-    /* Match Blob Pinch */
-    opacity: 1;
-    /* Fade in during pinch */
-  }
-
-  70% {
-    transform: translateX(-480px) scale(1.1);
-    /* Match Blob Overshoot */
-  }
-
-  100% {
-    transform: translateX(-470px) scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes content-hide {
-  0% {
-    transform: translateX(-440px) scale(1);
-    opacity: 1;
-  }
-
-  35% {
-    transform: translateX(-390px) scale(0.5);
-  }
-
-  100% {
-    transform: translateX(-370px) scale(1);
-    opacity: 0;
+    transform: translateX(-15vw);
   }
 }
 
 /* --- ANIMATION TRIGGERS --- */
 .nav-wrapper.active .goo-cursor {
-  animation: blob-reveal 0.8s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: bounce-in-left 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 .nav-wrapper.active .nav-logo.spotlight-mode {
-  animation: content-reveal 0.8s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: bounce-in-left 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  opacity: 1;
 }
 
 .nav-wrapper:not(.active) .goo-cursor {
-  animation: blob-hide 0.8s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: bounce-out-left 0.5s ease-in forwards;
 }
 
 .nav-wrapper:not(.active) .nav-logo.spotlight-mode {
-  animation: content-hide 0.8s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: bounce-out-left 0.5s ease-in forwards;
+  opacity: 0;
 }
 
 .goo-cursor {
