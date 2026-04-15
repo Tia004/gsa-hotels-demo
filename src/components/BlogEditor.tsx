@@ -150,7 +150,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
             ref={editorRef}
             contentEditable 
             className="rich-editor" 
-            placeholder="Scrivi qui il tuo articolo..."
+            data-placeholder="Scrivi qui il tuo articolo..."
           />
 
           <button type="submit" className="submit-btn" disabled={isSubmitting}>
@@ -163,40 +163,49 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
         .blog-modal-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(0,0,0,0.8);
-          backdrop-filter: blur(10px);
+          background: rgba(0,0,0,0.95);
+          backdrop-filter: blur(20px);
           display: flex;
           align-items: center;
           justify-content: center;
           z-index: 2000;
           padding: 20px;
+          animation: modalFadeIn 0.5s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
 
         .blog-modal-content {
-          background: #fff;
+          background: #0a0a0a;
           width: 100%;
-          max-width: 800px;
+          max-width: 900px;
           height: 90vh;
-          border-radius: 20px;
+          border-radius: 4px;
+          border: 1px solid rgba(197, 160, 89, 0.2);
           display: flex;
           flex-direction: column;
           overflow: hidden;
-          color: #333;
+          color: white;
+          box-shadow: 0 40px 100px rgba(0,0,0,0.8);
         }
 
         .modal-header {
-          padding: 20px 30px;
-          border-bottom: 1px solid #eee;
+          padding: 30px 40px;
+          border-bottom: 1px solid rgba(255,255,255,0.05);
           display: flex;
           justify-content: space-between;
           align-items: center;
         }
 
         .modal-header h2 {
-          font-family: 'Montserrat', sans-serif;
+          font-family: var(--font-display);
           margin: 0;
-          font-size: 1.2rem;
-          color: #1a1a1a;
+          font-size: 1.8rem;
+          color: white;
+          letter-spacing: 0.05em;
         }
 
         .close-btn {
@@ -204,53 +213,75 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
           border: none;
           font-size: 2rem;
           cursor: pointer;
-          color: #999;
+          color: rgba(255,255,255,0.4);
+          transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+          color: var(--gold-accent);
         }
 
         .editor-form {
           flex: 1;
           display: flex;
           flex-direction: column;
-          padding: 30px;
+          padding: 40px;
           overflow-y: auto;
-          gap: 20px;
+          gap: 30px;
         }
 
         .title-input {
           width: 100%;
+          background: transparent;
           border: none;
-          border-bottom: 2px solid #eee;
-          font-size: 2rem;
-          font-family: 'Montserrat', sans-serif;
-          font-weight: 700;
+          border-bottom: 1px solid rgba(255,255,255,0.1);
+          font-size: 2.5rem;
+          font-family: var(--font-display);
+          font-weight: 500;
           padding: 10px 0;
           outline: none;
+          color: white;
+          transition: border-color 0.3s ease;
         }
 
         .title-input:focus {
-          border-color: #C5A059;
+          border-color: var(--gold-accent);
         }
 
         .form-row {
           display: flex;
-          justify-content: space-between;
+          gap: 20px;
           align-items: center;
         }
 
         .category-select {
-          padding: 10px;
-          border-radius: 8px;
-          border: 1px solid #ddd;
-          font-family: 'Montserrat', sans-serif;
+          background: #0f1111;
+          color: white;
+          padding: 12px 20px;
+          border-radius: 4px;
+          border: 1px solid rgba(255,255,255,0.1);
+          font-family: var(--font-body);
+          outline: none;
+          cursor: pointer;
         }
 
         .file-upload label {
-          background: #f5f5f5;
-          padding: 10px 20px;
-          border-radius: 8px;
+          background: rgba(197, 160, 89, 0.1);
+          color: var(--gold-accent);
+          padding: 12px 25px;
+          border-radius: 4px;
+          border: 1px solid rgba(197, 160, 89, 0.2);
           cursor: pointer;
           font-size: 0.9rem;
-          font-weight: 600;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          transition: all 0.3s ease;
+        }
+
+        .file-upload label:hover {
+          background: var(--gold-accent);
+          color: black;
         }
 
         .file-upload input {
@@ -260,9 +291,10 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
         .image-preview {
           position: relative;
           width: 100%;
-          height: 200px;
-          border-radius: 12px;
+          height: 250px;
+          border-radius: 4px;
           overflow: hidden;
+          border: 1px solid rgba(255,255,255,0.1);
         }
 
         .image-preview img {
@@ -273,70 +305,86 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
 
         .image-preview button {
           position: absolute;
-          top: 10px;
-          right: 10px;
-          background: rgba(0,0,0,0.5);
+          top: 15px;
+          right: 15px;
+          background: rgba(0,0,0,0.8);
           color: white;
-          border: none;
-          padding: 5px 10px;
+          border: 1px solid rgba(255,255,255,0.2);
+          padding: 8px 15px;
           border-radius: 4px;
           cursor: pointer;
+          font-size: 0.8rem;
+          backdrop-filter: blur(5px);
         }
 
         .toolbar {
           display: flex;
-          gap: 10px;
-          border-bottom: 1px solid #eee;
-          padding-bottom: 10px;
+          gap: 8px;
+          padding: 10px;
+          background: #0f1111;
+          border: 1px solid rgba(255,255,255,0.05);
+          border-radius: 4px;
         }
 
         .toolbar button {
-          background: #f9f9f9;
-          border: 1px solid #ddd;
+          background: transparent;
+          border: 1px solid transparent;
           width: 40px;
           height: 40px;
           border-radius: 4px;
           cursor: pointer;
           font-weight: bold;
+          color: rgba(255,255,255,0.6);
+          transition: all 0.2s ease;
         }
 
         .toolbar button:hover {
-          background: #eee;
+          background: rgba(255,255,255,0.05);
+          color: white;
+          border-color: rgba(255,255,255,0.1);
         }
 
         .rich-editor {
           flex: 1;
-          min-height: 200px;
+          min-height: 300px;
           outline: none;
-          padding: 10px 0;
-          font-family: 'Montserrat', sans-serif;
-          line-height: 1.6;
+          padding: 20px 0;
+          font-family: var(--font-body);
+          line-height: 1.8;
           font-size: 1.1rem;
+          color: rgba(255,255,255,0.8);
         }
 
-        .rich-editor[placeholder]:empty:before {
-          content: attr(placeholder);
-          color: #999;
+        .rich-editor[data-placeholder]:empty:before {
+          content: attr(data-placeholder);
+          color: rgba(255,255,255,0.2);
         }
 
         .submit-btn {
-          background: #1a1a1a;
-          color: white;
+          background: var(--gold-accent);
+          color: black;
           border: none;
-          padding: 15px;
-          border-radius: 12px;
+          padding: 18px;
+          border-radius: 4px;
           font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.2em;
           cursor: pointer;
-          transition: background 0.3s;
+          transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+          margin-top: 20px;
         }
 
         .submit-btn:hover {
-          background: #333;
+          background: #d4b57a;
+          transform: translateY(-2px);
+          box-shadow: 0 10px 30px rgba(197, 160, 89, 0.3);
         }
         
         .submit-btn:disabled {
-          background: #ccc;
+          background: #333;
+          color: #666;
           cursor: not-allowed;
+          transform: none;
         }
       `}</style>
     </div>

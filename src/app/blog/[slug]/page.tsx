@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React from 'react';
 import { turso } from '@/lib/turso';
 import Link from 'next/link';
@@ -49,18 +50,18 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
   return (
     <div className="article-outer-wrapper">
       <nav className="article-nav">
-        <div className="article-container">
-          <Link href="/blog" className="back-link">
-            <i className="fas fa-arrow-left" /> Back to Blog
+        <div className="article-container" style={{ maxWidth: '1400px' }}>
+          <Link href="/blog" className="back-link" style={{ color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.15em', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <i className="fas fa-arrow-left" /> BACK TO INSIGHTS
           </Link>
           <div className="nav-controls">
             {prevPost && (
-              <Link href={`/blog/${prevPost.slug}`} className="nav-ctrl-btn" title="Precedente">
+              <Link href={`/blog/${prevPost.slug}`} className="nav-ctrl-btn" title="Precedente" style={{ color: 'white', padding: '10px' }}>
                 <i className="fas fa-chevron-left" />
               </Link>
             )}
             {nextPost && (
-              <Link href={`/blog/${nextPost.slug}`} className="nav-ctrl-btn" title="Successivo">
+              <Link href={`/blog/${nextPost.slug}`} className="nav-ctrl-btn" title="Successivo" style={{ color: 'white', padding: '10px' }}>
                 <i className="fas fa-chevron-right" />
               </Link>
             )}
@@ -71,47 +72,48 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       <header className="article-header">
         <div className="article-container">
           <span className={`category-label ${post.category}`}>
-            {post.category === 'comunica' ? 'GSA Comunica' : 'News'}
+            {post.category === 'comunica' ? 'GSA COMUNICA' : 'NEWS'}
           </span>
           <h1 className="article-title">{post.title}</h1>
           <div className="article-meta">
             <span className="meta-date">{formattedDate}</span>
             <div className="meta-sep" />
-            <span className="meta-author">GSA Editorial Team</span>
+            <span className="meta-author">GSA EDITORIAL TEAM</span>
           </div>
         </div>
-        {post.image_url && (
-          <div className="featured-image">
-            <img src={post.image_url} alt={post.title} />
-          </div>
-        )}
       </header>
+      
+      {post.image_url && (
+        <div className="featured-image">
+          <Image 
+            src={post.image_url} 
+            alt={post.title} 
+            fill
+            style={{ objectFit: 'cover' }}
+            priority
+          />
+        </div>
+      )}
 
       <main className="article-main">
         <div className="article-container">
-          <div className="nav-links-row top">
-             {prevPost && <Link href={`/blog/${prevPost.slug}`} className="chron-link prev">← Precedente</Link>}
-             <div className="flex-spacer" />
-             {nextPost && <Link href={`/blog/${nextPost.slug}`} className="chron-link next">Successivo →</Link>}
-          </div>
-
           <div 
             className="article-body" 
             dangerouslySetInnerHTML={{ __html: post.content }} 
           />
 
-          <div className="nav-links-row bottom">
+          <div className="nav-links-row bottom" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '100px', padding: '60px 0', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
              {prevPost && (
-               <Link href={`/blog/${prevPost.slug}`} className="chron-card prev">
-                 <span>ARTICOLO PRECEDENTE</span>
-                 <h4>{prevPost.title}</h4>
+               <Link href={`/blog/${prevPost.slug}`} className="chron-card prev" style={{ maxWidth: '45%' }}>
+                 <span style={{ fontSize: '0.7rem', color: 'var(--gold-accent)', letterSpacing: '0.2em' }}>ARTICOLO PRECEDENTE</span>
+                 <h4 style={{ color: 'white', marginTop: '10px', fontSize: '1.2rem', fontFamily: 'var(--font-display)' }}>{prevPost.title}</h4>
                </Link>
              )}
              <div className="flex-spacer" />
              {nextPost && (
-               <Link href={`/blog/${nextPost.slug}`} className="chron-card next" style={{ textAlign: 'right' }}>
-                 <span>PROSSIMO ARTICOLO</span>
-                 <h4>{nextPost.title}</h4>
+               <Link href={`/blog/${nextPost.slug}`} className="chron-card next" style={{ textAlign: 'right', maxWidth: '45%' }}>
+                 <span style={{ fontSize: '0.7rem', color: 'var(--gold-accent)', letterSpacing: '0.2em' }}>PROSSIMO ARTICOLO</span>
+                 <h4 style={{ color: 'white', marginTop: '10px', fontSize: '1.2rem', fontFamily: 'var(--font-display)' }}>{nextPost.title}</h4>
                </Link>
              )}
           </div>
@@ -120,24 +122,30 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
       {relatedPosts.length > 0 && (
         <section className="related-section">
-          <div className="article-container">
-            <h3 className="section-title">Articoli Correlati</h3>
-            <div className="related-grid">
+          <div className="article-container" style={{ maxWidth: '1200px' }}>
+            <h3 className="section-title">Letture Consigliate</h3>
+            <div className="related-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '30px' }}>
               {relatedPosts.map(rp => (
                 <Link key={rp.slug} href={`/blog/${rp.slug}`} className="related-card">
-                  <div className="related-img">
-                    <img src={rp.image_url || '/assets/hero-fallback.png'} alt={rp.title} />
+                  <div className="related-img" style={{ position: 'relative', width: '100%', aspectRatio: '16/9', overflow: 'hidden', marginBottom: '15px' }}>
+                    <Image 
+                      src={rp.image_url || '/assets/hero-fallback.png'} 
+                      alt={rp.title} 
+                      fill
+                      style={{ objectFit: 'cover' }}
+                    />
                   </div>
-                  <h4>{rp.title}</h4>
+                  <h4 style={{ color: '#fff', fontSize: '1.2rem' }}>{rp.title}</h4>
                 </Link>
               ))}
             </div>
           </div>
         </section>
       )}
-      <footer className="article-footer">
+      
+      <footer className="article-footer" style={{ padding: '80px 0', textAlign: 'center' }}>
         <div className="article-container">
-           <Link href="/blog" className="footer-back-btn">SCOPRI ALTRE NEWS</Link>
+           <Link href="/blog" className="footer-back-btn" style={{ border: '1px solid var(--gold-accent)', color: 'var(--gold-accent)', padding: '15px 40px', fontSize: '0.8rem', letterSpacing: '0.2em', textTransform: 'uppercase', transition: 'all 0.3s' }}>SCOPRI ALTRE INSIGHTS</Link>
         </div>
       </footer>
     </div>

@@ -1,10 +1,10 @@
-"use client";
-
-import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
+import React from 'react';
 
 interface BlogCardProps {
   post: {
+    id: number;
     title: string;
     slug: string;
     content: string;
@@ -20,7 +20,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
   // Extract a short excerpt (clean HTML tags if any)
   const excerpt = post.content
     .replace(/<[^>]*>/g, '') // Remove HTML tags
-    .substring(0, 180) + '...';
+    .substring(0, 160) + '...';
 
   const formattedDate = new Intl.DateTimeFormat('it-IT', {
     day: 'numeric',
@@ -32,18 +32,23 @@ const BlogCard: React.FC<BlogCardProps> = ({ post }) => {
     <div className={`blog-card-container ${post.category}`}>
       <Link href={`/blog/${post.slug}`} className="blog-card-link">
         <div className="blog-card-image">
-          <img src={post.image_url || '/assets/hero-fallback.png'} alt={post.title} />
+          <Image 
+            src={post.image_url || '/assets/hero-fallback.png'} 
+            alt={post.title}
+            fill
+            style={{ objectFit: 'cover' }}
+            sizes="(max-width: 768px) 100vw, 33vw"
+          />
         </div>
         <div className="blog-card-content">
           <span className={`blog-category-tag ${post.category}`}>
-            {isComunica ? 'GSA Comunica' : 'News'}
+            {isComunica ? 'GSA COMUNICA' : 'NEWS'}
           </span>
           <h2 className="blog-card-title">{post.title}</h2>
           <span className="blog-card-date">{formattedDate}</span>
           <p className="blog-card-excerpt">{excerpt}</p>
         </div>
       </Link>
-      
     </div>
   );
 };

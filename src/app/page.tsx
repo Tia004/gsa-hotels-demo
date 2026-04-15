@@ -9,6 +9,7 @@ import Lenis from 'lenis';
 import SplitType from 'split-type';
 import Link from 'next/link';
 import { SignInButton, SignUpButton, UserButton, useAuth } from '@clerk/nextjs';
+import Image from 'next/image';
 
 
 declare const particlesJS: any;
@@ -28,6 +29,9 @@ function SignedOut({ children }: { children: React.ReactNode }) {
 export default function Home() {
   const [activeVideo, setActiveVideo] = React.useState(0);
   const [activeVisionImage, setActiveVisionImage] = React.useState(0);
+  const [isVisionLightboxOpen, setIsVisionLightboxOpen] = React.useState(false);
+  const [scrubberHoverValue, setScrubberHoverValue] = React.useState<number | null>(null);
+  const [isScrubbing, setIsScrubbing] = React.useState(false);
 
   const videos = [
     {
@@ -74,66 +78,90 @@ export default function Home() {
     }
   ];
 
-  const visionImages = [
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.53.50.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.54.58.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.55.14.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.55.26.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.55.27.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.55.29.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.55.32.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.55.38.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.55.45.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.55.47.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.55.49.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.55.51.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.55.57.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.55.59.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.56.03.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.56.06.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.56.08.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.56.13.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.56.15.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.56.25.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.56.37.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.56.44.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.56.57.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.57.01.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.57.09.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.57.10.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.57.28.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.57.31.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.57.39.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.58.18.jpeg",
-    "assets/immagini-slider-autenticita/photo_2026-04-14 22.58.19.jpeg",
-    "assets/immagini-slider-autenticita/20260306_182332.jpg",
-    "assets/immagini-slider-autenticita/20260306_182338.jpg",
-    "assets/immagini-slider-autenticita/20260306_182345.jpg",
-    "assets/immagini-slider-autenticita/20260306_182437.jpg",
-    "assets/immagini-slider-autenticita/20260306_182539.jpg",
-    "assets/immagini-slider-autenticita/20260306_182559.jpg",
-    "assets/immagini-slider-autenticita/20260306_182616.jpg",
-    "assets/immagini-slider-autenticita/20260306_192406.jpg",
-    "assets/immagini-slider-autenticita/20260306_192552.jpg",
-    "assets/immagini-slider-autenticita/20260306_192911.jpg",
-    "assets/immagini-slider-autenticita/20260306_194922.jpg",
-    "assets/immagini-slider-autenticita/20260306_194934.jpg",
-    "assets/immagini-slider-autenticita/20260306_195222.jpg",
-    "assets/immagini-slider-autenticita/20260306_195306.jpg",
-    "assets/immagini-slider-autenticita/20260306_195418.jpg",
-    "assets/immagini-slider-autenticita/20260306_201121.jpg",
-    "assets/immagini-slider-autenticita/20260306_210327.jpg",
-    "assets/immagini-slider-autenticita/20260306_210332.jpg",
-    "assets/immagini-slider-autenticita/20260306_210339.jpg",
-    "assets/immagini-slider-autenticita/20260306_210419.jpg",
-    "assets/immagini-slider-autenticita/20260306_210451.jpg",
-    "assets/immagini-slider-autenticita/20260306_210559.jpg",
-    "assets/immagini-slider-autenticita/20260306_210601.jpg",
-    "assets/immagini-slider-autenticita/20260306_214152.jpg",
-    "assets/immagini-slider-autenticita/20260306_214210.jpg",
-    "assets/immagini-slider-autenticita/20260306_214214.jpg",
-    "assets/immagini-slider-autenticita/ea14f405-de3d-43c2-b0b6-8db20bdf1376.JPG"
+  const [visionImages, setVisionImages] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    fetch('/api/vision-images')
+      .then(res => res.json())
+      .then(data => setVisionImages(data))
+      .catch(err => console.error('Error fetching vision images:', err));
+  }, []);
+
+  const academyImages = [
+    "assets/formazione/1.jpg",
+    "assets/formazione/2.jpg",
+    "assets/formazione/3.jpg",
+    "assets/formazione/4.jpg",
+    "assets/formazione/5.jpg",
+    "assets/formazione/6.png",
+    "assets/formazione/7.jpeg",
+    "assets/formazione/8.jpeg"
   ];
+
+  const [activeAcademyImage, setActiveAcademyImage] = React.useState(0);
+
+  const nextAcademyImage = () => {
+    setActiveAcademyImage((prev) => (prev + 1) % academyImages.length);
+  };
+
+  const prevAcademyImage = () => {
+    setActiveAcademyImage((prev) => (prev - 1 + academyImages.length) % academyImages.length);
+  };
+
+  /* EXPERIENCES DATA */
+  const bolognaExperiences = [
+    {
+      title: "Bologna: Centro Storico",
+      desc: "Torri, piazze e i sapori autentici della tradizione bolognese.",
+      img: "https://images.unsplash.com/photo-1516483642775-9a3ac20c54ea?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+      title: "Bologna: San Luca",
+      desc: "Una camminata panoramica sotto il portico più lungo del mondo.",
+      img: "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+      title: "Bologna: Alternativa",
+      desc: "Arte contemporanea e angoli nascosti fuori dai circuiti classici.",
+      img: "https://images.unsplash.com/photo-1520175480921-4edfa0683a2f?q=80&w=800&auto=format&fit=crop"
+    }
+  ];
+
+  const ferraraExperiences = [
+    {
+      title: "Ferrara: Icone Estensi",
+      desc: "Un viaggio tra i simboli del Rinascimento ferrarese.",
+      img: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+      title: "Ferrara: Schifanoia",
+      desc: "Il Salone dei Mesi e l'astrologia rinascimentale.",
+      img: "https://images.unsplash.com/photo-1548574906-7d46c503c457?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+      title: "Ferrara: Ombre e Luci",
+      desc: "Atmosfere magiche tra i vicoli del ghetto e le mura.",
+      img: "https://images.unsplash.com/photo-1525874684015-58379d421a52?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+      title: "Ferrara: Comacchio",
+      desc: "55km di natura incontaminata e silenzi d'acqua.",
+      img: "https://images.unsplash.com/photo-1552528148-03820ac188f5?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+      title: "Ferrara: Food Tour",
+      desc: "Degustazione itinerante dei tesori gastronomici locali.",
+      img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=800&auto=format&fit=crop"
+    },
+    {
+      title: "Ferrara: Bike Tour",
+      desc: "La città delle biciclette vista da una prospettiva unica.",
+      img: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=800&auto=format&fit=crop"
+    }
+  ];
+
+  const [activeBologna, setActiveBologna] = React.useState(0);
+  const [activeFerrara, setActiveFerrara] = React.useState(0);
 
   const [formData, setFormData] = React.useState({
     nome: '',
@@ -179,8 +207,23 @@ export default function Home() {
   const nextVideo = () => setActiveVideo((prev) => (prev + 1) % videos.length);
   const prevVideo = () => setActiveVideo((prev) => (prev - 1 + videos.length) % videos.length);
 
-  const nextVisionImage = () => setActiveVisionImage((prev) => (prev + 1) % visionImages.length);
-  const prevVisionImage = () => setActiveVisionImage((prev) => (prev - 1 + visionImages.length) % visionImages.length);
+  const nextVisionImage = () => {
+    if (visionImages.length === 0) return;
+    setActiveVisionImage((prev) => (prev + 1) % visionImages.length);
+  };
+  const prevVisionImage = () => {
+    if (visionImages.length === 0) return;
+    setActiveVisionImage((prev) => (prev - 1 + visionImages.length) % visionImages.length);
+  };
+
+  // Close lightbox on Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsVisionLightboxOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     // Register GSAP
@@ -744,40 +787,83 @@ export default function Home() {
         el.addEventListener('mouseleave', () => document.body.classList.remove('hover-active'));
       });
     }
-    const trigger = document.querySelector('.mobile-toggle'); // L'icona hamburger nella navbar
-    const overlay = document.getElementById('mobile-menu-overlay');
-    const closeBtn = document.querySelector('.mobile-close-btn');
-    const mobileLinks = document.querySelectorAll('.mobile-link, .btn-mobile-gold');
+    // --- LIQUID GLASS MENU LOGIC ---
+    const overlay = document.getElementById('liquid-glass-menu');
+    const trigger = document.getElementById('menu-trigger'); // Main floating trigger (McButton)
+    const closeTrigger = document.getElementById('menu-close-trigger'); // Close button inside overlay
+    const glassLinks = document.querySelectorAll('.glass-link');
+    const previewImg = document.getElementById('glass-preview-img') as HTMLImageElement;
+    const desktopTrigger = document.querySelector('.desktop-menu-trigger');
 
-    // Funzione per aprire
-    function openMenu() {
-      if (overlay) overlay.classList.add('active');
-      if (trigger) trigger.classList.add('active');
-      document.body.style.overflow = 'hidden';
+    // Simple Open/Close with Body Scroll Lock + GSAP Choreography
+    const toggleMenu = (open: boolean) => {
+      if (overlay) {
+        if (open) {
+          overlay.classList.add('active');
+          document.body.style.overflow = 'hidden';
+
+          // GSAP Reveal for Links (Editorial Entrance)
+          gsap.fromTo('.glass-link',
+            { y: 50, opacity: 0 },
+            { y: 0, opacity: 0.4, duration: 0.8, stagger: 0.1, ease: 'power4.out', delay: 0.3 }
+          );
+        } else {
+          overlay.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      }
+
+      // Update all McButtons state for morphing animation (Hamburger -> X)
+      document.querySelectorAll('.McButton').forEach(btn => {
+        if (open) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+    };
+
+    // Event Listeners
+    if (trigger) {
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isActive = overlay?.classList.contains('active');
+        toggleMenu(!isActive);
+      });
     }
 
-    // Funzione per chiudere
-    function closeMenu() {
-      if (overlay) overlay.classList.remove('active');
-      if (trigger) trigger.classList.remove('active');
-      document.body.style.overflow = '';
+    if (desktopTrigger) {
+      desktopTrigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleMenu(true);
+      });
     }
 
-    if (trigger && overlay) {
-      // Toggle Logic
-      trigger.addEventListener('click', () => {
-        if (overlay.classList.contains('active')) closeMenu();
-        else openMenu();
+    if (closeTrigger) {
+      closeTrigger.addEventListener('click', () => toggleMenu(false));
+    }
+
+    // Dynamic Hover Preview System
+    glassLinks.forEach(link => {
+      link.addEventListener('mouseenter', () => {
+        const parent = link.closest('li');
+        const nextImg = parent?.getAttribute('data-img');
+
+        if (nextImg && previewImg) {
+          // Subtle Cross-fade for the high-end preview
+          gsap.to(previewImg, {
+            opacity: 0.2, // Quick dim before change
+            duration: 0.2,
+            onComplete: () => {
+              previewImg.src = nextImg;
+              gsap.to(previewImg, { opacity: 1, duration: 0.6, ease: 'power2.inOut' });
+              // Also add a slight scale effect for depth
+              gsap.fromTo(previewImg, { scale: 1.05 }, { scale: 1, duration: 1.5, ease: 'power2.out' });
+            }
+          });
+        }
       });
 
-      // Click su X (Chiudi)
-      if (closeBtn) closeBtn.addEventListener('click', closeMenu);
-
-      // Click su un link (Chiudi e vai alla sezione)
-      mobileLinks.forEach(link => {
-        link.addEventListener('click', closeMenu);
-      });
-    }
+      // Close menu upon navigation
+      link.addEventListener('click', () => toggleMenu(false));
+    });
 
     // SPOTLIGHT LOGO REVEAL (Apple Style)
     ScrollTrigger.create({
@@ -1154,11 +1240,11 @@ export default function Home() {
           <div id="shuffling-text" className="shuffle-word">VISIONE</div>
           {/* Layer 1: GOLD (Visible initially) */}
           <div id="logo-gold" className="gsa-huge-logo gsa-logo-layer gold">
-            <img src="assets/logo.png" alt="GSA Hotels" />
+            <Image src="/assets/logo.png" alt="GSA Hotels" width={800} height={300} priority />
           </div>
           {/* Layer 2: HOLE (Visible during zoom to cut the mask) */}
           <div id="logo-hole" className="gsa-huge-logo gsa-logo-layer hole">
-            <img src="assets/logo.png" alt="GSA Hotels" />
+            <Image src="/assets/logo.png" alt="GSA Hotels" width={800} height={300} priority />
           </div>
         </div>
       </div>
@@ -1179,34 +1265,54 @@ export default function Home() {
         <b />
         <b />
       </a>
-      {/* MOBILE MENU OVERLAY (The Black Curtain) */}
-      {/* MOBILE MENU OVERLAY (The Black Curtain) */}
-      <div id="mobile-menu-overlay" className="mobile-overlay">
-        <div className="mobile-menu-header">
-          <a href="/" onClick={() => window.location.reload()}><img src="assets/logo.png" alt="GSA Logo" className="mobile-logo" /></a>
-          <div className="mobile-close-btn">
-            <i className="fas fa-times" />
+      {/* LIQUID GLASS MENU OVERLAY (Editorial Full-Screen) */}
+      <div id="liquid-glass-menu" className="glass-menu-overlay">
+        <div className="glass-menu-header">
+          <Link href="/" className="glass-logo"><Image src="/assets/logo.png" alt="GSA Logo" width={120} height={40} /></Link>
+          <div className="glass-close-btn mobile-close-btn">
+            <div className="McButton active" id="menu-close-trigger">
+              <b /><b /><b />
+            </div>
           </div>
         </div>
-        <nav className="mobile-nav-content">
-          <ul className="mobile-links-list">
-            <li style={{ '--delay': '0.1s' } as React.CSSProperties}><a href="#services" className="mobile-link">ACADEMY</a></li>
-            <li style={{ '--delay': '0.15s' } as React.CSSProperties}><a href="#besafe" className="mobile-link">BESAFE</a></li>
-            <li style={{ '--delay': '0.2s' } as React.CSSProperties}><a href="#experiences" className="mobile-link">ESPERIENZE</a></li>
-            <li style={{ '--delay': '0.25s' } as React.CSSProperties}><a href="#fleet-section" className="mobile-link">I NOSTRI PARTNER</a></li>
-            <li style={{ '--delay': '0.3s' } as React.CSSProperties}><a href="#founder" className="mobile-link">STRATEGIA</a></li>
-            <li style={{ '--delay': '0.35s' } as React.CSSProperties}><a href="#career" className="mobile-link">CARRIERE</a></li>
-            <li style={{ '--delay': '0.4s' } as React.CSSProperties}><a href="#philosophy" className="mobile-link">VISION</a></li>
-          </ul>
-          <div className="mobile-cta-wrapper" style={{ '--delay': '0.5s' } as React.CSSProperties}>
-            <a href="#contact" className="btn-mobile-gold">DIVENTA PARTNER</a>
+
+        <div className="glass-menu-content">
+          {/* LEFT: Navigation Links */}
+          <nav className="glass-nav-col">
+            <ul className="editorial-links">
+              <li data-img="assets/academy_white_glove.png"><a href="#services" className="glass-link">ACADEMY</a></li>
+              <li data-img="assets/BeSafe.png"><a href="#besafe" className="glass-link">BESAFE</a></li>
+              <li data-img="assets/duchessa_isabella.png"><a href="#experiences" className="glass-link">ESPERIENZE</a></li>
+              <li data-img="assets/BeSafe.png"><a href="#fleet-section" className="glass-link">PARTNER</a></li>
+              <li data-img="assets/duchessa_isabella.png"><a href="#founder" className="glass-link">STRATEGIA</a></li>
+              <li data-img="assets/wellness.png"><a href="#career" className="glass-link">CARRIERE</a></li>
+              <li data-img="assets/duchessa_isabella.png"><a href="#philosophy" className="glass-link">VISION</a></li>
+            </ul>
+          </nav>
+
+          {/* RIGHT: Luxury Preview Image */}
+          <div className="glass-preview-col">
+            <div className="preview-image-container">
+              <Image 
+                src="/assets/duchessa_isabella.png" 
+                alt="Preview" 
+                id="glass-preview-img" 
+                fill
+                style={{ objectFit: 'cover' }}
+                sizes="(max-width: 768px) 100vw, 33vw"
+              />
+              <div className="preview-overlay" />
+            </div>
           </div>
-        </nav>
-        <div className="mobile-menu-footer">
-          <a href="mailto:info@gsahotels.com">info@gsahotels.com</a>
-          <div className="mobile-socials">
-            <a href="#" target="_blank"><i className="fab fa-linkedin" /></a>
-            <a href="https://www.instagram.com/gsahotels/" target="_blank"><i className="fab fa-instagram" /></a>
+        </div>
+
+        <div className="glass-menu-footer">
+          <div className="footer-links">
+            <a href="mailto:info@gsahotels.com">info@gsahotels.com</a>
+            <div className="glass-socials">
+              <a href="#"><i className="fab fa-linkedin" /></a>
+              <a href="https://www.instagram.com/gsahotels/"><i className="fab fa-instagram" /></a>
+            </div>
           </div>
         </div>
       </div>
@@ -1239,16 +1345,25 @@ export default function Home() {
         </div>
         {/* Spotlight Logo (Content) */}
         <a href="/" className="nav-logo spotlight-mode">
-          <img src="assets/logo.png" alt="GSA" />
+          <Image src="/assets/logo.png" alt="GSA" width={100} height={35} />
         </a>
         <nav className="nav-capsule navbar nav-menu">
-          {/* Logo moved out */}
+          {/* MODO MINIMALISTA - SOLO LOGO E MENU PER ELIMINARE CLUTTER */}
+          <div className="desktop-menu-trigger">
+            <div className="hamburger-icon">
+              <span />
+              <span />
+              <span />
+            </div>
+            <span>MENU</span>
+          </div>
+
           <div className="nav-links">
             <a href="#services" className="nav-link" data-text="ACADEMY"><span>ACADEMY</span></a>
             <a href="#besafe" className="nav-link" data-text="BESAFE"><span>BESAFE</span></a>
             <a href="#experiences" className="nav-link" data-text="ESPERIENZE"><span>ESPERIENZE</span></a>
-            <a href="#fleet-section" className="nav-link" data-text="PARTNER"><span>PARTNER</span></a>
             <a href="#founder" className="nav-link" data-text="STRATEGIA"><span>STRATEGIA</span></a>
+            <a href="#fleet-section" className="nav-link" data-text="PARTNER"><span>PARTNER</span></a>
             <a href="#career" className="nav-link" data-text="CARRIERE"><span>CARRIERE</span></a>
             <a href="#philosophy" className="nav-link" data-text="VISION"><span>VISION</span></a>
             <Link href="/blog" className="nav-link" data-text="BLOG"><span>BLOG</span></Link>
@@ -1260,12 +1375,16 @@ export default function Home() {
       {/* AUTH BUTTONS - Floating a destra, fuori dalla navbar capsule */}
       <div className="nav-auth-floating">
         <SignedOut>
-          <Link href="/login" className="auth-btn auth-btn-gold">Accedi</Link>
+          <Link href="/login" className="auth-icon-btn" title="Accedi">
+            <i className="far fa-user" />
+          </Link>
         </SignedOut>
         <SignedIn>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             <UserButton />
-            <Link href="/dashboard" className="auth-btn auth-btn-gold">Entra</Link>
+            <Link href="/dashboard" className="auth-icon-btn" title="Dashboard">
+              <i className="fas fa-columns" />
+            </Link>
           </div>
         </SignedIn>
       </div>
@@ -1279,7 +1398,7 @@ export default function Home() {
           <div className="jesko-ui-layer">
             {/* TOP LEFT: Logo */}
             <div className="j-logo-container">
-              <a href="/" onClick={() => window.location.reload()}><img src="assets/logo.png" alt="GSA Logo" className="j-logo" style={{ transform: 'scale(1.1)', transformOrigin: 'left center' }} fetchPriority="high" /></a>
+              <Link href="/" onClick={() => window.location.reload()}><Image src="/assets/logo.png" alt="GSA Logo" className="j-logo" style={{ transform: 'scale(1.1)', transformOrigin: 'left center' }} width={140} height={50} priority /></Link>
             </div>
             {/* CENTER LEFT: Headline */}
             <div className="j-headline-container">
@@ -1299,6 +1418,7 @@ export default function Home() {
             <div className="j-cta-container">
               <div className="j-scroll-in">
                 <span>SCOPRI I VANTAGGI</span>
+                <i className="fas fa-chevron-down j-arrow-down" />
                 <div className="j-line" />
               </div>
             </div>
@@ -1315,23 +1435,40 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Video Section: Corporate Vision */}
-        <section className="video-highlight-section" style={{ padding: '80px 0', background: '#050505' }}>
-          <div className="container">
-            <div className="video-wrapper reveal" style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden', borderRadius: '20px', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
-              <iframe
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
-                src="https://www.youtube.com/embed/MFyef0yMQsY?autoplay=1&mute=1&loop=1&playlist=MFyef0yMQsY&controls=0&showinfo=0&rel=0"
-                title="GSA Hotels Corporate Video"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-            <div className="video-description reveal" style={{ marginTop: '40px', textAlign: 'center', maxWidth: '800px', margin: '40px auto 0' }}>
-              <h3 style={{ fontFamily: 'var(--font-heading)', color: 'var(--gold)', fontSize: '1.8rem', marginBottom: '20px' }}>L'Eccellenza nell'Asset Management</h3>
-              <p style={{ color: 'rgba(255,255,255,0.7)', lineHeight: '1.8', fontSize: '1.1rem' }}>
+        {/* Refined Corporate Spotlight Area */}
+        <section className="corporate-spotlight-section">
+          <div className="container spotlight-container">
+            <div className="spotlight-content reveal">
+              <span className="label-gold">CORPORATE VISION</span>
+              <h2 className="vision-headline">L'Eccellenza nell'Asset Management</h2>
+              <div className="vision-divider" />
+              <p className="vision-body">
                 GSA Hotels non si limita alla gestione: noi eleviamo il potenziale di ogni struttura attraverso un'ingegneria dei processi impeccabile e una visione lungimirante che garantisce rendimenti superiori e un prestigio senza tempo.
               </p>
+              <div className="vision-footnote">
+                Un approccio sartoriale per patrimoni immobiliari d'eccezione.
+              </div>
+            </div>
+
+            <div className="spotlight-visual reveal">
+              <div className="video-preview-wrapper-luxury">
+                <a href="https://www.youtube.com/watch?v=MFyef0yMQsY" target="_blank" rel="noopener noreferrer" className="video-preview-card">
+                  <div className="video-overlay" />
+                  <Image 
+                    src="https://img.youtube.com/vi/MFyef0yMQsY/maxresdefault.jpg" 
+                    alt="GSA Corporate Video" 
+                    fill
+                    className="video-thumbnail" 
+                    style={{ objectFit: 'cover' }}
+                  />
+                  <div className="play-btn-luxury">
+                    <i className="fas fa-play" />
+                  </div>
+                  <div className="video-card-badge">
+                    WATCH FILM
+                  </div>
+                </a>
+              </div>
             </div>
           </div>
         </section>
@@ -1370,9 +1507,39 @@ export default function Home() {
               </a>
             </div>
             <div className="academy-visual reveal">
-              <div className="academy-image-wrapper">
-                <img src="assets/academy_white_glove.png" alt="GSA Certified Service" />
+              <div className="academy-slider-wrapper">
+                <div className="academy-image-wrapper">
+                  <Image 
+                    src={`/${academyImages[activeAcademyImage]}`} 
+                    alt="GSA Academy Highlight" 
+                    key={activeAcademyImage} 
+                    fill
+                    className="academy-slide-img"
+                    style={{ objectFit: 'cover' }}
+                    sizes="(max-width: 768px) 100vw, 80vw"
+                  />
+
+                  {/* Internal Arrows */}
+                  <button onClick={prevAcademyImage} className="academy-arrow prev" aria-label="Precedente">
+                    <i className="fas fa-chevron-left" />
+                  </button>
+                  <button onClick={nextAcademyImage} className="academy-arrow next" aria-label="Successiva">
+                    <i className="fas fa-chevron-right" />
+                  </button>
+                </div>
+
+                {/* Dots Pagination */}
+                <div className="academy-slider-dots">
+                  {academyImages.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`academy-dot ${index === activeAcademyImage ? 'active' : ''}`}
+                      onClick={() => setActiveAcademyImage(index)}
+                    />
+                  ))}
+                </div>
               </div>
+
               <div className="academy-badge">
                 <svg viewBox="0 0 200 200" className="rotating-text">
                   <defs>
@@ -1384,12 +1551,12 @@ export default function Home() {
                     </textPath>
                   </text>
                 </svg>
-                <div className="badge-center"><img src="assets/logo.png" alt="GSA Logo" /></div>
+                <div className="badge-center"><Image src="/assets/logo.png" alt="GSA Logo" width={80} height={30} /></div>
               </div>
             </div>
           </div>
         </section>
-         {/* 3. BESAFE RATE SECTION */}
+        {/* 3. BESAFE RATE SECTION */}
         <section id="besafe" className="besafe-section">
           <div className="bg-besafe-aurora">
             <div className="orb orb-1" />
@@ -1399,7 +1566,13 @@ export default function Home() {
             <div className="besafe-text-col">
               <span className="label-gold">PREMIUM PROTECTION</span>
               <div className="besafe-header-flex" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '10px' }}>
-                <img src="assets/besafe-logo.png" alt="BeSafe Rate" style={{ height: '40px', width: 'auto' }} />
+                <Image 
+                  src="/assets/BeSafe.png" 
+                  alt="BeSafe Rate" 
+                  width={150} 
+                  height={45} 
+                  style={{ height: '45px', width: 'auto', filter: 'brightness(1.2)' }} 
+                />
                 <h2 className="besafe-title" style={{ margin: 0 }}>BeSafe Rate</h2>
               </div>
               <h3 className="besafe-subtitle">Il lusso della serenità.</h3>
@@ -1448,110 +1621,110 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 4. ESPERIENZE MEMORABILI (NEW) */}
-        <section id="experiences" className="experiences-section" style={{ padding: '120px 0', background: '#0a0a0a' }}>
+        {/* 4. ESPERIENZE MEMORABILI: TERRITORIAL DUAL SHOWCASE */}
+        <section id="experiences" className="experiences-section">
           <div className="container">
-            <div className="section-header reveal" style={{ marginBottom: '60px', textAlign: 'center' }}>
-              <span className="label-gold">MOMENTI ESCLUSIVI</span>
-              <h2 className="academy-title" style={{ marginTop: '10px' }}>Esperienze Memorabili</h2>
+            <div className="section-header reveal" style={{ textAlign: 'center', marginBottom: '80px' }}>
+              <span className="label-gold">TERRITORI D'AUTORE</span>
+              <h2 className="vision-headline">Esperienze Memorabili</h2>
+              <div className="vision-divider" style={{ margin: '20px auto' }} />
+              <p className="vision-body" style={{ maxWidth: '800px', margin: '0 auto' }}>
+                Dalle torri medievali di Bologna al fascino rinascimentale di Ferrara. 
+                Abbiamo selezionato percorsi esclusivi per farvi vivere l'anima più autentica dei nostri territori.
+              </p>
             </div>
-            <div className="experience-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
-              <div className="experience-card reveal" style={{ position: 'relative', overflow: 'hidden', borderRadius: '15px', height: '450px' }}>
-                <img src="https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=800&auto=format&fit=crop" alt="Culinary Art" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                <div className="exp-overlay" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '30px' }}>
-                  <h3 style={{ color: 'var(--gold)', marginBottom: '10px' }}>Alta Cucina</h3>
-                  <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}>Percorsi enogastronomici curati dai migliori chef per riscoprire i sapori del territorio.</p>
+
+            <div className="experience-dual-columns">
+              {/* BOLOGNA SLIDER */}
+              <div className="experience-col reveal">
+                <div className="exp-city-label">BOLOGNA</div>
+                <div className="exp-slider-luxury">
+                  <div className="exp-image-wrapper">
+                    <Image 
+                      src={`/${bolognaExperiences[activeBologna].img}`} 
+                      alt={bolognaExperiences[activeBologna].title} 
+                      key={`bo-${activeBologna}`} 
+                      fill
+                      className="exp-slide-img"
+                      style={{ objectFit: 'cover' }}
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                    <div className="exp-overlay-luxury">
+                      <div className="exp-content-box">
+                        <span className="exp-count">0{activeBologna + 1} / 03</span>
+                        <h3>{bolognaExperiences[activeBologna].title}</h3>
+                        <p>{bolognaExperiences[activeBologna].desc}</p>
+                        <a href="/esperienze" className="exp-link-btn">SCOPRI DI PIÙ <i className="fas fa-arrow-right" /></a>
+                      </div>
+                    </div>
+                    
+                    {/* Internal Controls */}
+                    <div className="exp-controls-internal">
+                      <button onClick={() => setActiveBologna((prev) => (prev - 1 + bolognaExperiences.length) % bolognaExperiences.length)} className="exp-arrow-btn">
+                        <i className="fas fa-chevron-left" />
+                      </button>
+                      <button onClick={() => setActiveBologna((prev) => (prev + 1) % bolognaExperiences.length)} className="exp-arrow-btn">
+                        <i className="fas fa-chevron-right" />
+                      </button>
+                    </div>
+                  </div>
+                  {/* Dots */}
+                  <div className="exp-dots-pagination">
+                    {bolognaExperiences.map((_, i) => (
+                      <div key={i} className={`exp-dot ${i === activeBologna ? 'active' : ''}`} onClick={() => setActiveBologna(i)} />
+                    ))}
+                  </div>
                 </div>
               </div>
-              <div className="experience-card reveal" style={{ position: 'relative', overflow: 'hidden', borderRadius: '15px', height: '450px' }}>
-                <img src="https://images.unsplash.com/photo-1540555700478-4be289aef09a?q=80&w=800&auto=format&fit=crop" alt="Wellness" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                <div className="exp-overlay" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '30px' }}>
-                  <h3 style={{ color: 'var(--gold)', marginBottom: '10px' }}>Oasi di Benessere</h3>
-                  <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}>SPA di lusso e trattamenti esclusivi per una rigenerazione totale dei sensi.</p>
-                </div>
-              </div>
-              <div className="experience-card reveal" style={{ position: 'relative', overflow: 'hidden', borderRadius: '15px', height: '450px' }}>
-                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=800&auto=format&fit=crop" alt="Views" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                <div className="exp-overlay" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '30px' }}>
-                  <h3 style={{ color: 'var(--gold)', marginBottom: '10px' }}>Soggiorni Iconici</h3>
-                  <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.7)' }}>Suite con viste mozzafiato e arredi d'epoca, dove la storia incontra il lusso moderno.</p>
+
+              {/* FERRARA SLIDER */}
+              <div className="experience-col reveal">
+                <div className="exp-city-label">FERRARA</div>
+                <div className="exp-slider-luxury">
+                  <div className="exp-image-wrapper">
+                    <Image 
+                      src={`/${ferraraExperiences[activeFerrara].img}`} 
+                      alt={ferraraExperiences[activeFerrara].title} 
+                      key={`fe-${activeFerrara}`} 
+                      fill
+                      className="exp-slide-img"
+                      style={{ objectFit: 'cover' }}
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                    <div className="exp-overlay-luxury">
+                      <div className="exp-content-box">
+                        <span className="exp-count">0{activeFerrara + 1} / 06</span>
+                        <h3>{ferraraExperiences[activeFerrara].title}</h3>
+                        <p>{ferraraExperiences[activeFerrara].desc}</p>
+                        <a href="/esperienze" className="exp-link-btn">SCOPRI DI PIÙ <i className="fas fa-arrow-right" /></a>
+                      </div>
+                    </div>
+                    
+                    {/* Internal Controls */}
+                    <div className="exp-controls-internal">
+                      <button onClick={() => setActiveFerrara((prev) => (prev - 1 + ferraraExperiences.length) % ferraraExperiences.length)} className="exp-arrow-btn">
+                        <i className="fas fa-chevron-left" />
+                      </button>
+                      <button onClick={() => setActiveFerrara((prev) => (prev + 1) % ferraraExperiences.length)} className="exp-arrow-btn">
+                        <i className="fas fa-chevron-right" />
+                      </button>
+                    </div>
+                  </div>
+                  {/* Dots */}
+                  <div className="exp-dots-pagination">
+                    {ferraraExperiences.map((_, i) => (
+                      <div key={i} className={`exp-dot ${i === activeFerrara ? 'active' : ''}`} onClick={() => setActiveFerrara(i)} />
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* 5. I NOSTRI PARTNER (HOTEL SECTION) */}
-        <section id="fleet-section" style={{ padding: '80px 0 0', background: '#080808' }}>
-          <div className="container" style={{ marginBottom: '60px', textAlign: 'center' }}>
-            <span className="label-gold">STRUTTURE D'ECCELLENZA</span>
-            <h2 className="academy-title" style={{ marginTop: '10px' }}>I nostri partners</h2>
-            <p style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '600px', margin: '15px auto 0', fontSize: '1.1rem' }}>
-              Modelli di ospitalità autentica coordinati dalla nostra visione strategica.
-            </p>
-          </div>
-          <div id="fleet">
-            {/* Duchessa Isabella */}
-            <section className="hotel-section">
-              <div className="hotel-bg-wrapper">
-                <img src="assets/duchessa_isabella.png" alt="Hotel Duchessa Isabella" className="hotel-bg" data-speed="0.3" loading="lazy" />
-              </div>
-              <div className="hotel-overlay" />
-              <div className="hotel-content">
-                <span className="hotel-location">Ferrara</span>
-                <h2 className="hotel-name">Hotel Duchessa Isabella</h2>
-                <a href="https://duchessaisabella.com" target="_blank" className="btn-explore">Esplora Dimora</a>
-              </div>
-            </section>
-            {/* Hotel Blumen */}
-            <section className="hotel-section">
-              <div className="hotel-bg-wrapper">
-                <img src="assets/hotel_blumen.jpg" alt="Hotel Blumen" className="hotel-bg" data-speed="0.3" loading="lazy" />
-              </div>
-              <div className="hotel-overlay" />
-              <div className="hotel-content">
-                <span className="hotel-location">Bologna</span>
-                <h2 className="hotel-name">Hotel Blumen</h2>
-                <a href="https://hotelblumen.it" target="_blank" className="btn-explore">Esplora Dimora</a>
-              </div>
-            </section>
-            {/* Hotel Sant'Orsola */}
-            <section className="hotel-section">
-              <div className="hotel-bg-wrapper">
-                <img src="assets/santorsola.png" alt="Hotel Sant'Orsola" className="hotel-bg" data-speed="0.3" loading="lazy" />
-              </div>
-              <div className="hotel-overlay" />
-              <div className="hotel-content">
-                <span className="hotel-location">Bologna</span>
-                <h2 className="hotel-name">Hotel Sant'Orsola</h2>
-                <a href="https://hotelsantorsola.it" target="_blank" className="btn-explore">Esplora Dimora</a>
-              </div>
-            </section>
-            {/* Oasi Isabella Wellness SPA */}
-            <section className="hotel-section">
-              <div className="hotel-bg-wrapper">
-                <img src="https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=1600&auto=format&fit=crop" alt="Oasi Isabella Wellness SPA" className="hotel-bg" data-speed="0.3" loading="lazy" />
-              </div>
-              <div className="hotel-overlay" />
-              <div className="hotel-content">
-                <span className="hotel-location">Ferrara</span>
-                <h2 className="hotel-name">Oasi Isabella Wellness SPA</h2>
-                <a href="https://www.duchessaisabella.com/wellness/" target="_blank" className="btn-explore">Vivi il Benessere</a>
-              </div>
-            </section>
-
-            {/* Duchessa Isabella Eventi */}
-            <section className="hotel-section">
-              <div className="hotel-bg-wrapper">
-                <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1600&auto=format&fit=crop" alt="Duchessa Isabella Eventi" className="hotel-bg" data-speed="0.3" loading="lazy" />
-              </div>
-              <div className="hotel-overlay" />
-              <div className="hotel-content">
-                <span className="hotel-location">Ferrara</span>
-                <h2 className="hotel-name">Duchessa Isabella Eventi</h2>
-                <a href="https://www.duchessaisabella.com/meeting-eventi/" target="_blank" className="btn-explore">Celebra la Storia</a>
-              </div>
-            </section>
+            <div className="experience-footer reveal" style={{ textAlign: 'center', marginTop: '60px' }}>
+              <a href="/esperienze" className="btn-jesko">
+                <i className="fas fa-map-marked-alt" /> ESPLORA TUTTE LE ESPERIENZE
+              </a>
+            </div>
           </div>
         </section>
 
@@ -1583,7 +1756,13 @@ export default function Home() {
                 <div className="slider-video-container">
                   <a href={videos[activeVideo].url} target="_blank" className="video-preview-card">
                     <div className="video-overlay" />
-                    <img src={`https://img.youtube.com/vi/${videos[activeVideo].id}/maxresdefault.jpg`} alt={videos[activeVideo].title} className="video-thumbnail" />
+                    <Image 
+                      src={`https://img.youtube.com/vi/${videos[activeVideo].id}/maxresdefault.jpg`} 
+                      alt={videos[activeVideo].title} 
+                      fill
+                      className="video-thumbnail"
+                      style={{ objectFit: 'cover' }}
+                    />
                     <div className="podcast-badge">
                       <span>{videos[activeVideo].badge}</span>
                       <strong>{videos[activeVideo].title}</strong>
@@ -1622,6 +1801,120 @@ export default function Home() {
           </div>
         </section>
 
+        {/* 5. I NOSTRI PARTNER (HOTEL SECTION) */}
+        <section id="fleet-section" style={{ padding: '80px 0 0', background: '#080808' }}>
+          <div className="container" style={{ marginBottom: '60px', textAlign: 'center' }}>
+            <span className="label-gold">STRUTTURE D'ECCELLENZA</span>
+            <h2 className="academy-title" style={{ marginTop: '10px' }}>I nostri partners</h2>
+            <p style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '600px', margin: '15px auto 0', fontSize: '1.1rem' }}>
+              Modelli di ospitalità autentica coordinati dalla nostra visione strategica.
+            </p>
+          </div>
+          <div id="fleet">
+            {/* Duchessa Isabella */}
+            <section className="hotel-section">
+              <div className="hotel-bg-wrapper">
+                <Image 
+                  src="/assets/duchessa_isabella.png" 
+                  alt="Hotel Duchessa Isabella" 
+                  fill 
+                  className="hotel-bg" 
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  loading="lazy" 
+                />
+              </div>
+              <div className="hotel-overlay" />
+              <div className="hotel-content">
+                <span className="hotel-location">Ferrara</span>
+                <h2 className="hotel-name">Hotel Duchessa Isabella</h2>
+                <a href="https://duchessaisabella.com" target="_blank" className="btn-explore">Esplora Dimora</a>
+              </div>
+            </section>
+            {/* Hotel Blumen */}
+            <section className="hotel-section">
+              <div className="hotel-bg-wrapper">
+                <Image 
+                  src="/assets/hotel_blumen.jpg" 
+                  alt="Hotel Blumen" 
+                  fill 
+                  className="hotel-bg" 
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  loading="lazy" 
+                />
+              </div>
+              <div className="hotel-overlay" />
+              <div className="hotel-content">
+                <span className="hotel-location">Bologna</span>
+                <h2 className="hotel-name">Hotel Blumen</h2>
+                <a href="https://hotelblumen.it" target="_blank" className="btn-explore">Esplora Dimora</a>
+              </div>
+            </section>
+            {/* Hotel Sant'Orsola */}
+            <section className="hotel-section">
+              <div className="hotel-bg-wrapper">
+                <Image 
+                  src="/assets/santorsola.png" 
+                  alt="Hotel Sant'Orsola" 
+                  fill 
+                  className="hotel-bg" 
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  loading="lazy" 
+                />
+              </div>
+              <div className="hotel-overlay" />
+              <div className="hotel-content">
+                <span className="hotel-location">Bologna</span>
+                <h2 className="hotel-name">Hotel Sant'Orsola</h2>
+                <a href="https://hotelsantorsola.it" target="_blank" className="btn-explore">Esplora Dimora</a>
+              </div>
+            </section>
+            {/* Oasi Isabella Wellness SPA */}
+            <section className="hotel-section">
+              <div className="hotel-bg-wrapper">
+                <Image 
+                  src="/assets/wellness.png" 
+                  alt="Oasi Isabella Wellness SPA" 
+                  fill 
+                  className="hotel-bg" 
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  loading="lazy" 
+                />
+              </div>
+              <div className="hotel-overlay" />
+              <div className="hotel-content">
+                <span className="hotel-location">Ferrara</span>
+                <h2 className="hotel-name">Oasi Isabella Wellness SPA</h2>
+                <a href="https://www.duchessaisabella.com/wellness/" target="_blank" className="btn-explore">Vivi il Benessere</a>
+              </div>
+            </section>
+
+            {/* Duchessa Isabella Eventi */}
+            <section className="hotel-section">
+              <div className="hotel-bg-wrapper">
+                <Image 
+                  src="/assets/eventi.jpg" 
+                  alt="Duchessa Isabella Eventi" 
+                  fill 
+                  className="hotel-bg" 
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  loading="lazy" 
+                />
+              </div>
+              <div className="hotel-overlay" />
+              <div className="hotel-content">
+                <span className="hotel-location">Ferrara</span>
+                <h2 className="hotel-name">Duchessa Isabella Eventi</h2>
+                <a href="https://www.duchessaisabella.com/meeting-eventi/" target="_blank" className="btn-explore">Celebra la Storia</a>
+              </div>
+            </section>
+          </div>
+        </section>
+
         {/* CAREER SECTION - Talent Acquisition */}
         <section id="career" className="career-section">
           <div className="container career-container">
@@ -1630,7 +1923,7 @@ export default function Home() {
               <h2 className="career-headline">Il tuo futuro in GSA Hotels</h2>
               <div className="career-divider" />
               <p className="career-body">
-                Questa sezione è dedicata alla ricerca e valutazione di profili d'eccellenza per le realtà che orbitano attorno al marchio GSA Hotels. 
+                Questa sezione è dedicata alla ricerca e valutazione di profili d'eccellenza per le realtà che orbitano attorno al marchio GSA Hotels.
                 <strong> GSA Hotels non è un gruppo</strong>, è un ecosistema di valori, strategia e identità. Siamo costantemente alla ricerca di talenti dinamici che amino l'ospitalità autentica e desiderino contribuire all'ingegnerizzazione di modelli di accoglienza senza tempo.
               </p>
               <p className="career-subtext">
@@ -1665,29 +1958,68 @@ export default function Home() {
             </div>
             <div className="vision-visual reveal">
               <div className="video-slider-wrapper">
-                <div className="slider-video-container">
+                <div className="slider-video-container" onClick={() => visionImages.length > 0 && setIsVisionLightboxOpen(true)} style={{ cursor: visionImages.length > 0 ? 'zoom-in' : 'wait' }}>
                   <div className="visual-frame slider-frame" style={{ height: '600px' }}>
-                    <img key={activeVisionImage} src={visionImages[activeVisionImage]} alt="Authenticity Highlight" className="vision-slide-img" />
+                    {visionImages.length > 0 ? (
+                      <Image
+                        key={activeVisionImage}
+                        src={`/${visionImages[activeVisionImage]}`}
+                        alt="Authenticity Highlight"
+                        fill
+                        className="vision-slide-img"
+                        style={{ objectFit: 'cover', objectPosition: 'top' }}
+                        sizes="(max-width: 768px) 100vw, 70vw"
+                        priority={activeVisionImage === 0}
+                      />
+                    ) : (
+                      <div className="loading-placeholder" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#111' }}>
+                        <i className="fas fa-spinner fa-spin" style={{ color: 'var(--gold-accent)' }} />
+                      </div>
+                    )}
                     <div className="frame-border" />
                   </div>
                 </div>
 
                 <div className="video-slider-controls">
-                  <button onClick={prevVisionImage} className="slider-arrow" aria-label="Annulla">
+                  <button onClick={prevVisionImage} className="slider-arrow" aria-label="Annulla" disabled={visionImages.length === 0}>
                     <i className="fas fa-chevron-left" />
                   </button>
 
-                  <div className="slider-dots">
-                    {visionImages.map((_, index) => (
+                  <div className="vision-scrubber-wrapper">
+                    {/* Floating Tooltip */}
+                    {(visionImages.length > 0 && (scrubberHoverValue !== null || isScrubbing)) && (
                       <div
-                        key={index}
-                        className={`slider-dot ${index === activeVisionImage ? 'active' : ''}`}
-                        onClick={() => setActiveVisionImage(index)}
-                      />
-                    ))}
+                        className="vision-scrubber-tooltip"
+                        style={{
+                          left: `${((scrubberHoverValue !== null ? scrubberHoverValue : activeVisionImage) / (visionImages.length - 1)) * 100}%`
+                        }}
+                      >
+                        {String((scrubberHoverValue !== null ? scrubberHoverValue : activeVisionImage) + 1).padStart(2, '0')} / {visionImages.length}
+                      </div>
+                    )}
+                    <input
+                      type="range"
+                      min="0"
+                      max={visionImages.length > 0 ? visionImages.length - 1 : 0}
+                      value={activeVisionImage}
+                      disabled={visionImages.length === 0}
+                      onChange={(e) => setActiveVisionImage(parseInt(e.target.value))}
+                      onMouseEnter={() => visionImages.length > 0 && setScrubberHoverValue(activeVisionImage)}
+                      onMouseLeave={() => setScrubberHoverValue(null)}
+                      onMouseMove={(e) => {
+                        if (visionImages.length === 0) return;
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const val = Math.round((x / rect.width) * (visionImages.length - 1));
+                        setScrubberHoverValue(Math.max(0, Math.min(visionImages.length - 1, val)));
+                      }}
+                      onMouseDown={() => visionImages.length > 0 && setIsScrubbing(true)}
+                      onMouseUp={() => setIsScrubbing(false)}
+                      className="vision-scrubber"
+                    />
                   </div>
 
-                  <button onClick={nextVisionImage} className="slider-arrow" aria-label="Avanti">
+                  <button onClick={nextVisionImage} className="slider-arrow" aria-label="Avanti" disabled={visionImages.length === 0}>
                     <i className="fas fa-chevron-right" />
                   </button>
                 </div>
@@ -1706,7 +2038,7 @@ export default function Home() {
                 Non gestiamo semplici immobili, <strong>noi ingegnerizziamo asset</strong>.
               </p>
               <p className="partner-intro">
-                Eleviamo l'identità della tua struttura, trasformandola in un modello di eccellenza, valore e profittabilità sostenibile. 
+                Eleviamo l'identità della tua struttura, trasformandola in un modello di eccellenza, valore e profittabilità sostenibile.
                 <strong> Contenuti esclusivi che possono agevolare la tua attività</strong>, accesso prioritario al nostro network di fornitori certificati e strumenti di marketing d'élite.
               </p>
             </div>
@@ -1752,7 +2084,22 @@ export default function Home() {
         <section id="contact" className="luxury-form-section">
           <div id="embers-container" className="embers-container" />
           <div className="container luxury-form-container">
-            {/* Form Column - Now on the LEFT */}
+            {/* Intro Column - Now on the LEFT */}
+            <div className="form-intro reveal">
+              <h2 className="form-title">Contattaci</h2>
+              <p className="form-desc">
+                Valutiamo esclusivamente strutture con alto potenziale di crescita.
+                Lascia i tuoi recapiti per una conversazione riservata.
+              </p>
+              <div className="contact-direct-info">
+                <div className="info-row">
+                  <span className="info-label">HEADQUARTERS</span>
+                  <span className="info-value">Emilia Romagna, Italia</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Form Column - Now on the RIGHT */}
             <div className="form-wrapper reveal">
               <form className="minimal-form" onSubmit={handleSubmit}>
                 <div className="input-group">
@@ -1820,19 +2167,23 @@ export default function Home() {
                 </div>
                 <div className="input-group custom-select-wrapper" id="customSelectWrapper">
                   <input type="hidden" id="interesse" name="interesse" value={formData.interesse} />
-                  <div className="minimal-input custom-select-trigger" tabIndex={0} data-label="MOTIVO DEL CONTATTO">
-                    <span className="checkmark-icon" style={{ display: 'none', marginRight: 10, color: '#C5A059' }}>✓</span>
-                    <span className="selected-text">{formData.interesse || "MOTIVO DEL CONTATTO"}</span>
-                    <span className="select-arrow">
+                  <div 
+                    className={`minimal-input custom-select-trigger ${formData.interesse ? 'has-value' : ''}`} 
+                    tabIndex={0}
+                  >
+                    <span className="selected-text">{formData.interesse}</span>
+                    <span className="select-arrow-custom">
                       <i className="fas fa-chevron-down" />
                     </span>
                   </div>
+                  <label className="floating-label select-label">MOTIVO DEL CONTATTO</label>
                   <div className="custom-options">
                     <div className="custom-option" onClick={() => setFormData(p => ({ ...p, interesse: 'Affiliazione Brand' }))}>Affiliazione Brand</div>
                     <div className="custom-option" onClick={() => setFormData(p => ({ ...p, interesse: 'Gestione Diretta' }))}>Gestione Diretta</div>
                     <div className="custom-option" onClick={() => setFormData(p => ({ ...p, interesse: 'Academy & Formazione' }))}>Academy & Formazione</div>
                     <div className="custom-option" onClick={() => setFormData(p => ({ ...p, interesse: 'Altro' }))}>Altro</div>
                   </div>
+                  <span className="focus-border" />
                 </div>
 
                 <div className="form-footer">
@@ -1848,21 +2199,6 @@ export default function Home() {
                   )}
                 </div>
               </form>
-            </div>
-
-            {/* Intro Column - Now on the RIGHT */}
-            <div className="form-intro reveal">
-              <h2 className="form-title">Contattaci</h2>
-              <p className="form-desc">
-                Valutiamo esclusivamente strutture con alto potenziale di crescita.
-                Lascia i tuoi recapiti per una conversazione riservata.
-              </p>
-              <div className="contact-direct-info">
-                <div className="info-row">
-                  <span className="info-label">HEADQUARTERS</span>
-                  <span className="info-value">Emilia Romagna, Italia</span>
-                </div>
-              </div>
             </div>
           </div>
         </section>
@@ -1928,11 +2264,72 @@ export default function Home() {
               </div>
             </div>
           </div> {/* Closes container */}
-          
+
           <div className="footer-signature">
             GSA HOTELS
           </div>
         </footer>
+        {/* Fullscreen Lightbox Portal */}
+        {isVisionLightboxOpen && visionImages.length > 0 && (
+          <div className="vision-lightbox-overlay">
+            <button className="lightbox-close" onClick={() => setIsVisionLightboxOpen(false)}>
+              <i className="fas fa-times" />
+            </button>
+            <div className="lightbox-content">
+              <div className="lightbox-image-container">
+                <Image
+                  src={`/${visionImages[activeVisionImage]}`}
+                  alt="Vision Fullscreen"
+                  fill
+                  className="lightbox-img"
+                  style={{ objectFit: 'contain' }}
+                  priority
+                />
+              </div>
+
+              <div className="lightbox-controls">
+                <button onClick={prevVisionImage} className="slider-arrow large" aria-label="Precedente">
+                  <i className="fas fa-chevron-left" />
+                </button>
+
+                <div className="vision-scrubber-wrapper lightbox-scrubber">
+                  {(scrubberHoverValue !== null || isScrubbing) && (
+                    <div
+                      className="vision-scrubber-tooltip"
+                      style={{
+                        left: `${((scrubberHoverValue !== null ? scrubberHoverValue : activeVisionImage) / (visionImages.length - 1)) * 100}%`
+                      }}
+                    >
+                      {String((scrubberHoverValue !== null ? scrubberHoverValue : activeVisionImage) + 1).padStart(2, '0')} / {visionImages.length}
+                    </div>
+                  )}
+                  <input
+                    type="range"
+                    min="0"
+                    max={visionImages.length - 1}
+                    value={activeVisionImage}
+                    onChange={(e) => setActiveVisionImage(parseInt(e.target.value))}
+                    onMouseEnter={() => setScrubberHoverValue(activeVisionImage)}
+                    onMouseLeave={() => setScrubberHoverValue(null)}
+                    onMouseMove={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = e.clientX - rect.left;
+                      const val = Math.round((x / rect.width) * (visionImages.length - 1));
+                      setScrubberHoverValue(Math.max(0, Math.min(visionImages.length - 1, val)));
+                    }}
+                    onMouseDown={() => setIsScrubbing(true)}
+                    onMouseUp={() => setIsScrubbing(false)}
+                    className="vision-scrubber"
+                  />
+                </div>
+
+                <button onClick={nextVisionImage} className="slider-arrow large" aria-label="Successiva">
+                  <i className="fas fa-chevron-right" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
       {/* Scripts */}
       {/* GSAP Core */}

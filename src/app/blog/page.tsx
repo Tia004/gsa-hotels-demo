@@ -60,11 +60,10 @@ export default async function BlogPage({
 
   return (
     <div className="blog-outer-wrapper">
-      {/* Re-using some of the site's design tokens via inline styles or globals */}
       <nav className="blog-mini-nav">
         <div className="blog-container">
           <Link href="/" className="back-link">
-            <i className="fas fa-chevron-left" /> Torna alla Home
+            <i className="fas fa-arrow-left" /> TORNA ALLA HOME
           </Link>
           <div className="blog-brand">
             GSA <span>Insights</span>
@@ -72,23 +71,26 @@ export default async function BlogPage({
         </div>
       </nav>
 
-      <main className="blog-container main-content">
+      <main className="blog-container main-content" style={{ marginTop: '0' }}>
         <header className="blog-header">
-          <span className="blog-subtitle">JOURNAL D'ECCELLENZA</span>
+          <span className="blog-subtitle">JOURNAL D&apos;ECCELLENZA</span>
           <h1 className="blog-title">Visione & <span>Strategy</span></h1>
           <div className="editorial-line" />
         </header>
-        <section className="posts-list">
+        
+        <section className="posts-section">
           <BlogAnimate>
-            {posts.length > 0 ? (
-              posts.map((post) => (
-                <BlogCard key={post.id} post={post} />
-              ))
-            ) : (
-              <div className="empty-state">
-                <p>Ancora nessun articolo pubblicato. Torna presto.</p>
-              </div>
-            )}
+            <div className="posts-grid">
+              {posts.length > 0 ? (
+                posts.map((post) => (
+                  <BlogCard key={post.id} post={post} />
+                ))
+              ) : (
+                <div className="empty-state">
+                  <p>Ancora nessun articolo pubblicato. Torna presto.</p>
+                </div>
+              )}
+            </div>
           </BlogAnimate>
         </section>
 
@@ -108,7 +110,6 @@ export default async function BlogPage({
       </main>
 
       {isAuthorized && <BlogEditor />}
-
     </div>
   );
 }
