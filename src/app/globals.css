@@ -3555,12 +3555,13 @@ textarea.minimal-input:not(:placeholder-shown)~.floating-label {
   /* --- CONTACT FORM (Editorial Style) --- */
   .luxury-form-container {
     grid-template-columns: 1fr !important;
-    /* Una sola colonna */
-    gap: 60px !important;
+    gap: 40px !important;
+    padding: 0 20px !important;
   }
 
   .form-title {
-    font-size: 3rem !important;
+    font-size: clamp(2rem, 8vw, 2.5rem) !important;
+    line-height: 1.1;
   }
 
   /* Adatta gli input per essere più comodi col dito */
@@ -3571,15 +3572,12 @@ textarea.minimal-input:not(:placeholder-shown)~.floating-label {
   /* --- FOOTER (Architectural) --- */
   .footer-grid {
     grid-template-columns: 1fr !important;
-    /* Tutto in una colonna */
     gap: 40px !important;
-    text-align: center;
-    /* Centra tutto su mobile */
+    text-align: left !important;
   }
 
   .footer-col {
-    align-items: center;
-    /* Centra items flex */
+    align-items: flex-start !important;
   }
 
   .footer-brand {
@@ -7164,14 +7162,13 @@ body.cursor-hover-active .luxury-cursor-dot {
 /* Footer Mobile Centering */
 @media (max-width: 768px) {
   .luxury-footer {
-    text-align: center !important;
+    text-align: left !important;
   }
   .luxury-footer .footer-grid {
     display: flex !important;
     flex-direction: column !important;
     align-items: flex-start !important;
     gap: 50px !important;
-    padding-left: 20px !important;
   }
   .footer-col h3 {
     text-align: left !important;
@@ -7197,18 +7194,23 @@ body.cursor-hover-active .luxury-cursor-dot {
     align-items: flex-start !important;
   }
   .luxury-footer .footer-legal {
-    justify-content: center !important;
-    text-align: center !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
     flex-direction: column !important;
-    gap: 20px !important;
+    gap: 15px !important;
+    align-items: flex-start !important;
   }
   .luxury-footer .legal-left {
-    justify-content: center !important;
-    text-align: center !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
     width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
   }
   .luxury-footer .footer-credits {
-    text-align: center !important;
+    text-align: left !important;
+    margin-left: 0 !important;
     width: 100% !important;
   }
 }
