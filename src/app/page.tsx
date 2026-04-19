@@ -10,6 +10,8 @@ import SplitType from 'split-type';
 import Link from 'next/link';
 import { SignInButton, SignUpButton, UserButton, useAuth } from '@clerk/nextjs';
 import Image from 'next/image';
+import GlobalNav from '@/components/GlobalNav';
+import { useLang } from '@/context/LangContext';
 
 
 declare const particlesJS: any;
@@ -27,53 +29,53 @@ function SignedOut({ children }: { children: React.ReactNode }) {
 
 
 export default function Home() {
+  const { t, lang } = useLang();
   const [activeVideo, setActiveVideo] = React.useState(0);
   const [activeVisionImage, setActiveVisionImage] = React.useState(0);
-  const [isVisionLightboxOpen, setIsVisionLightboxOpen] = React.useState(false);
   const [scrubberHoverValue, setScrubberHoverValue] = React.useState<number | null>(null);
   const [isScrubbing, setIsScrubbing] = React.useState(false);
 
   const videos = [
     {
       id: "rzLIWEaDbuc",
-      title: "IL CORVO PODCAST",
+      title: t('video.1.title'),
       badge: "FEATURING",
-      description: "Stefano Golisano racconta la genesi di GSA Hotels e la sua visione imprenditoriale.",
+      description: t('video.1.desc'),
       url: "https://www.youtube.com/watch?v=rzLIWEaDbuc"
     },
     {
       id: "cYublCdofos",
-      title: "GSA Hotel e Istituto Oficina",
+      title: t('video.2.title'),
       badge: "JOB MEETING",
-      description: "GSA Hotels ha preso parte al progetto Job Meeting Experience promosso da Angelo Golisano, questa volta con l’Istituto Oficina di Bologna.",
+      description: t('video.2.desc'),
       url: "https://www.youtube.com/watch?v=cYublCdofos"
     },
     {
       id: "UOwRwARrSiY",
-      title: "Triennale FenImprese Bologna",
+      title: t('video.3.title'),
       badge: "FENIMPRESE",
-      description: "Presentazione dei risultati raggiunti e i progetti futuri verso una crescita internazionale del network.",
+      description: t('video.3.desc'),
       url: "https://www.youtube.com/watch?v=UOwRwARrSiY"
     },
     {
       id: "GVVnU6k9Jjg",
-      title: "Rilancio Duchessa Isabella",
+      title: t('video.4.title'),
       badge: "CASE STUDY",
-      description: "Il rilancio dell'unico hotel 5 stelle di Ferrara attraverso l'eccellenza gestionale e il turismo internazionale.",
+      description: t('video.4.desc'),
       url: "https://www.youtube.com/watch?v=GVVnU6k9Jjg"
     },
     {
       id: "mAvvATDQBvY",
-      title: "GSA e Formazione Scolastica",
+      title: t('video.5.title'),
       badge: "EDUCATION",
-      description: "Il successo di un corso scolastico innovativo: marketing, pricing e benessere aziendale.",
+      description: t('video.5.desc'),
       url: "https://www.youtube.com/watch?v=mAvvATDQBvY"
     },
     {
       id: "ylUr5gn1XHQ",
-      title: "Opportunità per i Giovani",
+      title: t('video.6.title'),
       badge: "TALENT",
-      description: "Il nostro approccio unisce teoria ed esperienza diretta per stimolare la partecipazione e la crescita personale.",
+      description: t('video.6.desc'),
       url: "https://www.youtube.com/watch?v=ylUr5gn1XHQ"
     }
   ];
@@ -99,6 +101,9 @@ export default function Home() {
   ];
 
   const [activeAcademyImage, setActiveAcademyImage] = React.useState(0);
+  const [isPlayingIntro, setIsPlayingIntro] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState(false);
+  const [isRevealed, setIsRevealed] = React.useState(false);
 
   const nextAcademyImage = () => {
     setActiveAcademyImage((prev) => (prev + 1) % academyImages.length);
@@ -111,58 +116,58 @@ export default function Home() {
   /* EXPERIENCES DATA */
   const bolognaExperiences = [
     {
-      title: "Bologna: Centro Storico",
-      desc: "Torri, piazze e i sapori autentici della tradizione bolognese.",
+      title: t('exp.bo1.title'),
+      desc: t('exp.bo1.desc'),
       img: "/assets/esperienze/bologna/1.jpg"
     },
     {
-      title: "Bologna: San Luca",
-      desc: "Una camminata panoramica sotto il portico più lungo del mondo.",
+      title: t('exp.bo2.title'),
+      desc: t('exp.bo2.desc'),
       img: "/assets/esperienze/bologna/2.jpg"
     },
     {
-      title: "Bologna: Alternativa",
-      desc: "Arte contemporanea e angoli nascosti fuori dai circuiti classici.",
+      title: t('exp.bo3.title'),
+      desc: t('exp.bo3.desc'),
       img: "/assets/esperienze/bologna/3.jpg"
     }
   ];
 
   const ferraraExperiences = [
     {
-      title: "Ferrara: Icone Estensi",
-      desc: "Un viaggio tra i simboli del Rinascimento ferrarese.",
+      title: t('exp.fe1.title'),
+      desc: t('exp.fe1.desc'),
       img: "/assets/esperienze/ferrara/1.jpg"
     },
     {
-      title: "Ferrara: Schifanoia",
-      desc: "Il Salone dei Mesi e l'astrologia rinascimentale.",
+      title: t('exp.fe2.title'),
+      desc: t('exp.fe2.desc'),
       img: "/assets/esperienze/ferrara/2.jpg"
     },
     {
-      title: "Ferrara: Ombre e Luci",
-      desc: "Atmosfere magiche tra i vicoli del ghetto e le mura.",
+      title: t('exp.fe3.title'),
+      desc: t('exp.fe3.desc'),
       img: "/assets/esperienze/ferrara/3.jpg"
     },
     {
-      title: "Ferrara: Comacchio",
-      desc: "55km di natura incontaminata e silenzi d'acqua.",
+      title: t('exp.fe4.title'),
+      desc: t('exp.fe4.desc'),
       img: "/assets/esperienze/ferrara/4.png"
     },
     {
-      title: "Ferrara: Food Tour",
-      desc: "Degustazione itinerante dei tesori gastronomici locali.",
+      title: t('exp.fe5.title'),
+      desc: t('exp.fe5.desc'),
       img: "/assets/esperienze/ferrara/5.png"
     },
     {
-      title: "Ferrara: Bike Tour",
-      desc: "La città delle biciclette vista da una prospettiva unica.",
+      title: t('exp.fe6.title'),
+      desc: t('exp.fe6.desc'),
       img: "/assets/esperienze/ferrara/6.jpg"
     }
   ];
 
   const [activeBologna, setActiveBologna] = React.useState(0);
   const [activeFerrara, setActiveFerrara] = React.useState(0);
-
+  const [scrolled, setScrolled] = React.useState(false);
   const [formData, setFormData] = React.useState({
     nome: '',
     azienda: '',
@@ -171,8 +176,10 @@ export default function Home() {
     messaggio: '',
     interesse: ''
   });
+
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitStatus, setSubmitStatus] = React.useState<'success' | 'error' | null>(null);
+  const [isSelectOpen, setIsSelectOpen] = React.useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -216,32 +223,63 @@ export default function Home() {
     setActiveVisionImage((prev) => (prev - 1 + visionImages.length) % visionImages.length);
   };
 
-  // Close lightbox on Escape
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsVisionLightboxOpen(false);
+    const bolognaTimer = setInterval(() => {
+      setActiveBologna((prev) => (prev + 1) % bolognaExperiences.length);
+    }, 4000);
+    const ferraraTimer = setInterval(() => {
+      setActiveFerrara((prev) => (prev + 1) % ferraraExperiences.length);
+    }, 4500);
+    const videoTimer = setInterval(() => {
+      setActiveVideo((prev) => (prev + 1) % videos.length);
+    }, 5000);
+    const academyTimer = setInterval(() => {
+      setActiveAcademyImage((prev) => (prev + 1) % academyImages.length);
+    }, 3000);
+
+    const handleScroll = () => {
+      // Logic moved to GlobalNav or kept local if needed for other things
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      clearInterval(bolognaTimer);
+      clearInterval(ferraraTimer);
+      clearInterval(videoTimer);
+      clearInterval(academyTimer);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [bolognaExperiences.length, ferraraExperiences.length, videos.length, academyImages.length]);
 
   useEffect(() => {
+    if (visionImages.length === 0) return;
+    const visionTimer = setInterval(() => {
+      setActiveVisionImage((prev) => (prev + 1) % visionImages.length);
+    }, 3500);
+    return () => clearInterval(visionTimer);
+  }, [visionImages.length]);
+
+
+
+  useEffect(() => {
+    const createdEmbers: HTMLDivElement[] = [];
+
     // Register GSAP
+    // Register GSAP once
     gsap.registerPlugin(ScrollTrigger);
 
-    gsap.registerPlugin(ScrollTrigger);
 
     // 1. Animazione Testo (Sinistra)
     gsap.from(".besafe-text-col > *", {
       scrollTrigger: {
         trigger: ".besafe-section",
-        start: "top 70%", // Parte quando la sezione è al 70% del viewport
-        toggleActions: "play none none reverse"
+        start: "top 70%",
+        toggleActions: "play none none none" // Stay visible after reveal
       },
       y: 30,
       opacity: 0,
       duration: 1,
-      stagger: 0.2, // Ritardo tra un elemento e l'altro
+      stagger: 0.2,
       ease: "power3.out"
     });
 
@@ -308,8 +346,10 @@ export default function Home() {
           p.style.setProperty('--scale-end', (Math.random() * 0.5 + 0.5).toString());
 
           embersContainer.appendChild(p);
+          createdEmbers.push(p);
         }
       };
+
 
       // 1. BOKEH (Background, Large, Blur)
       spawn(25, 'bokeh', 40, 120, 20, 40, 0.1, 0.3);
@@ -360,11 +400,20 @@ export default function Home() {
     (window as any).lenis = lenis; // EXPOSE TO WINDOW FOR PRELOADER
     window.scrollTo(0, 0); // Force top
 
+    let rafId: number;
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      ScrollTrigger.update(); // CRITICAL: Keep ScrollTrigger in sync with Lenis
+      rafId = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
+
+    // Refresh ScrollTrigger on window resize to fix misalignments
+    const handleResize = () => ScrollTrigger.refresh();
+    window.addEventListener('resize', handleResize);
+
+    // Also refresh when images load (important for lazy-loaded content)
+    window.addEventListener('load', handleResize);
 
     // Connect GSAP ScrollTrigger to Lenis
     gsap.registerPlugin(ScrollTrigger);
@@ -384,17 +433,15 @@ export default function Home() {
       delay: 0.5
     });
 
-    gsap.from(heroDesc.lines, {
+    gsap.from(".j-desc", {
       y: 20,
       opacity: 0,
-      stagger: 0.1,
-      duration: 1,
+      duration: 1.2,
       ease: "power3.out",
       delay: 1.2
     });
 
-    // --- 2. GENERIC LUXURY REVEAL SYSTEM (Academy, Founder, Philosophy) ---
-    // Targets any element with class .reveal
+    // --- 2. GENERIC LUXURY REVEAL SYSTEM ---
     // Wrapped in timeout to ensure layout is settled
     setTimeout(() => {
       const revealElements = gsap.utils.toArray('.reveal') as HTMLElement[];
@@ -409,13 +456,13 @@ export default function Home() {
             scrollTrigger: {
               trigger: elem,
               start: "top 90%",
-              toggleActions: "play none none reverse"
+              toggleActions: "play none none none" // Changed from reverse to none for stability
             }
           }
         );
       });
       ScrollTrigger.refresh();
-    }, 100);
+    }, 500); // Increased timeout for better stability
 
     // 2. Window Reveal Animation (Pin & Expand)
     // We pin the hero so the expansion happens "in place" before scrolling down
@@ -469,56 +516,19 @@ export default function Home() {
 
 
 
-    // OS DETECTION: Show cursor only on Mac/PC (Windows/Linux)
-    const userAgent = navigator.userAgent.toLowerCase();
-    const platform = navigator.platform.toLowerCase();
-
-    // --- UI HARDENING: Prevent Image Dragging ---
+    // UI HARDENING: Prevent Image Dragging
     document.querySelectorAll('img').forEach(img => {
       img.setAttribute('draggable', 'false');
-      img.addEventListener('contextmenu', e => e.preventDefault()); // Optional: Disable right-click save
+      img.addEventListener('contextmenu', e => e.preventDefault());
     });
-
-    const isMac = platform.includes('mac');
-    const isWindows = platform.includes('win');
-    const isLinux = platform.includes('linux') && !userAgent.includes('android');
-
-    const isDesktopOS = isMac || isWindows || isLinux;
-
-    if (!isDesktopOS) {
-      // Nascondi cursore custom su dispositivi non-desktop
-      const cursorElements = document.querySelectorAll('#webgl-canvas, canvas, #glitch-lens, .cursor-dot, #cursor-blob, .luxury-cursor');
-      cursorElements.forEach(el => {
-        const htmlEl = el as HTMLElement;
-        if (htmlEl) {
-          htmlEl.style.display = 'none';
-          htmlEl.style.visibility = 'hidden';
-        }
-      });
-
-      // Ripristina cursore nativo
-      document.body.style.cursor = 'auto';
-    }
 
     // MOBILE FIX: Remove nav-wrapper completely on touch devices
-    if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) {
-      const navWrapper = document.querySelector('.nav-wrapper');
-      const navCapsule = document.querySelector('.nav-capsule');
-      const navLogo = document.querySelector('.nav-logo');
-      const gooContainer = document.querySelector('.goo-container');
-
-      if (navWrapper) navWrapper.remove();
-      if (navCapsule) navCapsule.remove();
-      if (navLogo) navLogo.remove();
-      if (gooContainer) gooContainer.remove();
+    const isCoarse = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+    if (isCoarse) {
+      setIsMobile(true);
     }
 
-    // Custom Cursor Logic - REMOVED (Replaced by WebGL Canvas)
-
-    document.querySelectorAll('a, button, .slide').forEach(el => {
-      el.addEventListener('mouseenter', () => document.body.classList.add('hover-active'));
-      el.addEventListener('mouseleave', () => document.body.classList.remove('hover-active'));
-    });
+    // Cursore custom ora gestito globalmente in layout.tsx via Cursor.tsx
 
     // GSAP Animations
 
@@ -658,8 +668,8 @@ export default function Home() {
     const visionTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: ".vision-section-bugatti",
-        start: "top 75%", // Triggers when top of section hits 75% of viewport
-        toggleActions: "play none none reverse"
+        start: "top 75%",
+        toggleActions: "play none none none" // Stay visible after reveal
       }
     });
 
@@ -675,7 +685,7 @@ export default function Home() {
       scrollTrigger: {
         trigger: ".luxury-form-section",
         start: "top 70%",
-        toggleActions: "play none none reverse"
+        toggleActions: "play none none none" // Stay visible
       }
     });
 
@@ -720,162 +730,9 @@ export default function Home() {
     }
 
 
-    // FLUID DROPLET CURSOR TRACKING (Fast + Slow)
-    // FLUID DROPLET CURSOR TRACKING (Fast + Slow)
-    // DETECT MOBILE/TOUCH -> KILL CURSOR
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-    if (isTouch) {
-      const wrappers = document.querySelectorAll('#cursor-wrapper, #cursor-goo-wrapper');
-      wrappers.forEach(w => (w as HTMLElement).remove()); // Remove from DOM
-    } else {
-      // Select GLASS cursors
-      const cursorFast = document.getElementById('cursor-fast');
-      const cursorSlow = document.getElementById('cursor-slow');
-
-      // Select GOO cursors
-      const gooFast = document.getElementById('goo-fast');
-      const gooSlow = document.getElementById('goo-slow');
-
-      // Variables
-      let mouseX = 0;
-      let mouseY = 0;
-      let slowX = 0;
-      let slowY = 0;
-
-      // 1. Track Mouse Input
-      document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-
-        // Fast cursors follow immediately
-        if (cursorFast) {
-          cursorFast.style.left = mouseX + 'px';
-          cursorFast.style.top = mouseY + 'px';
-        }
-        if (gooFast) {
-          gooFast.style.left = mouseX + 'px';
-          gooFast.style.top = mouseY + 'px';
-        }
-      });
-
-      // 2. Animation Loop for Smooth Trail
-      function animateCursor() {
-        // LERP for delay (0.15 = fluid lag)
-        slowX += (mouseX - slowX) * 0.15;
-        slowY += (mouseY - slowY) * 0.15;
-
-        // Move Slow Glass
-        if (cursorSlow) {
-          cursorSlow.style.left = slowX + 'px';
-          cursorSlow.style.top = slowY + 'px';
-        }
-        // Move Slow Goo
-        if (gooSlow) {
-          gooSlow.style.left = slowX + 'px';
-          gooSlow.style.top = slowY + 'px';
-        }
-
-        requestAnimationFrame(animateCursor);
-      }
-      animateCursor();
-
-      // 3. Hover Management
-      const interactives = document.querySelectorAll('a, button, input, textarea, .category-stripe, .slide');
-      interactives.forEach(el => {
-        el.addEventListener('mouseenter', () => document.body.classList.add('hover-active'));
-        el.addEventListener('mouseleave', () => document.body.classList.remove('hover-active'));
-      });
-    }
+    // Cursore gestito globalmente da Cursor.tsx
     // --- LIQUID GLASS MENU LOGIC ---
-    const overlay = document.getElementById('liquid-glass-menu');
-    const trigger = document.getElementById('menu-trigger'); // Main floating trigger (McButton)
-    const closeTrigger = document.getElementById('menu-close-trigger'); // Close button inside overlay
-    const glassLinks = document.querySelectorAll('.glass-link');
-    const desktopTrigger = document.querySelector('.desktop-menu-trigger');
-    let menuScrollY = 0;
-
-    // Simple Open/Close with Body Scroll Lock + GSAP Choreography
-    const toggleMenu = (open: boolean) => {
-      if (overlay) {
-        if (open) {
-          overlay.classList.add('active');
-          // Full scroll lock (body + html) to prevent overflow-y while menu is open
-          menuScrollY = window.scrollY || window.pageYOffset || 0;
-          document.documentElement.style.overflowY = 'hidden';
-          document.body.style.overflowY = 'hidden';
-          document.body.style.position = 'fixed';
-          document.body.style.top = `-${menuScrollY}px`;
-          document.body.style.width = '100%';
-
-          // GSAP Reveal for Links (Editorial Entrance)
-          gsap.fromTo('.glass-link',
-            { y: 50, opacity: 0 },
-            { y: 0, opacity: 0.4, duration: 0.8, stagger: 0.1, ease: 'power4.out', delay: 0.3 }
-          );
-        } else {
-          overlay.classList.remove('active');
-          // Unlock scroll + restore position
-          document.documentElement.style.overflowY = '';
-          document.body.style.overflowY = '';
-          document.body.style.position = '';
-          document.body.style.top = '';
-          document.body.style.width = '';
-          window.scrollTo(0, menuScrollY);
-        }
-      }
-
-      // Update all McButtons state for morphing animation (Hamburger -> X)
-      document.querySelectorAll('.McButton').forEach(btn => {
-        if (open) btn.classList.add('active');
-        else btn.classList.remove('active');
-      });
-    };
-
-    // Event Listeners
-    if (trigger) {
-      trigger.addEventListener('click', (e) => {
-        e.preventDefault();
-        const isActive = overlay?.classList.contains('active');
-        toggleMenu(!isActive);
-      });
-    }
-
-    if (desktopTrigger) {
-      desktopTrigger.addEventListener('click', (e) => {
-        e.preventDefault();
-        const isActive = overlay?.classList.contains('active');
-        toggleMenu(!isActive);
-      });
-    }
-
-    if (closeTrigger) {
-      closeTrigger.addEventListener('click', () => toggleMenu(false));
-    }
-
-    // Close menu upon navigation
-    glassLinks.forEach(link => link.addEventListener('click', () => toggleMenu(false)));
-
-    // Close menu on ESC
-    const onEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') toggleMenu(false);
-    };
-    document.addEventListener('keydown', onEsc);
-
-    // SPOTLIGHT LOGO REVEAL
-    // Show only after passing the static hero logo.
-    ScrollTrigger.create({
-      trigger: ".j-logo-container",
-      start: "bottom top",
-      onEnter: () => {
-        const navWrapper = document.querySelector('.nav-wrapper');
-        if (navWrapper) navWrapper.classList.add('active');
-      },
-      onLeaveBack: () => {
-        const navWrapper = document.querySelector('.nav-wrapper');
-        if (navWrapper) navWrapper.classList.remove('active');
-      }
-    });
+    // Navigation and Menu logic moved to GlobalNav.tsx
 
     // PRIVACY CONCIERGE LOGIC
     const banner = document.getElementById('cookie-banner');
@@ -987,9 +844,10 @@ export default function Home() {
     });
 
     // Chiudi con ESC
-    document.addEventListener('keydown', (e) => {
+    const onEscKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') closeModal();
-    });
+    };
+    document.addEventListener('keydown', onEscKey);
 
     // EXPLICIT HANDLER per cookie banner privacy link
     const cookieBannerLink = document.querySelector('.cookie-link');
@@ -1002,86 +860,92 @@ export default function Home() {
     }
 
 
-    // Blocca scroll
-    document.body.style.overflow = 'hidden';
+    // Timing tracking for cleanup
+    let phase1Timeout: any, phase2Timeout: any, revealTimeout: any, recalculateTimeout: any, removeTimeout: any, shuffleInterval: any;
 
-    const preloaderOverlay = document.getElementById('zoom-preloader');
-    const shuffler = document.getElementById('shuffling-text');
-    const logoGold = document.getElementById('logo-gold');
-    const logoHole = document.getElementById('logo-hole');
+    // 0. CHECK IF PRELOADER ALREADY SHOWN IN THIS SESSION (FOR BACK BUTTON STABILITY)
+    const alreadyShown = sessionStorage.getItem('gsa_preloader_shown') === 'true';
+    
+    if (alreadyShown) {
+      setIsRevealed(true);
+      if ((window as any).lenis) (window as any).lenis.start();
+      document.body.style.overflow = '';
+      document.body.classList.add('revealed');
+      document.body.classList.remove('loading');
+      document.documentElement.classList.remove('loading');
+      setTimeout(() => ScrollTrigger.refresh(), 100);
+    } else {
+      // Blocca scroll
+      document.body.style.overflow = 'hidden';
 
-    // Le "Robe diverse" che compongono il caricamento (Italiano)
-    const words = [
-      "VISIONE",
-      "ASSET",
-      "VALORE",
-      "FUTURO",
-      "PRESTIGIO",
-      "RENDIMENTO",
-      "STRATEGIA"
-    ];
+      const preloaderOverlay = document.getElementById('zoom-preloader');
+      const shuffler = document.getElementById('shuffling-text');
+      const logoGold = document.getElementById('logo-gold');
+      const logoHole = document.getElementById('logo-hole');
 
-    let wordIndex = 0;
+      // Le "Robe diverse" che compongono il caricamento (Italiano)
+      const words = [
+        t('preloader.w1'),
+        t('preloader.w2'),
+        t('preloader.w3'),
+        t('preloader.w4'),
+        t('preloader.w5'),
+        t('preloader.w6'),
+        t('preloader.w7')
+      ];
 
-    // 1. FASE SHUFFLE (Composizione veloce)
-    // Cambia parola ogni 100ms
-    const shuffleInterval = setInterval(() => {
-      if (shuffler) {
-        shuffler.innerText = words[wordIndex];
-        wordIndex++;
-        if (wordIndex >= words.length) wordIndex = 0;
-      }
-    }, 120);
+      let wordIndex = 0;
 
-    // Dopo 1.5 secondi, stoppa lo shuffle e mostra GSA
-    setTimeout(() => {
-      clearInterval(shuffleInterval);
-      if (shuffler) shuffler.classList.add('hidden'); // Via le parole
+      // 1. FASE SHUFFLE (Composizione veloce)
+      shuffleInterval = setInterval(() => {
+        if (shuffler) {
+          shuffler.innerText = words[wordIndex];
+          wordIndex++;
+          if (wordIndex >= words.length) wordIndex = 0;
+        }
+      }, 280);
 
-      // Appare GSA (Assemblaggio) - ENTRAMBI (Il Gold copre il Buco che è già pronto sotto)
-      if (logoGold) logoGold.classList.add('visible');
-      if (logoHole) logoHole.classList.add('visible');
+      // Dopo 1.8 secondi, stoppa lo shuffle e mostra GSA
+      phase1Timeout = setTimeout(() => {
+        clearInterval(shuffleInterval);
+        if (shuffler) shuffler.classList.add('hidden'); // Via le parole
 
-      // 2. FASE ZOOM (L'entrata nel sito)
-      // Aspetta un attimo che l'utente legga GSA (0.8s), poi ZOOM
-      setTimeout(() => {
-        // Trigger Zoom su entrambi
-        if (logoGold) logoGold.classList.add('zoom-in');
-        if (logoHole) logoHole.classList.add('zoom-in');
+        // Appare GSA (Assemblaggio)
+        if (logoGold) logoGold.classList.add('visible');
+        if (logoHole) logoHole.classList.add('visible');
 
-        // Mentre zooma, possiamo già sbloccare lo scroll o far partire la hero
-        // Ma aspettiamo che il nero svanisca per pulizia
+        // 2. FASE ZOOM (L'entrata nel sito)
+        phase2Timeout = setTimeout(() => {
+          if (logoGold) logoGold.classList.add('zoom-in');
+          if (logoHole) logoHole.classList.add('zoom-in');
 
-        // 3. FASE REVEAL (Pulizia finale)
-        // Aspetta la fine della transizione di zoom (1.2s)
-        setTimeout(() => {
-          if (preloaderOverlay) preloaderOverlay.classList.add('finished');
-          document.body.style.overflow = ''; // Sblocca sito (CSS Fallback)
+          // 3. FASE REVEAL (Pulizia finale)
+          revealTimeout = setTimeout(() => {
+            if (preloaderOverlay) preloaderOverlay.classList.add('finished');
+            document.body.style.overflow = ''; 
 
-          // UNLOCK LENIS (Resume Scroll)
-          if ((window as any).lenis) {
-            (window as any).lenis.start();
-          }
+            if ((window as any).lenis) {
+              (window as any).lenis.start();
+            }
 
-          // REMOVE LOADING CLASS (CSS LOCK)
-          document.documentElement.classList.remove('loading');
-          document.body.classList.remove('loading');
+            document.documentElement.classList.remove('loading');
+            document.body.classList.remove('loading');
+            document.body.classList.add('revealed');
+            
+            // Persistent flag for session
+            sessionStorage.setItem('gsa_preloader_shown', 'true');
+            setIsRevealed(true);
 
-          // RECALCULATE ANIMATIONS (Crucial for Contact Section visibility)
-          setTimeout(() => {
-            ScrollTrigger.refresh();
-          }, 100);
+            recalculateTimeout = setTimeout(() => {
+              ScrollTrigger.refresh();
+            }, 100);
 
-          // Rimuovi dal DOM per performance
-          setTimeout(() => {
-            if (preloaderOverlay) preloaderOverlay.remove();
-          }, 500);
+          }, 1000); 
 
-        }, 1000); // Timing sincronizzato col picco dello zoom
+        }, 800); 
 
-      }, 800); // Tempo di "lettura" del logo fermo
-
-    }, 1800); // Durata totale dello shuffle iniziale
+      }, 1800); 
+    }
     const contextMenu = document.getElementById('gsa-context-menu');
     const ctxPartner = document.getElementById('ctx-partner');
     const ctxNewTab = document.getElementById('ctx-newtab');
@@ -1092,7 +956,7 @@ export default function Home() {
     let targetAction: HTMLElement | null = null;
 
     // 1. ASCOLTA IL CLICK DESTRO
-    document.addEventListener('contextmenu', (e: MouseEvent) => {
+    const onContextMenu = (e: MouseEvent) => {
       e.preventDefault(); // BLOCCA il menu nativo del browser
 
       // Resetta le voci dinamiche (nascondi tutto tranne Partner)
@@ -1135,11 +999,14 @@ export default function Home() {
         // MOSTRA IL MENU
         contextMenu.classList.add('active');
       }
-    });
+    };
+    document.addEventListener('contextmenu', onContextMenu);
 
     // 2. CHIUDI IL MENU (Al click ovunque o scroll)
-    document.addEventListener('click', () => { if (contextMenu) contextMenu.classList.remove('active') });
-    window.addEventListener('scroll', () => { if (contextMenu) contextMenu.classList.remove('active') });
+    const onDocClick = () => { if (contextMenu) contextMenu.classList.remove('active') };
+    const onWinScroll = () => { if (contextMenu) contextMenu.classList.remove('active') };
+    document.addEventListener('click', onDocClick);
+    window.addEventListener('scroll', onWinScroll);
 
     // 3. AZIONI DEL MENU
 
@@ -1171,15 +1038,60 @@ export default function Home() {
     }
 
 
-
     // Cleanup function
     return () => {
-      // Remove ESC handler for menu (defined above)
-      try { document.removeEventListener('keydown', onEsc as any); } catch (e) {}
+      // Clear all timers
+      clearInterval(shuffleInterval);
+      clearTimeout(phase1Timeout);
+      clearTimeout(phase2Timeout);
+      clearTimeout(revealTimeout);
+      clearTimeout(recalculateTimeout);
+      clearTimeout(removeTimeout);
+
+      cancelAnimationFrame(rafId);
       ScrollTrigger.getAll().forEach(t => t.kill());
-      if ((window as any).lenis) (window as any).lenis.destroy();
+      lenis.destroy();
+      delete (window as any).lenis;
+
+      // REVERT SPLIT TYPE (Avoid DOM corruption on re-navigation)
+      if (heroHeadline) heroHeadline.revert();
+      if (heroDesc) heroDesc.revert();
+      if (textStats) textStats.revert();
+
+      // Ensure loading classes are gone
+      document.documentElement.classList.remove('loading');
+      document.body.classList.remove('loading');
+      document.body.style.overflow = '';
+
+      // Clean up global listeners
+      document.removeEventListener('keydown', onEscKey);
+      document.removeEventListener('contextmenu', onContextMenu);
+      window.removeEventListener('scroll', onWinScroll);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('load', handleResize);
+      document.removeEventListener('click', onDocClick);
+
+      // Clean up embers
+      createdEmbers.forEach((emp: HTMLDivElement) => emp.remove());
+
+      // Clean up ParticlesJS
+      const pJS = (window as any).pJSDom;
+      if (Array.isArray(pJS)) {
+        for (let i = 0; i < pJS.length; i++) {
+          const instance = pJS[i];
+          if (instance && instance.pJS && instance.pJS.fn && instance.pJS.fn.vendors) {
+            try {
+              instance.pJS.fn.vendors.destroypJS();
+            } catch (e) {
+              console.warn("ParticlesJS cleanup error:", e);
+            }
+          }
+        }
+        (window as any).pJSDom = [];
+      }
     };
-  }, []);
+
+  }, [lang]);
 
   return (
     <div>
@@ -1232,23 +1144,25 @@ export default function Home() {
       {/* Styles */}
 
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
       {/* PRELOADER: THE GSA REVEAL (Typographic) */}
       {/* PRELOADER: THE ZOOM-THROUGH REVEAL (Cutout Mask Edition) */}
-      <div id="zoom-preloader" className="zoom-overlay">
-        <div className="zoom-bg" />
-        <div className="zoom-content">
-          <div id="shuffling-text" className="shuffle-word">VISIONE</div>
-          {/* Layer 1: GOLD (Visible initially) */}
-          <div id="logo-gold" className="gsa-huge-logo gsa-logo-layer gold">
-            <Image src="/assets/logo.png" alt="GSA Hotels" width={800} height={300} priority />
-          </div>
-          {/* Layer 2: HOLE (Visible during zoom to cut the mask) */}
-          <div id="logo-hole" className="gsa-huge-logo gsa-logo-layer hole">
-            <Image src="/assets/logo.png" alt="GSA Hotels" width={800} height={300} priority />
+      {!isRevealed && (
+        <div id="zoom-preloader" className="zoom-overlay">
+          <div className="zoom-bg" />
+          <div className="zoom-content">
+            <div id="shuffling-text" className="shuffle-word">{t('preloader.w1')}</div>
+            {/* Layer 1: GOLD (Visible initially) */}
+            <div id="logo-gold" className="gsa-huge-logo gsa-logo-layer gold">
+              <Image src="/assets/logo.png" alt="GSA Hotels" width={1200} height={450} priority style={{ width: '35vw', height: 'auto' }} />
+            </div>
+            {/* Layer 2: HOLE (Visible during zoom to cut the mask) */}
+            <div id="logo-hole" className="gsa-huge-logo gsa-logo-layer hole">
+              <Image src="/assets/logo.png" alt="GSA Hotels" width={1200} height={450} priority style={{ width: '35vw', height: 'auto' }} />
+            </div>
           </div>
         </div>
-      </div>
-      {/* SVG FILTER (User Snippet) */}
+      )}
       <svg style={{ width: 0, height: 0, position: 'absolute', pointerEvents: 'none' }}>
         <defs>
           <filter id="goo">
@@ -1258,129 +1172,18 @@ export default function Home() {
           </filter>
         </defs>
       </svg>
-      {/* Custom Cursor */}
-      {/* Mobile Toggle (Moved to Body for Z-Index Safety) */}
-      <a className="McButton mobile-toggle" data-menu="hamburger-menu">
-        <b />
-        <b />
-        <b />
-      </a>
-      {/* LIQUID GLASS MENU OVERLAY (Editorial Full-Screen) */}
-      <div id="liquid-glass-menu" className="glass-menu-overlay">
-        <div className="glass-menu-header">
-          <Link href="/" className="glass-logo"><Image src="/assets/logo.png" alt="GSA Logo" width={120} height={40} style={{ objectFit: 'contain' }} /></Link>
-          <div className="glass-close-btn mobile-close-btn">
-            <div className="McButton active" id="menu-close-trigger">
-              <b /><b /><b />
-            </div>
-          </div>
-        </div>
 
-        <div className="glass-menu-content" style={{ justifyContent: 'center' }}>
-          {/* LEFT: Navigation Links */}
-          <nav className="glass-nav-col" style={{ width: '100%', textAlign: 'center' }}>
-            <ul className="editorial-links" style={{ padding: 0 }}>
-              <li data-img="assets/academy_white_glove.png"><a href="#services" className="glass-link">ACADEMY</a></li>
-              <li data-img="assets/besafe-logo.png"><a href="#besafe" className="glass-link">BESAFE</a></li>
-              <li data-img="assets/duchessa_isabella.png"><a href="#experiences" className="glass-link">ESPERIENZE</a></li>
-              <li data-img="assets/besafe-logo.png"><a href="#fleet-section" className="glass-link">PARTNER</a></li>
-              <li data-img="assets/duchessa_isabella.png"><a href="#founder" className="glass-link">STRATEGIA</a></li>
-              <li data-img="assets/wellness.png"><a href="#career" className="glass-link">CARRIERE</a></li>
-              <li data-img="assets/duchessa_isabella.png"><a href="#philosophy" className="glass-link">VISION</a></li>
-            </ul>
-          </nav>
-        </div>
 
-        <div className="glass-menu-footer">
-          <div className="footer-links">
-            <a href="mailto:info@gsahotels.com">info@gsahotels.com</a>
-            <div className="glass-socials">
-              <a href="#"><i className="fab fa-linkedin" /></a>
-              <a href="https://www.instagram.com/gsahotels/"><i className="fab fa-instagram" /></a>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* LAYER 1: LIQUID GHOST (Solid White, Goo Filter) */}
-      <div id="cursor-goo-wrapper">
-        <div id="goo-fast" className="goo-blob"></div>
-        <div id="goo-slow" className="goo-blob"></div>
-      </div>
-      {/* LAYER 2: GLASS SHELL - solo il ring (cursor-slow) */}
-      <div id="cursor-wrapper">
-        <div id="cursors">
-          <div id="cursor-slow" className="cursor-dot" />
-        </div>
-      </div>
-      {/* Page Transition Curtain */}
-      <div className="transition-curtain" />
-      {/* GLOBAL BACKGROUND LAYER (Moved out of Hero) */}
+      <GlobalNav isHomePage={true} />
+
+      {/* GLOBAL BACKGROUND LAYER */}
       <div className="jesko-bg-layer">
-        <video id="hero-video" className="jesko-bg-video" autoPlay muted loop playsInline poster="assets/hero-fallback.png">
+        <video id="hero-video" className="jesko-bg-video" autoPlay muted loop playsInline>
           <source src="assets/wallpaperherosection.mp4" type="video/mp4" />
         </video>
         <div className="jesko-overlay-layer" />
       </div>
-      {/* Floating Navbar (Default Visible) */}
-      <div className="nav-wrapper">
-        {/* GOOEY BACKDROP */}
-        <div className="goo-container">
-          <div className="goo-cursor" id="goo-logo-blob" />
-        </div>
-        {/* Spotlight Logo (Content) */}
-        <a href="/" className="nav-logo spotlight-mode">
-          <Image src="/assets/logo.png" alt="GSA" width={100} height={35} />
-        </a>
-        <nav className="nav-capsule navbar nav-menu" style={{ justifyContent: 'flex-end', marginLeft: 'auto', gap: '20px', paddingRight: '20px' }}>
 
-          {/* CONTATTI (left of ACCEDI) */}
-          <a href="#contact" className="nav-cta">CONTATTI</a>
-
-          {/* ACCEDI (left of MENU) */}
-          <div className="nav-auth-inline" style={{ display: 'flex', alignItems: 'center' }}>
-            <SignedOut>
-              <Link href="/login" className="auth-icon-btn" title="Accedi">
-                <svg
-                  className="auth-icon-svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M20 21a8 8 0 0 0-16 0"
-                    stroke="currentColor"
-                    strokeWidth="1.25"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"
-                    stroke="currentColor"
-                    strokeWidth="1.25"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </Link>
-            </SignedOut>
-            <SignedIn>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <UserButton />
-                <Link href="/dashboard" className="auth-icon-btn" title="Dashboard">
-                  <i className="fas fa-columns" />
-                </Link>
-              </div>
-            </SignedIn>
-          </div>
-
-          {/* MENU (right-most) - hamburger without text */}
-          <div className="desktop-menu-trigger McButton" id="menu-trigger" style={{ position: 'relative', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <b style={{ pointerEvents: 'none' }} />
-            <b style={{ pointerEvents: 'none' }} />
-            <b style={{ pointerEvents: 'none' }} />
-          </div>
-
-        </nav>
-      </div>
       {/* Main Content */}
       <main>
         {/* Hero Section (Jesko Clone) */}
@@ -1395,22 +1198,20 @@ export default function Home() {
             </div>
             {/* CENTER LEFT: Headline */}
             <div className="j-headline-container">
-              <h1 className="j-headline">
-                IL FUTURO<br />
-                <span className="j-italic"> DELL'OSPITALITÀ</span>
+              <h1 className="j-headline" key={lang}>
+                {t('hero.title1')}<br />
+                <span className="j-italic"> {t('hero.title2')}</span>
               </h1>
             </div>
             {/* BOTTOM LEFT: Info */}
             <div className="j-info-container">
               <div className="j-separator" />
-              <p className="j-desc">Uniamo imprenditori visionari e strutture d'eccellenza. GSA Hotels
-                ridefinisce il concetto di gestione alberghiera, massimizzando il valore del tuo asset
-                attraverso strategie innovative e un network esclusivo.</p>
+              <p className="j-desc" key={lang}>{t('hero.desc')}</p>
             </div>
             {/* BOTTOM RIGHT: CTA */}
             <div className="j-cta-container">
               <div className="j-scroll-in">
-                <span>SCOPRI I VANTAGGI</span>
+                <span>{t('hero.cta')}</span>
                 <i className="fas fa-chevron-down j-arrow-down" />
                 <div className="j-line" />
               </div>
@@ -1420,65 +1221,67 @@ export default function Home() {
         {/* Pillars Section (Nuclear Insert) */}
         <section id="features" className="pillars-section">
           <div className="jesko-statement-container">
-            <p className="jesko-statement">
-              Unisciti a noi: <br /><br />
-              Entrare in GSA Hotels significa accedere ad un know-how condiviso e una forza
-              commerciale che il singolo hotel non può raggiungere.<br /><br />
+            <p className="jesko-statement" key={lang}>
+              {t('statement.text')}
             </p>
           </div>
         </section>
 
         {/* Refined Corporate Spotlight Area */}
-        <section className="corporate-spotlight-section">
+        <section id="intro" className="corporate-spotlight-section">
           <div className="spotlight-code-bg" aria-hidden="true" />
           <div className="spotlight-gold-glow" aria-hidden="true" />
           <div className="container spotlight-container">
-            <div className="spotlight-content reveal">
-              <h2 className="vision-headline">
-                L'Eccellenza nell'
-                <span className="vision-accent">Asset Management</span>
+            <div className="spotlight-content reveal" style={{ flex: 1, textAlign: 'left' }}>
+              <div className="section-label-chip">{t('corporate.label')}</div>
+              <h2 className="academy-title" style={{ fontSize: '3.5rem', marginBottom: '20px', lineHeight: '1.2', fontFamily: 'var(--font-display)' }}>
+                {t('corporate.title').split('\n').map((line: string, i: number) => <React.Fragment key={i}>{line}{i === 0 && <br />}</React.Fragment>)}
               </h2>
-              <div className="vision-divider" />
-              <p className="vision-body">
-                GSA Hotels non si limita alla gestione: noi eleviamo il potenziale di ogni struttura attraverso un'ingegneria dei processi impeccabile e una visione lungimirante che garantisce rendimenti superiori e un prestigio senza tempo.
+              <div className="vision-divider" style={{ margin: '20px 0' }} />
+              <p className="vision-body" style={{ fontSize: '1.1rem', maxWidth: '100%' }}>
+                {t('corporate.desc')}
               </p>
-              <div className="vision-footnote">
-                Un approccio sartoriale per patrimoni immobiliari d'eccezione.
+              <div className="vision-footnote" style={{ marginTop: '20px' }}>
+                {t('corporate.footnote')}
               </div>
             </div>
 
-            <div className="spotlight-visual reveal">
-              <div className="video-preview-wrapper-luxury">
-                <a href="https://www.youtube.com/watch?v=MFyef0yMQsY" target="_blank" rel="noopener noreferrer" className="video-preview-card">
-                  <div className="video-overlay" />
-                  <Image
-                    src="https://img.youtube.com/vi/MFyef0yMQsY/maxresdefault.jpg"
-                    alt="GSA Corporate Video"
-                    fill
-                    className="video-thumbnail"
-                    style={{ objectFit: 'cover' }}
-                  />
-                  <div className="play-btn-luxury">
-                    <i className="fas fa-play" />
-                  </div>
-                </a>
+            <div className="spotlight-video-wrapper" style={{ flex: 1.2 }}>
+              <div className="video-preview-card" style={{ cursor: 'pointer', height: '100%' }} onClick={() => setIsPlayingIntro(true)} id="section1-video-container">
+                {isPlayingIntro ? (
+                  <iframe width="100%" height="100%" src="https://www.youtube.com/embed/MFyef0yMQsY?autoplay=1" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen style={{ borderRadius: '12px' }}></iframe>
+                ) : (
+                  <>
+                    <div className="video-overlay" />
+                    <Image
+                      src="https://img.youtube.com/vi/MFyef0yMQsY/maxresdefault.jpg"
+                      alt="GSA Corporate Video"
+                      fill
+                      className="video-thumbnail"
+                      style={{ objectFit: 'cover' }}
+                    />
+                    <div className="play-btn-luxury">
+                      <i className="fas fa-play" />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
         </section>
 
         {/* 1. INTRODUCTION BANNER (NEW) */}
-        <section className="intro-banner-section" style={{ padding: '120px 0', background: 'linear-gradient(to bottom, #050505, #0a0a0a)' }}>
+        <section className="intro-banner-section" style={{ padding: '120px 0', background: 'rgba(5, 5, 5, 0.7)', position: 'relative' }}>
           <div className="container">
             <div className="intro-banner-content reveal" style={{ textAlign: 'center' }}>
-              <span className="label-gold" style={{ letterSpacing: '0.3em' }}>LA NOSTRA FILOSOFIA</span>
+              <span className="label-gold" style={{ letterSpacing: '0.3em' }}>{t('philosophy.label')}</span>
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', color: 'white', marginTop: '20px', lineHeight: '1.1' }}>
-                L'Eccellenza è uno <span style={{ color: 'var(--gold)', fontStyle: 'italic' }}>Standard</span>,<br />
-                l'Emozione è la nostra Firma.
+                {t('philosophy.title1')}<span style={{ color: 'var(--gold)', fontStyle: 'italic' }}>{t('philosophy.titleHighlight')}</span>,<br />
+                {t('philosophy.title2').split(',\n')[1]}
               </h2>
               <div className="gold-line" style={{ margin: '40px auto' }}></div>
               <p style={{ maxWidth: '700px', margin: '0 auto', fontSize: '1.1rem', opacity: 0.8 }}>
-                GSA Hotels trasforma la gestione alberghiera in una forma d'arte digitale e operativa, dove ogni dettaglio è progettato per elevare il valore dell'asset e l'esperienza dell'ospite.
+                {t('philosophy.desc')}
               </p>
             </div>
           </div>
@@ -1489,15 +1292,14 @@ export default function Home() {
           <div className="bg-academy-grid" />
           <div className="container academy-container">
             <div className="academy-content reveal">
-              <span className="label-gold">Formazione Certificata: GSA ACADEMY</span>
-              <h2 className="academy-title">Costruire il Futuro</h2>
+              <span className="label-gold">{t('academy.label')}</span>
+              <h2 className="academy-title">{t('academy.title')}</h2>
               <div className="separator-line" />
               <p className="academy-desc">
-                GSA Hotels non è solo gestione, è opportunità.
-                Offriamo percorsi certificati che uniscono competenze concrete e visione manageriale, trasformando il talento in professione.
+                {t('academy.desc')}
               </p>
               <a href="mailto:stefanogolisano@gsa-hotels.com" className="btn-jesko">
-                <i className="fas fa-envelope" /> FORMATI INSIEME A NOI
+                <i className="fas fa-envelope" /> {t('academy.cta')}
               </a>
             </div>
             <div className="academy-visual reveal">
@@ -1545,7 +1347,7 @@ export default function Home() {
                     </textPath>
                   </text>
                 </svg>
-                <div className="badge-center"><Image src="/assets/logo.png" alt="GSA Logo" width={80} height={30} /></div>
+                <div className="badge-center"><Image src="/assets/logo.png" alt="GSA Logo" fill style={{ objectFit: 'contain' }} /></div>
               </div>
             </div>
           </div>
@@ -1569,46 +1371,45 @@ export default function Home() {
                 />
                 <h2 className="besafe-title" style={{ margin: 0 }}>BeSafe Rate</h2>
               </div>
-              <h3 className="besafe-subtitle">Il lusso della serenità.</h3>
+              <h3 className="besafe-subtitle">{t('besafe.subtitle')}</h3>
               <p className="besafe-desc">
-                Prenotare una struttura d'eccellenza richiede garanzie d'eccellenza.
-                Con <strong>BeSafe Rate</strong>, la tariffa include un'assicurazione completa che protegge il
-                tuo investimento e la tua esperienza, prima e durante il soggiorno.
+                {t('besafe.desc').split('BeSafe Rate')[0]}
+                <strong>BeSafe Rate</strong>{t('besafe.desc').split('BeSafe Rate')[1]}
               </p>
             </div>
             <div className="besafe-cards-col">
               <div className="safety-card glass-effect">
                 <div className="card-icon"><i className="fas fa-undo" /></div>
                 <div className="card-info">
-                  <h4>Rimborso Garantito</h4>
-                  <p>Fino al 100% dell’importo prepagato in caso di cancellazione per eventi imprevisti.</p>
+                  <h4>{t('besafe.card1.title')}</h4>
+                  <p>{t('besafe.card1.desc')}</p>
                 </div>
               </div>
               <div className="safety-card glass-effect">
                 <div className="card-icon"><i className="fas fa-user-md" /></div>
                 <div className="card-info">
-                  <h4>Copertura Sanitaria</h4>
-                  <p>Assistenza completa per spese mediche e farmaceutiche dovute a infortuni o malattie.</p>
+                  <h4>{t('besafe.card2.title')}</h4>
+                  <p>{t('besafe.card2.desc')}</p>
                 </div>
               </div>
               <div className="safety-card glass-effect">
                 <div className="card-icon"><i className="fas fa-suitcase" /></div>
                 <div className="card-info">
-                  <h4>Protezione Bagaglio</h4>
-                  <p>Garanzia totale in caso di furto o mancata consegna dei tuoi effetti personali.</p>
+                  <h4>{t('besafe.card3.title')}</h4>
+                  <p>{t('besafe.card3.desc')}</p>
                 </div>
               </div>
               <div className="safety-card glass-effect">
                 <div className="card-icon"><i className="fas fa-road" /></div>
                 <div className="card-info">
-                  <h4>Assistenza Stradale</h4>
-                  <p>Supporto immediato sul posto per viaggiare senza pensieri verso la tua destinazione.</p>
+                  <h4>{t('besafe.card4.title')}</h4>
+                  <p>{t('besafe.card4.desc')}</p>
                 </div>
               </div>
               {/* Button added below the cards */}
               <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                <a href="https://www.besafesuite.com/besaferate/" target="_blank" className="btn-besafe-site">
-                  SCOPRI DI PIÙ <i className="fas fa-external-link-alt" style={{ marginLeft: '10px', fontSize: '0.8rem' }} />
+                <a href={t('besafe.link')} target="_blank" className="btn-besafe-site">
+                  {t('besafe.cta')} <i className="fas fa-external-link-alt" style={{ marginLeft: '10px', fontSize: '0.8rem' }} />
                 </a>
               </div>
             </div>
@@ -1619,12 +1420,11 @@ export default function Home() {
         <section id="experiences" className="experiences-section">
           <div className="container">
             <div className="section-header reveal" style={{ textAlign: 'center', marginBottom: '80px' }}>
-              <span className="label-gold">TERRITORI D'AUTORE</span>
-              <h2 className="vision-headline">Esperienze Memorabili</h2>
+              <span className="label-gold">{t('exp.label')}</span>
+              <h2 className="academy-title" style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(2.5rem, 5vw, 4.5rem)', marginBottom: '20px' }}>{t('exp.title')}</h2>
               <div className="vision-divider" style={{ margin: '20px auto' }} />
               <p className="vision-body" style={{ maxWidth: '800px', margin: '0 auto' }}>
-                Dalle torri medievali di Bologna al fascino rinascimentale di Ferrara.
-                Abbiamo selezionato percorsi esclusivi per farvi vivere l'anima più autentica dei nostri territori.
+                {t('exp.desc')}
               </p>
             </div>
 
@@ -1634,23 +1434,25 @@ export default function Home() {
                 <div className="exp-city-label">BOLOGNA</div>
                 <div className="exp-slider-luxury">
                   <div className="exp-image-wrapper">
-                    <Image
-                      src={bolognaExperiences[activeBologna].img}
-                      alt={bolognaExperiences[activeBologna].title}
-                      key={`bo-${activeBologna}`}
-                      fill
-                      className="exp-slide-img"
-                      style={{ objectFit: 'cover' }}
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                    />
-                    <div className="exp-overlay-luxury">
-                      <div className="exp-content-box">
-                        <span className="exp-count">0{activeBologna + 1} / 03</span>
-                        <h3>{bolognaExperiences[activeBologna].title}</h3>
-                        <p>{bolognaExperiences[activeBologna].desc}</p>
-                        <a href="/esperienze/bologna" className="exp-link-btn">SCOPRI DI PIÙ <i className="fas fa-arrow-right" /></a>
+                    <a href={`/esperienze/bologna/${encodeURIComponent(bolognaExperiences[activeBologna].title.split(': ')[1]?.toLowerCase().replace(/ /g, '-') || '')}`} className="exp-image-link" style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
+                      <Image
+                        src={bolognaExperiences[activeBologna].img}
+                        alt={bolognaExperiences[activeBologna].title}
+                        key={`bo-${activeBologna}`}
+                        fill
+                        className="exp-slide-img"
+                        style={{ objectFit: 'cover' }}
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
+                      <div className="exp-overlay-luxury">
+                        <div className="exp-content-box">
+                          <span className="exp-count">0{activeBologna + 1} / 03</span>
+                          <h3>{bolognaExperiences[activeBologna].title}</h3>
+                          <p>{bolognaExperiences[activeBologna].desc}</p>
+                          <span className="exp-link-btn">{t('exp.scopri')} <i className="fas fa-arrow-right" /></span>
+                        </div>
                       </div>
-                    </div>
+                    </a>
 
                     {/* Internal Controls */}
                     <div className="exp-controls-internal">
@@ -1668,6 +1470,10 @@ export default function Home() {
                       <div key={i} className={`slider-dot ${i === activeBologna ? 'active' : ''}`} onClick={() => setActiveBologna(i)} />
                     ))}
                   </div>
+                  {/* Bologna Button */}
+                  <div className="city-pill-wrapper" style={{ marginTop: '30px', textAlign: 'center' }}>
+                    <a href="/esperienze/bologna" className="btn btn-partner-gold pill-btn">BOLOGNA</a>
+                  </div>
                 </div>
               </div>
 
@@ -1676,23 +1482,25 @@ export default function Home() {
                 <div className="exp-city-label">FERRARA</div>
                 <div className="exp-slider-luxury">
                   <div className="exp-image-wrapper">
-                    <Image
-                      src={ferraraExperiences[activeFerrara].img}
-                      alt={ferraraExperiences[activeFerrara].title}
-                      key={`fe-${activeFerrara}`}
-                      fill
-                      className="exp-slide-img"
-                      style={{ objectFit: 'cover' }}
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                    />
-                    <div className="exp-overlay-luxury">
-                      <div className="exp-content-box">
-                        <span className="exp-count">0{activeFerrara + 1} / 06</span>
-                        <h3>{ferraraExperiences[activeFerrara].title}</h3>
-                        <p>{ferraraExperiences[activeFerrara].desc}</p>
-                        <a href="/esperienze/ferrara" className="exp-link-btn">SCOPRI DI PIÙ <i className="fas fa-arrow-right" /></a>
+                    <a href={`/esperienze/ferrara/${encodeURIComponent(ferraraExperiences[activeFerrara].title.split(': ')[1]?.toLowerCase().replace(/ /g, '-') || '')}`} className="exp-image-link" style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
+                      <Image
+                        src={ferraraExperiences[activeFerrara].img}
+                        alt={ferraraExperiences[activeFerrara].title}
+                        key={`fe-${activeFerrara}`}
+                        fill
+                        className="exp-slide-img"
+                        style={{ objectFit: 'cover' }}
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
+                      <div className="exp-overlay-luxury">
+                        <div className="exp-content-box">
+                          <span className="exp-count">0{activeFerrara + 1} / 06</span>
+                          <h3>{ferraraExperiences[activeFerrara].title}</h3>
+                          <p>{ferraraExperiences[activeFerrara].desc}</p>
+                          <span className="exp-link-btn">SCOPRI DI PIÙ <i className="fas fa-arrow-right" /></span>
+                        </div>
                       </div>
-                    </div>
+                    </a>
 
                     {/* Internal Controls */}
                     <div className="exp-controls-internal">
@@ -1710,17 +1518,15 @@ export default function Home() {
                       <div key={i} className={`slider-dot ${i === activeFerrara ? 'active' : ''}`} onClick={() => setActiveFerrara(i)} />
                     ))}
                   </div>
+                  {/* Ferrara Button */}
+                  <div className="city-pill-wrapper" style={{ marginTop: '30px', textAlign: 'center' }}>
+                    <a href="/esperienze/ferrara" className="btn btn-partner-gold pill-btn">FERRARA</a>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="experience-footer reveal" style={{ textAlign: 'center', marginTop: '60px', display: 'flex', justifyContent: 'center', gap: '14px', flexWrap: 'wrap' }}>
-              <a href="/esperienze/bologna" className="btn-jesko">
-                Bologna
-              </a>
-              <a href="/esperienze/ferrara" className="btn-jesko">
-                Ferrara
-              </a>
             </div>
           </div>
         </section>
@@ -1731,19 +1537,16 @@ export default function Home() {
           <div className="bg-noise" />
           <div className="container founder-container">
             <div className="founder-bio reveal">
-              <span className="label-gold">La mente dietro GSA Hotels</span>
+              <span className="label-gold">{t('founder.label')}</span>
               <h2 className="founder-name">Stefano Golisano</h2>
               <div className="separator-line" />
               <p className="founder-text">
-                Un decennio di esperienza nel settore alberghiero ha forgiato una visione chiara:
-                l'ospitalità non è solo servizio, è un'esperienza.
+                {t('founder.text1')}
               </p>
               <p className="founder-text">
-                Stefano ha fondato GSA Hotels per colmare il divario tra la gestione tradizionale e le moderne
-                esigenze di ricettività.
-                <br /><br />
-                Se vuoi approfondire il mondo GSA Hotels e conoscere la persona che ne guida la strategia guarda i suoi interventi.
+                {t('founder.text2')}
               </p>
+
               <div className="founder-signature">
                 Stefano Golisano
               </div>
@@ -1799,12 +1602,12 @@ export default function Home() {
         </section>
 
         {/* 5. I NOSTRI PARTNER (HOTEL SECTION) */}
-        <section id="fleet-section" style={{ padding: '80px 0 0', background: '#080808' }}>
+        <section id="partner" style={{ padding: '80px 0 0', background: '#080808' }}>
           <div className="container" style={{ marginBottom: '60px', textAlign: 'center' }}>
-            <span className="label-gold">STRUTTURE D'ECCELLENZA</span>
-            <h2 className="academy-title" style={{ marginTop: '10px' }}>I nostri partners</h2>
+            <span className="label-gold">{t('partners.label')}</span>
+            <h2 className="academy-title" style={{ marginTop: '10px' }}>{t('partners.title')}</h2>
             <p style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '600px', margin: '15px auto 0', fontSize: '1.1rem' }}>
-              Modelli di ospitalità autentica coordinati dalla nostra visione strategica.
+              {t('partners.desc')}
             </p>
           </div>
           <div id="fleet">
@@ -1825,7 +1628,7 @@ export default function Home() {
               <div className="hotel-content">
                 <span className="hotel-location">Ferrara</span>
                 <h2 className="hotel-name">Hotel Duchessa Isabella</h2>
-                <a href="https://duchessaisabella.com" target="_blank" className="btn-explore">Esplora Dimora</a>
+                <a href="https://duchessaisabella.com" target="_blank" className="btn-explore">{t('hotel.esplora')}</a>
               </div>
             </section>
             {/* Hotel Blumen */}
@@ -1845,7 +1648,7 @@ export default function Home() {
               <div className="hotel-content">
                 <span className="hotel-location">Bologna</span>
                 <h2 className="hotel-name">Hotel Blumen</h2>
-                <a href="https://hotelblumen.it" target="_blank" className="btn-explore">Esplora Dimora</a>
+                <a href="https://hotelblumen.it" target="_blank" className="btn-explore">{t('hotel.esplora')}</a>
               </div>
             </section>
             {/* Hotel Sant'Orsola */}
@@ -1865,7 +1668,7 @@ export default function Home() {
               <div className="hotel-content">
                 <span className="hotel-location">Bologna</span>
                 <h2 className="hotel-name">Hotel Sant'Orsola</h2>
-                <a href="https://hotelsantorsola.it" target="_blank" className="btn-explore">Esplora Dimora</a>
+                <a href="https://hotelsantorsola.it" target="_blank" className="btn-explore">{t('hotel.esplora')}</a>
               </div>
             </section>
             {/* Oasi Isabella Wellness SPA */}
@@ -1885,7 +1688,7 @@ export default function Home() {
               <div className="hotel-content">
                 <span className="hotel-location">Ferrara</span>
                 <h2 className="hotel-name">Oasi Isabella Wellness SPA</h2>
-                <a href="https://www.duchessaisabella.com/wellness/" target="_blank" className="btn-explore">Vivi il Benessere</a>
+                <a href="https://www.duchessaisabella.com/wellness/" target="_blank" className="btn-explore">{t('hotel.wellness')}</a>
               </div>
             </section>
 
@@ -1906,33 +1709,9 @@ export default function Home() {
               <div className="hotel-content">
                 <span className="hotel-location">Ferrara</span>
                 <h2 className="hotel-name">Duchessa Isabella Eventi</h2>
-                <a href="https://www.duchessaisabella.com/meeting-eventi/" target="_blank" className="btn-explore">Celebra la Storia</a>
+                <a href="https://www.duchessaisabella.com/meeting-eventi/" target="_blank" className="btn-explore">{t('hotel.eventi')}</a>
               </div>
             </section>
-          </div>
-        </section>
-
-        {/* CAREER SECTION - Talent Acquisition */}
-        <section id="career" className="career-section">
-          <div className="container career-container">
-            <div className="career-content reveal">
-              <span className="label-gold">UNISCITI ALL'ELITE</span>
-              <h2 className="career-headline">Il tuo futuro in GSA Hotels</h2>
-              <div className="career-divider" />
-              <p className="career-body">
-                Questa sezione è dedicata alla ricerca e valutazione di profili d'eccellenza per le realtà che orbitano attorno al marchio GSA Hotels.
-                <strong> GSA Hotels non è un gruppo</strong>, è un ecosistema di valori, strategia e identità. Siamo costantemente alla ricerca di talenti dinamici che amino l'ospitalità autentica e desiderino contribuire all'ingegnerizzazione di modelli di accoglienza senza tempo.
-              </p>
-              <p className="career-subtext">
-                Di seguito potrai inviare la tua candidatura e il tuo curriculum vitae seguendo la procedura dedicata. Valutiamo ogni profilo con il massimo riserbo e attenzione al potenziale individuale.
-              </p>
-              <div className="career-cta-wrapper">
-                <a href="#contact" className="btn-bugatti" onClick={() => setFormData(p => ({ ...p, interesse: 'Candidatura Lavorativa' }))}>
-                  <span className="btn-text">INVIA LA TUA CANDIDATURA</span>
-                  <span className="btn-line" />
-                </a>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -1942,30 +1721,28 @@ export default function Home() {
           <div className="bg-watermark">AUTHENTICITY</div>
           <div className="container vision-container">
             <div className="vision-content reveal">
-              <span className="vision-kicker">IL NOSTRO DNA</span>
-              <h2 className="vision-headline">L'Autenticità</h2>
+              <span className="vision-kicker">{t('dna.kicker')}</span>
+              <h2 className="vision-headline">{t('dna.title')}</h2>
               <div className="vision-divider" />
-              <p className="vision-body">
-                Il nostro approccio fonde l'inimitabile ospitalità italiana con l'autenticità delle persone che ogni giorno animano le nostre aziende.
-              </p>
-              <a href="#metodo" className="btn-bugatti">
-                <span className="btn-text">SCOPRI DI PIÙ</span>
-                <span className="btn-line" />
-              </a>
+              <div className="vision-body-wrapper" style={{ marginBottom: '40px' }}>
+                <p className="vision-body">
+                  {t('dna.body')}
+                </p>
+              </div>
             </div>
             <div className="vision-visual reveal">
               <div className="video-slider-wrapper">
-                <div className="slider-video-container" onClick={() => visionImages.length > 0 && setIsVisionLightboxOpen(true)} style={{ cursor: visionImages.length > 0 ? 'zoom-in' : 'wait' }}>
-                  <div className="visual-frame slider-frame" style={{ height: '600px' }}>
+                <div className="slider-video-container" style={{ height: '100%', width: '100%' }}>
+                  <div className="visual-frame slider-frame" style={{ height: '70vh', border: 'none' }}>
                     {visionImages.length > 0 ? (
                       <Image
                         key={activeVisionImage}
-                        src={visionImages[activeVisionImage]}
+                        src={visionImages[activeVisionImage].startsWith('assets/') ? `/${visionImages[activeVisionImage]}` : visionImages[activeVisionImage]}
                         alt="Authenticity Highlight"
                         fill
                         className="vision-slide-img"
-                        style={{ objectFit: 'cover', objectPosition: 'top' }}
-                        sizes="(max-width: 768px) 100vw, 70vw"
+                        style={{ objectFit: 'cover', objectPosition: 'center' }}
+                        sizes="100vw"
                         priority={activeVisionImage === 0}
                       />
                     ) : (
@@ -1973,7 +1750,6 @@ export default function Home() {
                         <i className="fas fa-spinner fa-spin" style={{ color: 'var(--gold-accent)' }} />
                       </div>
                     )}
-                    <div className="frame-border" />
                   </div>
                 </div>
 
@@ -2025,18 +1801,17 @@ export default function Home() {
           </div>
         </section>
 
-        {/* PARTNER SECTION - Dynamic Business Models */}
-        <section id="partner" className="partner-section">
+        {/* PARTNER SECTION - Dynamic Business Models (B2B EXPERTISE) */}
+        <section id="b2b-section" className="partner-section">
           <div className="container partner-container">
             <div className="partner-header reveal">
-              <span className="label-gold">COLLABORAZIONE STRATEGICA</span>
-              <h2 className="partner-headline">Diventa un Partner</h2>
+              <span className="label-gold">{t('b2b.label')}</span>
+              <h2 className="partner-headline">{t('b2b.title')}</h2>
               <p className="partner-subline">
-                Non gestiamo semplici immobili, <strong>noi ingegnerizziamo asset</strong>.
+                {t('b2b.subtitle')}
               </p>
               <p className="partner-intro">
-                Eleviamo l'identità della tua struttura, trasformandola in un modello di eccellenza, valore e profittabilità sostenibile.
-                <strong> Contenuti esclusivi che possono agevolare la tua attività</strong>, accesso prioritario al nostro network di fornitori certificati e strumenti di marketing d'élite.
+                {t('b2b.desc')}
               </p>
             </div>
 
@@ -2048,13 +1823,15 @@ export default function Home() {
                   <div className="card-icon-wrapper">
                     <i className="fas fa-certificate" />
                   </div>
-                  <h3 className="card-title">Affiliazione GSA</h3>
-                  <p className="card-tagline">Lend the Prestige (Royalty Model)</p>
+                  <h3 className="card-title">{t('b2b.card1.title')}</h3>
+                  <p className="card-tagline">{t('b2b.card1.tagline')}</p>
                   <p className="card-description">
-                    Ti concediamo l'uso del nostro marchio d'eccellenza come royalty.
-                    Mantieni la tua gestione operativa beneficiando della nostra forza commerciale, dei sistemi di pricing avanzati e del prestigio del network GSA Hotels.
+                    {t('b2b.card1.desc')}
                   </p>
-                  <a href="#contact" className="btn-card-action">RICHIEDI AFFILIAZIONE</a>
+                  <a href="#contact" className="btn-partner-gold pill-btn" onClick={(e) => {
+                    setFormData(p => ({ ...p, interesse: t('contact.opt1') }));
+                    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                  }}>{t('b2b.card1.cta')}</a>
                 </div>
               </div>
 
@@ -2065,13 +1842,39 @@ export default function Home() {
                   <div className="card-icon-wrapper">
                     <i className="fas fa-key" />
                   </div>
-                  <h3 className="card-title">Gestione GSA</h3>
-                  <p className="card-tagline">Total Management Solutions</p>
+                  <h3 className="card-title">{t('b2b.card2.title')}</h3>
+                  <p className="card-tagline">{t('b2b.card2.tagline')}</p>
                   <p className="card-description">
-                    Affidaci la gestione completa del tuo hotel. Trasformiamo la tua proprietà in un asset performante a 360°, liberandoti dalla complessità operativa e garantendo risultati certi attraverso i nostri standard pluripremiati.
+                    {t('b2b.card2.desc')}
                   </p>
-                  <a href="#contact" className="btn-card-action">AFFIDA LA GESTIONE</a>
+                  <a href="#contact" className="btn-partner-gold pill-btn" onClick={(e) => {
+                    setFormData(p => ({ ...p, interesse: t('contact.opt2') }));
+                    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                  }}>{t('b2b.card2.cta')}</a>
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        {/* CAREER SECTION - Talent Acquisition */}
+        <section id="career" className="career-section">
+          <div className="container career-container">
+            <div className="career-content reveal">
+              <span className="label-gold">{t('career.label')}</span>
+              <h2 className="career-headline">{t('career.title')}</h2>
+              <div className="career-divider" />
+              <p className="career-body">
+                {t('career.body')}
+              </p>
+              <p className="career-subtext">
+                {t('career.subtext')}
+              </p>
+              <div className="career-cta-wrapper" style={{ marginTop: '40px' }}>
+                <a href="#contact" className="btn-partner-gold pill-btn" onClick={() => { setFormData(p => ({ ...p, interesse: t('contact.opt4') })); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }}>
+                  {t('career.cta')}
+                </a>
               </div>
             </div>
           </div>
@@ -2083,15 +1886,14 @@ export default function Home() {
           <div className="container luxury-form-container">
             {/* Intro Column - Now on the LEFT */}
             <div className="form-intro reveal">
-              <h2 className="form-title">Contattaci</h2>
+              <h2 className="form-title">{t('contact.title')}</h2>
               <p className="form-desc">
-                Valutiamo esclusivamente strutture con alto potenziale di crescita.
-                Lascia i tuoi recapiti per una conversazione riservata.
+                {t('contact.desc')}
               </p>
               <div className="contact-direct-info">
                 <div className="info-row">
                   <span className="info-label">HEADQUARTERS</span>
-                  <span className="info-value">Emilia Romagna, Italia</span>
+                  <span className="info-value">{t('contact.hq')}</span>
                 </div>
               </div>
             </div>
@@ -2109,7 +1911,7 @@ export default function Home() {
                     value={formData.nome}
                     onChange={handleInputChange}
                   />
-                  <label htmlFor="nome" className="floating-label">NOME E COGNOME</label>
+                  <label htmlFor="nome" className="floating-label">{t('contact.nome')}</label>
                   <span className="focus-border" />
                 </div>
                 <div className="input-group">
@@ -2122,7 +1924,7 @@ export default function Home() {
                     value={formData.azienda}
                     onChange={handleInputChange}
                   />
-                  <label htmlFor="azienda" className="floating-label">AZIENDA / HOTEL</label>
+                  <label htmlFor="azienda" className="floating-label">{t('contact.azienda')}</label>
                   <span className="focus-border" />
                 </div>
                 <div className="input-group">
@@ -2135,7 +1937,7 @@ export default function Home() {
                     value={formData.email}
                     onChange={handleInputChange}
                   />
-                  <label htmlFor="email" className="floating-label">EMAIL AZIENDALE</label>
+                  <label htmlFor="email" className="floating-label">{t('contact.email')}</label>
                   <span className="focus-border" />
                 </div>
                 <div className="input-group">
@@ -2147,7 +1949,7 @@ export default function Home() {
                     value={formData.telefono}
                     onChange={handleInputChange}
                   />
-                  <label htmlFor="telefono" className="floating-label">TELEFONO</label>
+                  <label htmlFor="telefono" className="floating-label">{t('contact.telefono')}</label>
                   <span className="focus-border" />
                 </div>
                 <div className="input-group">
@@ -2159,40 +1961,42 @@ export default function Home() {
                     value={formData.messaggio}
                     onChange={handleInputChange}
                   />
-                  <label htmlFor="messaggio" className="floating-label">MESSAGGIO</label>
+                  <label htmlFor="messaggio" className="floating-label">{t('contact.messaggio')}</label>
                   <span className="focus-border" />
                 </div>
-                <div className="input-group custom-select-wrapper" id="customSelectWrapper">
+                <div className={`input-group custom-select-wrapper ${isSelectOpen ? 'open' : ''}`} id="customSelectWrapper">
                   <input type="hidden" id="interesse" name="interesse" value={formData.interesse} />
                   <div
                     className={`minimal-input custom-select-trigger ${formData.interesse ? 'has-value' : ''}`}
                     tabIndex={0}
+                    onClick={() => setIsSelectOpen(!isSelectOpen)}
                   >
                     <span className="selected-text">{formData.interesse}</span>
                     <span className="select-arrow-custom">
-                      <i className="fas fa-chevron-down" />
+                      <i className="fas fa-chevron-down" style={{ transition: 'transform 0.3s', transform: isSelectOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
                     </span>
                   </div>
-                  <label className="floating-label select-label">MOTIVO DEL CONTATTO</label>
-                  <div className="custom-options">
-                    <div className="custom-option" onClick={() => setFormData(p => ({ ...p, interesse: 'Affiliazione Brand' }))}>Affiliazione Brand</div>
-                    <div className="custom-option" onClick={() => setFormData(p => ({ ...p, interesse: 'Gestione Diretta' }))}>Gestione Diretta</div>
-                    <div className="custom-option" onClick={() => setFormData(p => ({ ...p, interesse: 'Academy & Formazione' }))}>Academy & Formazione</div>
-                    <div className="custom-option" onClick={() => setFormData(p => ({ ...p, interesse: 'Altro' }))}>Altro</div>
+                  <label className="floating-label select-label">{t('contact.motivo')}</label>
+                  <div className="custom-options" style={{ display: isSelectOpen ? 'block' : 'none' }}>
+                    <div className="custom-option" onClick={() => { setFormData(p => ({ ...p, interesse: t('contact.opt1') })); setIsSelectOpen(false); }}>{t('contact.opt1')}</div>
+                    <div className="custom-option" onClick={() => { setFormData(p => ({ ...p, interesse: t('contact.opt2') })); setIsSelectOpen(false); }}>{t('contact.opt2')}</div>
+                    <div className="custom-option" onClick={() => { setFormData(p => ({ ...p, interesse: t('contact.opt3') })); setIsSelectOpen(false); }}>{t('contact.opt3')}</div>
+                    <div className="custom-option" onClick={() => { setFormData(p => ({ ...p, interesse: t('contact.opt4') })); setIsSelectOpen(false); }}>{t('contact.opt4')}</div>
+                    <div className="custom-option" onClick={() => { setFormData(p => ({ ...p, interesse: t('contact.opt5') })); setIsSelectOpen(false); }}>{t('contact.opt5')}</div>
                   </div>
                   <span className="focus-border" />
                 </div>
 
                 <div className="form-footer">
                   <button type="submit" className="btn-bugatti" disabled={isSubmitting}>
-                    <span className="btn-text">{isSubmitting ? 'INVIO IN CORSO...' : 'INVIA RICHIESTA'}</span>
+                    <span className="btn-text">{isSubmitting ? t('contact.sending') : t('contact.submit')}</span>
                     <span className="btn-line" />
                   </button>
                   {submitStatus === 'success' && (
-                    <p className="submit-feedback success" style={{ color: '#C5A059', marginTop: '15px' }}>Richiesta inviata con successo.</p>
+                    <p className="submit-feedback success" style={{ color: '#C5A059', marginTop: '15px' }}>{t('contact.success')}</p>
                   )}
                   {submitStatus === 'error' && (
-                    <p className="submit-feedback error" style={{ color: '#ff4d4d', marginTop: '15px' }}>Errore nell'invio. Riprova più tardi.</p>
+                    <p className="submit-feedback error" style={{ color: '#ff4d4d', marginTop: '15px' }}>{t('contact.error')}</p>
                   )}
                 </div>
               </form>
@@ -2228,17 +2032,25 @@ export default function Home() {
                   <a href="https://instagram.com/duchessaisabella" target="_blank" className="social-link-item">
                     <i className="fab fa-instagram" /> <span>Instagram</span>
                   </a>
-                  <a href="https://www.tripadvisor.it/Hotel_Review-g187803-d232537-Reviews-Hotel_Duchessa_Isabella-Ferrara_Province_of_Ferrara_Emilia_Romagna.html" target="_blank" className="social-link-item">
-                    <i className="fab fa-tripadvisor" /> <span>TripAdvisor</span>
+                  <a href="https://www.tripadvisor.it/Hotel_Review-g187803-d232851-Reviews-Duchessa_Isabella_Hotel-Ferrara_Province_of_Ferrara_Emilia_Romagna.html" target="_blank" className="social-link-item">
+                    <i className="fa fa-tripadvisor" /> <span>TripAdvisor</span>
                   </a>
                 </div>
               </div>
 
               {/* Category 3: Quick Links */}
               <div className="footer-col">
-                <h4 className="footer-heading">NAVIGAZIONE</h4>
+                <h4 className="footer-heading">{t('footer.navigazione')}</h4>
                 <ul className="footer-links">
-                  <li><a href=""></a></li>
+                  <li><a href="#intro">{t('menu.chiSiamo')}</a></li>
+                  <li><a href="#services">{t('menu.academy')}</a></li>
+                  <li><a href="#besafe">{t('menu.besafe')}</a></li>
+                  <li><a href="#experiences">{t('menu.esperienze')}</a></li>
+                  <li><a href="#founder">{t('menu.fondatore')}</a></li>
+                  <li><a href="#partner">{t('menu.partner')}</a></li>
+                  <li><a href="#b2b-section">{t('menu.lavora')}</a></li>
+                  <li><a href="#philosophy">{t('menu.dna')}</a></li>
+                  <li><a href="/blog">{t('menu.blog')}</a></li>
                 </ul>
               </div>
             </div> {/* Closes footer-grid */}
@@ -2249,81 +2061,25 @@ export default function Home() {
               <div className="j-line" />
             </div>
 
-            <div className="footer-legal">
-              <p>&copy; {new Date().getFullYear()} GSA Hotels. All Rights Reserved.</p>
-              <div className="legal-links">
-                <span>Designed and coded by <a href="mailto:tiachinaglia@gmail.com">Mattia Chinaglia</a></span>
-                <a href="#" className="cookie-link">Privacy Policy</a>
-                <a href="#">Cookie Policy</a>
+            <div className="footer-legal" style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', flexWrap: 'wrap', gap: '30px', width: '100%', marginTop: '5px' }}>
+              <div className="legal-left" style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
+                <a href="#" className="cookie-link">{t('footer.legal.privacy')}</a>
+                <a href="#" className="cookie-link">{t('footer.legal.cookie')}</a>
+                <a href="#" className="cookie-link">{t('footer.legal.terms')}</a>
+                <span style={{ opacity: 0.5 }}>|</span>
+                <p style={{ margin: 0 }}>&copy; 2026 GSA Hotels. All Rights Reserved.</p>
               </div>
+              <p className="footer-credits" style={{ margin: 10, textAlign: 'start' }}>
+                Powered by: <a href="mailto:tiachinaglia@gmail.com" style={{ color: '#C5A059', textDecoration: 'none' }}>tiachinaglia@gmail.com</a>
+              </p>
             </div>
           </div> {/* Closes container */}
 
-          <div className="footer-signature">
+          <div className="footer-signature" style={{ color: 'transparent', WebkitTextStroke: '1px #C5A059' }}>
             GSA HOTELS
           </div>
         </footer>
-        {/* Fullscreen Lightbox Portal */}
-        {isVisionLightboxOpen && visionImages.length > 0 && (
-          <div className="vision-lightbox-overlay">
-            <button className="lightbox-close" onClick={() => setIsVisionLightboxOpen(false)}>
-              <i className="fas fa-times" />
-            </button>
-            <div className="lightbox-content">
-              <div className="lightbox-image-container">
-                <Image
-                  src={visionImages[activeVisionImage]}
-                  alt="Vision Fullscreen"
-                  fill
-                  className="lightbox-img"
-                  style={{ objectFit: 'contain' }}
-                  priority
-                />
-              </div>
 
-              <div className="lightbox-controls">
-                <button onClick={prevVisionImage} className="slider-arrow large" aria-label="Precedente">
-                  <i className="fas fa-chevron-left" />
-                </button>
-
-                <div className="vision-scrubber-wrapper lightbox-scrubber">
-                  {(scrubberHoverValue !== null || isScrubbing) && (
-                    <div
-                      className="vision-scrubber-tooltip"
-                      style={{
-                        left: `${((scrubberHoverValue !== null ? scrubberHoverValue : activeVisionImage) / (visionImages.length - 1)) * 100}%`
-                      }}
-                    >
-                      {String((scrubberHoverValue !== null ? scrubberHoverValue : activeVisionImage) + 1).padStart(2, '0')} / {visionImages.length}
-                    </div>
-                  )}
-                  <input
-                    type="range"
-                    min="0"
-                    max={visionImages.length - 1}
-                    value={activeVisionImage}
-                    onChange={(e) => setActiveVisionImage(parseInt(e.target.value))}
-                    onMouseEnter={() => setScrubberHoverValue(activeVisionImage)}
-                    onMouseLeave={() => setScrubberHoverValue(null)}
-                    onMouseMove={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const x = e.clientX - rect.left;
-                      const val = Math.round((x / rect.width) * (visionImages.length - 1));
-                      setScrubberHoverValue(Math.max(0, Math.min(visionImages.length - 1, val)));
-                    }}
-                    onMouseDown={() => setIsScrubbing(true)}
-                    onMouseUp={() => setIsScrubbing(false)}
-                    className="vision-scrubber"
-                  />
-                </div>
-
-                <button onClick={nextVisionImage} className="slider-arrow large" aria-label="Successiva">
-                  <i className="fas fa-chevron-right" />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </main>
       {/* Scripts */}
       {/* GSAP Core */}
@@ -2340,15 +2096,14 @@ export default function Home() {
       {/* PRIVACY CONCIERGE (Cookie Banner) */}
       <div id="cookie-banner" className="cookie-banner">
         <div className="cookie-content">
-          <h4 className="cookie-title">Privacy &amp; Eccellenza</h4>
+          <h4 className="cookie-title">{t('cookie.title')}</h4>
           <p className="cookie-text">
-            Utilizziamo i cookie per garantire un'esperienza di navigazione all'altezza dei nostri standard.
-            Continuando, accetti la nostra <a href="#" className="cookie-link">Privacy Policy</a>.
+            {t('cookie.text')} <a href="#" className="cookie-link">{t('footer.legal.privacy')}</a>.
           </p>
         </div>
         <div className="cookie-actions">
-          <button id="cookie-decline" className="btn-cookie-ghost">Solo Necessari</button>
-          <button id="cookie-accept" className="btn-cookie-gold">Accetta Tutto</button>
+          <button id="cookie-decline" className="btn-cookie-ghost">{t('cookie.necessary')}</button>
+          <button id="cookie-accept" className="btn-cookie-gold">{t('cookie.accept')}</button>
         </div>
       </div>
       {/* LEGAL MODAL (Privacy Policy) */}
@@ -2356,65 +2111,25 @@ export default function Home() {
         <div className="legal-modal-backdrop" />
         <div className="legal-modal-content">
           <div className="legal-header">
-            <h2 className="legal-title">Privacy Policy</h2>
-            <button className="legal-close-btn" aria-label="Chiudi">
+            <h2 className="legal-title">{t('footer.legal.privacy')}</h2>
+            <button className="legal-close-btn" aria-label={t('legal.close')}>
               <i className="fas fa-times" />
             </button>
           </div>
-          <div className="legal-body">
-            <h3>1. Titolare del Trattamento</h3>
-            <p>Il Titolare del trattamento è <strong>GSA Hotels S.r.l.</strong>, con sede in Italia. Per qualsiasi
-              richiesta relativa alla privacy, puoi contattarci all'indirizzo: <a href="mailto:info@gsahotels.com">info@gsahotels.com</a>.</p>
-            <h3>2. Tipologia di Dati Raccolti</h3>
-            <p>Raccogliamo dati per finalità di business e partnership strategiche:</p>
-            <ul>
-              <li><strong>Dati di Contatto:</strong> Nome, email aziendale, telefono, nome dell'hotel (tramite
-                form).</li>
-              <li><strong>Dati Tecnici:</strong> Indirizzo IP, dati di navigazione e preferenze (tramite cookie).
-              </li>
-            </ul>
-            <h3>3. Finalità e Base Giuridica</h3>
-            <p>I tuoi dati vengono trattati per:</p>
-            <ul>
-              <li>Gestire richieste di affiliazione e valutazione asset (Esecuzione precontrattuale).</li>
-              <li>Comunicazioni commerciali relative ai servizi GSA (Legittimo interesse).</li>
-              <li>Obblighi di legge amministrativi e fiscali.</li>
-            </ul>
-            <h3>4. Conservazione dei Dati</h3>
-            <p>I dati verranno conservati per il tempo strettamente necessario a gestire la tua richiesta o per la
-              durata del rapporto commerciale, salvo diversi obblighi di legge.</p>
-            <h3>5. I Tuoi Diritti (GDPR)</h3>
-            <p>Hai il diritto di accedere ai tuoi dati, chiederne la rettifica, la cancellazione o la limitazione
-              del trattamento in qualsiasi momento contattando il Titolare.</p>
-            <p className="legal-footer-note">Ultimo aggiornamento: Gennaio 2026</p>
-          </div>
+          <div className="legal-body" dangerouslySetInnerHTML={{ __html: t('legal.privacy.html') }} />
         </div>
       </div>
-      {/* LEGAL MODAL (Termini e Condizioni) */}
+      {/* LEGAL MODAL (Terms) */}
       <div id="terms-modal" className="legal-modal">
         <div className="legal-modal-backdrop" />
         <div className="legal-modal-content">
           <div className="legal-header">
-            <h2 className="legal-title">Termini e Condizioni</h2>
-            <button className="legal-close-btn" aria-label="Chiudi">
+            <h2 className="legal-title">{t('footer.legal.terms')}</h2>
+            <button className="legal-close-btn" aria-label={t('legal.close')}>
               <i className="fas fa-times" />
             </button>
           </div>
-          <div className="legal-body">
-            <h3>1. Proprietà del Sito</h3>
-            <p>Il sito è gestito da <strong>GSA Hotels S.r.l.</strong>. L'accesso implica l'accettazione di questi
-              termini. Il servizio è riservato a utenti business (B2B).</p>
-            <h3>2. Copyright e Proprietà Intellettuale</h3>
-            <p>Tutti i contenuti, il design, il codice e il marchio "GSA Hotels" sono protetti da copyright. È
-              vietata la copia o l'uso non autorizzato del materiale presente.</p>
-            <h3>3. Limitazione di Responsabilità</h3>
-            <p>Le informazioni sul sito sono fornite a titolo informativo. GSA Hotels non risponde di eventuali
-              inesattezze o di decisioni prese basandosi esclusivamente su tali informazioni senza una consulenza
-              diretta.</p>
-            <h3>4. Foro Competente</h3>
-            <p>Per qualsiasi controversia legale è competente in via esclusiva il Foro di Bologna, Italia.</p>
-            <p className="legal-footer-note">Ultimo aggiornamento: Gennaio 2026</p>
-          </div>
+          <div className="legal-body" dangerouslySetInnerHTML={{ __html: t('legal.terms.html') }} />
         </div>
       </div>
       {/* LEGAL MODAL (Cookie Policy) */}
@@ -2422,29 +2137,12 @@ export default function Home() {
         <div className="legal-modal-backdrop" />
         <div className="legal-modal-content">
           <div className="legal-header">
-            <h2 className="legal-title">Cookie Policy</h2>
-            <button className="legal-close-btn" aria-label="Chiudi">
+            <h2 className="legal-title">{t('footer.legal.cookie')}</h2>
+            <button className="legal-close-btn" aria-label={t('legal.close')}>
               <i className="fas fa-times" />
             </button>
           </div>
-          <div className="legal-body">
-            <h3>1. Uso dei Cookie</h3>
-            <p>Questo sito utilizza cookie per migliorare l'esperienza di navigazione e analizzare il traffico.
-              Gestiamo i cookie tramite il sistema proprietario <em>GSA Cookie Engine</em>.</p>
-            <h3>2. Tipologie</h3>
-            <ul>
-              <li><strong>Tecnici:</strong> Necessari per il funzionamento (es. ricordare se hai accettato i
-                cookie).</li>
-              <li><strong>Analitici:</strong> (Google Analytics) Usati per statistiche anonime. Attivi solo col
-                tuo consenso.</li>
-              <li><strong>Marketing:</strong> (Pixel Meta/LinkedIn) Usati per campagne pubblicitarie mirate.
-                Attivi solo col tuo consenso.</li>
-            </ul>
-            <h3>3. I Tuoi Diritti</h3>
-            <p>Puoi revocare il consenso in qualsiasi momento cancellando i cookie dal browser o usando il tasto
-              "Gestisci Preferenze" (se presente).</p>
-            <p className="legal-footer-note">Ultimo aggiornamento: Gennaio 2026</p>
-          </div>
+          <div className="legal-body" dangerouslySetInnerHTML={{ __html: t('legal.cookie.html') }} />
         </div>
       </div>
       {/* PRELOADER LOGIC (The Zoom-Through Reveal) */}
@@ -2453,15 +2151,15 @@ export default function Home() {
         <ul className="context-menu-list">
           <li className="ctx-item" id="ctx-partner">
             <span className="ctx-icon">✦</span>
-            <a href="#contact"><span className="ctx-text">DIVENTA PARTNER</span></a>
+            <a href="#contact"><span className="ctx-text">{t('ctx.partner')}</span></a>
           </li>
           <li className="ctx-item ctx-dynamic" id="ctx-newtab">
             <span className="ctx-icon"><i className="fas fa-external-link-alt" /></span>
-            <span className="ctx-text">APRI IN ALTRA SCHEDA</span>
+            <span className="ctx-text">{t('ctx.newtab')}</span>
           </li>
           <li className="ctx-item ctx-dynamic" id="ctx-submit">
             <span className="ctx-icon"><i className="fas fa-paper-plane" /></span>
-            <span className="ctx-text">INVIA</span>
+            <span className="ctx-text">{t('ctx.submit')}</span>
           </li>
         </ul>
       </div>

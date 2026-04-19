@@ -3,6 +3,8 @@ import React from 'react';
 import { turso } from '@/lib/turso';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import GlobalNav from '@/components/GlobalNav';
+
 
 async function getPostData(slug: string) {
   const result = await turso.execute({
@@ -36,8 +38,9 @@ async function getPostData(slug: string) {
   };
 }
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const data = await getPostData(params.slug);
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  const data = await getPostData(resolvedParams.slug);
   if (!data) notFound();
 
   const { post, prevPost, nextPost, relatedPosts } = data;
@@ -49,25 +52,8 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
   return (
     <div className="article-outer-wrapper">
-      <nav className="article-nav">
-        <div className="article-container" style={{ maxWidth: '1400px' }}>
-          <Link href="/blog" className="back-link" style={{ color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.15em', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <i className="fas fa-arrow-left" /> BACK TO INSIGHTS
-          </Link>
-          <div className="nav-controls">
-            {prevPost && (
-              <Link href={`/blog/${prevPost.slug}`} className="nav-ctrl-btn" title="Precedente" style={{ color: 'white', padding: '10px' }}>
-                <i className="fas fa-chevron-left" />
-              </Link>
-            )}
-            {nextPost && (
-              <Link href={`/blog/${nextPost.slug}`} className="nav-ctrl-btn" title="Successivo" style={{ color: 'white', padding: '10px' }}>
-                <i className="fas fa-chevron-right" />
-              </Link>
-            )}
-          </div>
-        </div>
-      </nav>
+      <GlobalNav />
+
 
       <header className="article-header">
         <div className="article-container">

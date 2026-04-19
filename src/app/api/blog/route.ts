@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { turso } from '@/lib/turso';
 import { currentUser } from '@clerk/nextjs/server';
+import { revalidatePath } from 'next/cache';
 
 const AUTHORIZED_EMAILS = [
   'stefanogolisano@gsa-hotels.com',
@@ -67,26 +68,35 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const user = await currentUser();
-    const userEmail = user?.emailAddresses[0]?.emailAddress;
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-    if (!userEmail || !AUTHORIZED_EMAILS.includes(userEmail)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    const userEmail = user.emailAddresses[0]?.emailAddress;
+    const isAdmin = user.publicMetadata?.role === 'admin';
+
+    if (!isAdmin && (!userEmail || !AUTHORIZED_EMAILS.includes(userEmail))) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const body = await request.json();
-    const { title, content, category, image_url } = body;
+    const { title, content, category, image_url, created_at } = body;
+
 
     if (!title || !content || !category) {
       return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
     }
 
     const slug = slugify(title);
+    const finalDate = created_at ? new Date(created_at).toISOString().replace('T', ' ').replace('Z', '') : new Date().toISOString().replace('T', ' ').replace('Z', '');
 
     await turso.execute({
-      sql: 'INSERT INTO blog_posts (title, slug, content, category, image_url, author) VALUES (?, ?, ?, ?, ?, ?)',
-      args: [title, slug, content, category, image_url, userEmail]
+      sql: 'INSERT INTO blog_posts (title, slug, content, category, image_url, author, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      args: [title, slug, content, category, image_url, userEmail, finalDate]
     });
 
+
+    revalidatePath('/blog');
     return NextResponse.json({ success: true, slug });
   } catch (error) {
     console.error('Blog POST Error:', error);

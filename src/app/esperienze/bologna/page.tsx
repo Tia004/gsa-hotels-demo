@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import GlobalNav from "@/components/GlobalNav";
 
 const experiences = [
   {
@@ -25,24 +26,21 @@ const experiences = [
 export default function BolognaExperiencesPage() {
   return (
     <main style={{ minHeight: "100vh", background: "#050505", color: "white" }}>
-      <header style={{ padding: "28px 6vw", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Link href="/" className="auth-icon-btn" title="Torna alla Home" style={{ width: 44, height: 44, borderRadius: 999 }}>
-          <span style={{ fontSize: 18, lineHeight: 1 }}>←</span>
-        </Link>
-        <nav style={{ display: "flex", gap: 10 }}>
-          <Link href="/esperienze/ferrara" className="btn-jesko" style={{ padding: "10px 18px", fontSize: 12 }}>
-            Ferrara
-          </Link>
-          <Link href="/esperienze/bologna" className="btn-jesko" style={{ padding: "10px 18px", fontSize: 12 }}>
-            Bologna
-          </Link>
-        </nav>
-      </header>
+      <GlobalNav />
 
-      <section style={{ padding: "90px 6vw 40px" }}>
+      <div style={{ position: "fixed", top: 120, right: "6vw", zIndex: 100, display: "flex", gap: 10 }}>
+        <Link href="/esperienze/ferrara" className="pill-btn" style={{ fontSize: 11, padding: "8px 20px" }}>
+          Ferrara
+        </Link>
+        <Link href="/esperienze/bologna" className="pill-btn active" style={{ fontSize: 11, padding: "8px 20px" }}>
+          Bologna
+        </Link>
+      </div>
+
+      <section style={{ padding: "160px 6vw 40px" }}>
         <span className="label-gold">TERRITORI D'AUTORE</span>
         <h1 className="vision-headline" style={{ marginTop: 18 }}>
-          Bologna
+          Esperienze Memorabili: Bologna
         </h1>
         <div className="vision-divider" style={{ marginTop: 22 }} />
         <p className="vision-body" style={{ maxWidth: 820, marginTop: 18 }}>
@@ -68,11 +66,8 @@ export default function BolognaExperiencesPage() {
                 {exp.desc}
               </p>
               <div style={{ marginTop: 26, display: "flex", gap: 12, flexWrap: "wrap" }}>
-                <Link href="/esperienze/ferrara" className="btn-jesko" style={{ padding: "12px 22px", fontSize: 12 }}>
-                  Vedi anche Ferrara
-                </Link>
-                <Link href="/#experiences" className="btn-jesko" style={{ padding: "12px 22px", fontSize: 12 }}>
-                  Torna agli slider
+                <Link href={`/esperienze/bologna/${encodeURIComponent(exp.title.toLowerCase().replace(/ /g, '-'))}`} className="btn-partner-gold" style={{ padding: "12px 26px", fontSize: "0.9rem", borderRadius: "100px", display: "inline-block" }}>
+                  SCOPRI L'ESPERIENZA
                 </Link>
               </div>
             </div>

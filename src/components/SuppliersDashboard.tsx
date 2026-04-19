@@ -1,7 +1,8 @@
 "use client";
 
-import React from 'react';
-import { UserButton, useClerk } from "@clerk/nextjs";
+import React, { useState } from 'react';
+import { UserButton, useClerk, useUser } from "@clerk/nextjs";
+
 import Link from "next/link";
 
 const suppliers = [
@@ -10,47 +11,65 @@ const suppliers = [
     name: "Technogym",
     category: "WELLNESS & PERFORMANCE",
     description: "Leader mondiale in soluzioni fitness di lusso e biomeccanica d'avanguardia per aree wellness d'élite.",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Technogym_Logo.svg/1024px-Technogym_Logo.svg.png"
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Technogym_Logo.svg/1024px-Technogym_Logo.svg.png",
+    email: "contact@technogym.com",
+    phone: "+39 0547 650111"
   },
   {
     id: 2,
     name: "Etro Home",
     category: "LUXURY TEXTILES",
     description: "L'altezza dell'arte tessile italiana per arredi e complementi che definiscono l'estetica delle suite più prestigiose.",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Etro_logo.svg/1024px-Etro_logo.svg.png"
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Etro_logo.svg/1024px-Etro_logo.svg.png",
+    email: "info@etro.com",
+    phone: "+39 02 550201"
   },
   {
     id: 3,
     name: "Oracle Hospitality",
     category: "TECHNOLOGY & PMS",
     description: "Sistemi gestionali evoluti (Opera) per un'ingegneria dei processi impeccabile e data-driven.",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Oracle_logo.svg/1024px-Oracle_logo.svg.png"
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Oracle_logo.svg/1024px-Oracle_logo.svg.png",
+    email: "suppport.hospitality@oracle.com",
+    phone: "+39 02 249511"
   },
   {
     id: 4,
     name: "Dorelan",
     category: "PREMIUM SLEEP",
     description: "Alchimia perfetta tra comfort e tecnologia per garantire un riposo rigenerante di standard superiore.",
-    logo: "https://www.dorelan.it/uploads/media/default/0001/01/5e2ef0d30c5e3f4e8e8e8e8e8e8e8e8e.svg" // Fallback expected
+    logo: "https://www.dorelan.it/uploads/media/default/0001/01/5e2ef0d30c5e3f4e8e8e8e8e8e8e8e8e.svg",
+    email: "customercare@dorelan.it",
+    phone: "+39 0543 410611"
   },
   {
     id: 5,
     name: "Viabizzuno",
     category: "ARCHITECTURAL LIGHT",
     description: "Progettazione della luce come elemento architettonico ed emozionale per atmosfere senza tempo.",
-    logo: "https://images.squarespace-cdn.com/content/v1/577bc6f0d1758e576f30d075/1468412630500-Z0I1X1X1X1X1X1X1X1/Viabizzuno_logo.png"
+    logo: "https://images.squarespace-cdn.com/content/v1/577bc6f0d1758e576f30d075/1468412630500-Z0I1X1X1X1X1X1X1X1/Viabizzuno_logo.png",
+    email: "viabizzuno@viabizzuno.com",
+    phone: "+39 051 8651011"
   },
   {
     id: 6,
     name: "Arper",
     category: "CONTRACT FURNITURE",
     description: "Design essenziale e contemporaneo per spazi comuni che fondono funzionalità ed eleganza formale.",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Arper_logo.svg/1024px-Arper_logo.svg.png"
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Arper_logo.svg/1024px-Arper_logo.svg.png",
+    email: "info@arper.com",
+    phone: "+39 0422 7918"
   }
 ];
 
 export default function SuppliersDashboard({ userName = "Partner" }) {
   const { signOut } = useClerk();
+  const { user } = useUser();
+  const isAdmin = user?.publicMetadata?.role === 'admin';
+  const [activeView, setActiveView] = useState<'suppliers' | 'support'>('suppliers');
+  const [formStatus, setFormStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+
 
   return (
     <div className="dashboard-wrapper">
@@ -109,13 +128,108 @@ export default function SuppliersDashboard({ userName = "Partner" }) {
 
         .nav-item.active {
           color: var(--gold);
-          background: rgba(197, 160, 89, 0.05);
+          background: rgba(197, 160, 89, 0.08);
+          border-right: 2px solid var(--gold);
+          border-radius: 0 12px 12px 0;
+          margin-left: -20px;
+          padding-left: 40px;
         }
 
         .nav-item:hover:not(.active) {
           color: white;
           background: rgba(255, 255, 255, 0.02);
         }
+
+        /* Support Form */
+        .support-container {
+          max-width: 800px;
+          animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .support-form {
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          padding: 60px;
+          border-radius: 4px;
+        }
+
+        .form-group {
+          margin-bottom: 40px;
+          position: relative;
+        }
+
+        .form-group label {
+          display: block;
+          color: rgba(255, 255, 255, 0.3);
+          font-size: 0.65rem;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          margin-bottom: 15px;
+        }
+
+        .form-input, .form-textarea {
+          width: 100%;
+          background: none;
+          border: none;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          color: white;
+          padding: 15px 0;
+          font-family: 'Montserrat', sans-serif;
+          font-size: 1rem;
+          transition: border-color 0.3s ease;
+          outline: none;
+          text-align: start !important;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+          border-bottom-color: var(--gold);
+        }
+
+        .form-textarea {
+          min-height: 150px;
+          resize: none;
+        }
+
+        .submit-btn {
+          background: var(--gold);
+          color: black;
+          border: none;
+          padding: 20px 40px;
+          font-family: 'Montserrat', sans-serif;
+          font-weight: 600;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          font-size: 0.75rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          gap: 15px;
+        }
+
+        .submit-btn:hover {
+          background: white;
+          transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .success-message {
+          color: var(--gold);
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 1.5rem;
+          text-align: center;
+          padding: 40px;
+        }
+
 
         /* Main Content */
         .dashboard-main {
@@ -182,6 +296,11 @@ export default function SuppliersDashboard({ userName = "Partner" }) {
           transform: translateY(-5px);
         }
 
+        .supplier-card.expanded {
+          border-color: var(--gold);
+          background: rgba(197, 160, 89, 0.05);
+        }
+
         .card-label {
           color: var(--gold);
           font-size: 0.65rem;
@@ -225,6 +344,50 @@ export default function SuppliersDashboard({ userName = "Partner" }) {
           font-size: 0.9rem;
           line-height: 1.6;
           margin: 0;
+          transition: all 0.5s ease;
+        }
+
+        .supplier-card.expanded .card-info {
+          transform: translateY(-100px);
+        }
+
+        .card-contact {
+          position: absolute;
+          bottom: 30px;
+          left: 0;
+          right: 0;
+          padding: 30px 40px; /* Increased padding */
+          background: linear-gradient(to top, var(--bg-dark) 60%, transparent);
+          opacity: 0;
+          transform: translateY(20px);
+          transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+          pointer-events: none;
+          z-index: 2;
+        }
+
+        .supplier-card.expanded .card-contact {
+          opacity: 1;
+          transform: translateY(0);
+          pointer-events: all;
+        }
+
+        .contact-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: var(--gold);
+          font-size: 0.8rem;
+          margin-bottom: 8px;
+          text-decoration: none;
+          transition: color 0.3s ease;
+        }
+
+        .contact-item:hover {
+          color: white;
+        }
+
+        .contact-item i {
+          width: 14px;
         }
 
         .card-connector {
@@ -254,22 +417,33 @@ export default function SuppliersDashboard({ userName = "Partner" }) {
         <Link href="/">
           <img src="/assets/logo.png" alt="GSA Hotels" className="sidebar-logo" />
         </Link>
-        
+
         <nav className="sidebar-nav">
-          <Link href="/dashboard" className="nav-item active">
-            <i className="fas fa-th-large" /> Dashboard
-          </Link>
-          <Link href="/#fleet" className="nav-item">
-            <i className="fas fa-hotel" /> Partner
-          </Link>
-          <Link href="/#contact" className="nav-item">
-            <i className="fas fa-envelope" /> Supporto
-          </Link>
+          <button
+            onClick={() => setActiveView('suppliers')}
+            className={`nav-item ${activeView === 'suppliers' ? 'active' : ''}`}
+            style={{ background: 'none', border: 'none', width: '100%', cursor: 'pointer', textAlign: 'left' }}
+          >
+            <i className="fas fa-certificate" /> I Nostri Fornitori
+          </button>
+          <button
+            onClick={() => setActiveView('support')}
+            className={`nav-item ${activeView === 'support' ? 'active' : ''}`}
+            style={{ background: 'none', border: 'none', width: '100%', cursor: 'pointer', textAlign: 'left' }}
+          >
+            <i className="fas fa-headset" /> Supporto
+          </button>
+          {isAdmin && (
+            <Link href="/blog" className="nav-item" style={{ textDecoration: 'none' }}>
+              <i className="fas fa-edit" /> Gestione Blog
+            </Link>
+          )}
         </nav>
+
 
         <div className="sidebar-footer">
           <button onClick={() => signOut()} className="nav-item" style={{ background: 'none', border: 'none', width: '100%', cursor: 'pointer' }}>
-            <i className="fas fa-sign-out-alt" /> Esci
+            <i className="fas fa-sign-out-alt" /> Logout
           </button>
         </div>
       </aside>
@@ -284,42 +458,100 @@ export default function SuppliersDashboard({ userName = "Partner" }) {
           <div className="header-actions">
             <div style={{ textAlign: 'right' }}>
               <p style={{ fontSize: '0.8rem', fontWeight: 600, color: 'white' }}>{userName}</p>
-              <p style={{ fontSize: '0.65rem', color: 'var(--gold)', letterSpacing: '0.1em' }}>PARTNER CERTIFICATO</p>
+              <p style={{ fontSize: '0.65rem', color: 'var(--gold)', letterSpacing: '0.1em' }}>
+                {isAdmin ? 'AMMINISTRATORE ' : 'PARTNER CERTIFICATO'}
+              </p>
             </div>
             <UserButton />
           </div>
         </header>
 
-        <section className="suppliers-section">
-          <div style={{ marginBottom: '40px' }}>
-            <h2 style={{ fontSize: '1.5rem', fontFamily: 'Montserrat', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Fornitori Certificati</h2>
-            <div style={{ width: '40px', height: '1px', background: 'var(--gold)', marginTop: '10px' }} />
-          </div>
+        {activeView === 'suppliers' ? (
+          <section className="suppliers-section">
+            <div style={{ marginBottom: '40px' }}>
+              <h2 style={{ fontSize: '1.5rem', fontFamily: 'Montserrat', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Fornitori Certificati</h2>
+              <div style={{ width: '40px', height: '1px', background: 'var(--gold)', marginTop: '10px' }} />
+            </div>
 
-          <div className="suppliers-grid">
-            {suppliers.map(s => (
-              <div key={s.id} className="supplier-card">
-                <span className="card-label">{s.category}</span>
-                <div className="card-logo-box">
-                  {/* Fallback pattern for missing images */}
-                  <img 
-                    src={s.logo} 
-                    alt={s.name} 
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = '/assets/logo.png';
-                      (e.target as HTMLImageElement).style.opacity = '0.3';
-                    }}
-                  />
+            <div className="suppliers-grid">
+              {suppliers.map(s => (
+                <div 
+                  key={s.id} 
+                  className={`supplier-card ${expandedId === s.id ? 'expanded' : ''}`}
+                  onClick={() => setExpandedId(expandedId === s.id ? null : s.id)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <span className="card-label">{s.category}</span>
+                  <div className="card-logo-box">
+                    <img
+                      src={s.logo}
+                      alt={s.name}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/assets/logo.png';
+                        (e.target as HTMLImageElement).style.opacity = '0.3';
+                      }}
+                    />
+                  </div>
+                  <div className="card-info">
+                    <h3>{s.name}</h3>
+                    <p>{s.description}</p>
+                  </div>
+                  <div className="card-contact">
+                    <a href={`mailto:${s.email}`} className="contact-item" onClick={(e) => e.stopPropagation()}>
+                      <i className="fas fa-envelope" /> {s.email}
+                    </a>
+                    <a href={`tel:${s.phone}`} className="contact-item" onClick={(e) => e.stopPropagation()}>
+                      <i className="fas fa-phone" /> {s.phone}
+                    </a>
+                  </div>
+                  <div className="card-connector"></div>
                 </div>
-                <div className="card-info">
-                  <h3>{s.name}</h3>
-                  <p>{s.description}</p>
-                </div>
-                <div className="card-connector"></div>
+              ))}
+            </div>
+          </section>
+        ) : (
+          <section className="support-container">
+            <div style={{ marginBottom: '60px' }}>
+              <p style={{ color: 'var(--gold)', fontSize: '0.75rem', letterSpacing: '0.3em', marginBottom: '15px' }}>ASSISTENZA DIRETTA</p>
+              <h2 style={{ fontSize: '3rem', fontFamily: 'Cormorant Garamond', fontWeight: 300 }}>Contattaci</h2>
+              <div style={{ width: '60px', height: '1px', background: 'var(--gold)', marginTop: '20px' }} />
+            </div>
+
+            {formStatus === 'sent' ? (
+              <div className="success-message">
+                <i className="fas fa-check-circle" style={{ display: 'block', fontSize: '3rem', marginBottom: '20px' }} />
+                Messaggio inviato con successo. Stefano ti risponderà al più presto.
+                <button
+                  onClick={() => setFormStatus('idle')}
+                  className="submit-btn"
+                  style={{ margin: '40px auto 0' }}
+                >
+                  Nuovo Messaggio
+                </button>
               </div>
-            ))}
-          </div>
-        </section>
+            ) : (
+              <form className="support-form" onSubmit={(e) => {
+                e.preventDefault();
+                setFormStatus('sending');
+                setTimeout(() => setFormStatus('sent'), 1500);
+              }}>
+                <div className="form-group">
+                  <label>Oggetto della richiesta</label>
+                  <input type="text" className="form-input" placeholder="E.g. Informazioni su fornitore, Assistenza tecnica..." required />
+                </div>
+                <div className="form-group">
+                  <label>Messaggio</label>
+                  <textarea className="form-textarea" placeholder="Descrivi qui la tua richiesta..." required></textarea>
+                </div>
+                <button type="submit" className="submit-btn" disabled={formStatus === 'sending'}>
+                  {formStatus === 'sending' ? 'Invio in corso...' : 'Invia Messaggio'}
+                  {formStatus !== 'sending' && <i className="fas fa-paper-plane" />}
+                </button>
+              </form>
+            )}
+          </section>
+        )}
+
       </main>
     </div>
   );

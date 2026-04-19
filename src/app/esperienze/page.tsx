@@ -3,25 +3,14 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import GlobalNav from "@/components/GlobalNav";
 
 export default function ExperiencesPage() {
   return (
     <main style={{ minHeight: "100vh", background: "#050505", color: "white" }}>
-      <header style={{ padding: "28px 6vw", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Link href="/" className="auth-icon-btn" title="Torna alla Home" style={{ width: 44, height: 44, borderRadius: 999 }}>
-          <span style={{ fontSize: 18, lineHeight: 1 }}>←</span>
-        </Link>
-        <nav style={{ display: "flex", gap: 10 }}>
-          <Link href="/esperienze/ferrara" className="btn-jesko" style={{ padding: "10px 18px", fontSize: 12 }}>
-            Ferrara
-          </Link>
-          <Link href="/esperienze/bologna" className="btn-jesko" style={{ padding: "10px 18px", fontSize: 12 }}>
-            Bologna
-          </Link>
-        </nav>
-      </header>
-
-      <section style={{ padding: "90px 6vw 120px" }}>
+      <GlobalNav />
+      
+      <section style={{ padding: "160px 6vw 120px" }}>
         <span className="label-gold">TERRITORI D'AUTORE</span>
         <h1 className="vision-headline" style={{ marginTop: 18 }}>
           Esperienze Memorabili

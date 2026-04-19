@@ -5,7 +5,8 @@ import BlogCard from '@/components/BlogCard';
 import BlogEditor from '@/components/BlogEditor';
 import Link from 'next/link';
 import BlogAnimate from '@/components/BlogAnimate';
-import SuppliersDashboard from '@/components/SuppliersDashboard'; // Just for the wrapper/layout patterns if needed
+import GlobalNav from '@/components/GlobalNav';
+
 
 const AUTHORIZED_EMAILS = [
   'stefanogolisano@gsa-hotels.com',
@@ -39,7 +40,7 @@ async function getPosts(page: number, limit: number) {
   const total = (countResult.rows[0] as any).total;
 
   return {
-    posts: result.rows as any[],
+    posts: result.rows.map(row => ({ ...row })) as any[],
     total,
     totalPages: Math.ceil(total / limit)
   };
@@ -48,28 +49,22 @@ async function getPosts(page: number, limit: number) {
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams: { page?: string };
+  searchParams: Promise<{ page?: string }>;
 }) {
+  const resolvedSearchParams = await searchParams;
   const user = await currentUser();
   const userEmail = user?.emailAddresses[0]?.emailAddress;
-  const isAuthorized = userEmail && AUTHORIZED_EMAILS.includes(userEmail);
+  const isAdmin = user?.publicMetadata?.role === 'admin';
+  const isAuthorized = isAdmin || (userEmail && AUTHORIZED_EMAILS.includes(userEmail));
 
-  const currentPage = parseInt(searchParams.page || '1');
+  const currentPage = parseInt(resolvedSearchParams.page || '1');
   const limit = 5; // Vertical list, small limit per page for clarity
   const { posts, total, totalPages } = await getPosts(currentPage, limit);
 
   return (
     <div className="blog-outer-wrapper">
-      <nav className="blog-mini-nav">
-        <div className="blog-container">
-          <Link href="/" className="back-link">
-            <i className="fas fa-arrow-left" /> TORNA ALLA HOME
-          </Link>
-          <div className="blog-brand">
-            GSA <span>Insights</span>
-          </div>
-        </div>
-      </nav>
+      <GlobalNav />
+
 
       <main className="blog-container main-content" style={{ marginTop: '0' }}>
         <header className="blog-header">

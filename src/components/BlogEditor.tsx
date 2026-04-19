@@ -1,18 +1,28 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface BlogEditorProps {
   onSuccess?: () => void;
 }
 
 const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<'news' | 'comunica'>('news');
   const [imageUrl, setImageUrl] = useState('');
+  const [publishedAt, setPublishedAt] = useState(new Date().toISOString().split('T')[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Link management
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
+  const [savedSelection, setSavedSelection] = useState<Range | null>(null);
+  
   const editorRef = useRef<HTMLDivElement>(null);
+
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -41,14 +51,22 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
       const response = await fetch('/api/blog', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, content, category, image_url: imageUrl }),
+        body: JSON.stringify({ 
+          title, 
+          content, 
+          category, 
+          image_url: imageUrl,
+          created_at: publishedAt 
+        }),
+
       });
 
-      if (response.ok) {
+        if (response.ok) {
         setIsOpen(false);
         setTitle('');
         setImageUrl('');
         if (editorRef.current) editorRef.current.innerHTML = '';
+        router.refresh();
         if (onSuccess) onSuccess();
       } else {
         alert('Errore durante la pubblicazione.');
@@ -63,30 +81,45 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
   if (!isOpen) {
     return (
       <button className="add-post-trigger" onClick={() => setIsOpen(true)}>
-        <i className="fas fa-plus" />
+        <i className="fas fa-pen-nib" />
+        <i className="fas fa-book-open" style={{ marginLeft: '-10px', fontSize: '1rem', opacity: 0.8 }} />
+        <span>Crea nuovo articolo</span>
         <style jsx>{`
           .add-post-trigger {
             position: fixed;
             bottom: 40px;
             right: 40px;
-            width: 60px;
-            height: 60px;
+            padding: 0 35px;
+            height: 65px;
             background: #C5A059;
-            color: white;
+            color: black;
             border: none;
-            border-radius: 50%;
-            font-size: 1.5rem;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(197, 160, 89, 0.4);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4), 0 0 20px rgba(197, 160, 89, 0.2);
             z-index: 1000;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            font-family: 'Montserrat', sans-serif;
           }
           .add-post-trigger:hover {
-            transform: scale(1.1) rotate(90deg);
+            transform: translateY(-5px) scale(1.02);
+            background: #d4b57a;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(197, 160, 89, 0.3);
+          }
+          .add-post-trigger i {
+            font-size: 1.2rem;
           }
         `}</style>
       </button>
     );
+
   }
 
   return (
@@ -128,7 +161,18 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
                 onChange={handleFileUpload} 
               />
             </div>
+
+            <div className="date-picker-group">
+              <label>Data Pubblicazione</label>
+              <input 
+                type="date" 
+                value={publishedAt}
+                onChange={(e) => setPublishedAt(e.target.value)}
+                className="date-input"
+              />
+            </div>
           </div>
+
 
           {imageUrl && (
             <div className="image-preview">
@@ -140,11 +184,48 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
           <div className="toolbar">
             <button type="button" onClick={() => execCommand('bold')} title="Grassetto">B</button>
             <button type="button" onClick={() => execCommand('italic')} title="Corsivo">I</button>
-            <button type="button" onClick={() => {
-              const url = prompt('Inserisci URL:');
-              if (url) execCommand('createLink', url);
-            }} title="Link">L</button>
+            <div className="link-tool-wrapper" style={{ position: 'relative' }}>
+              <button type="button" onClick={() => {
+                const selection = window.getSelection();
+                if (selection && selection.rangeCount > 0) {
+                  setSavedSelection(selection.getRangeAt(0));
+                  setShowLinkModal(!showLinkModal);
+                } else {
+                  setShowLinkModal(!showLinkModal);
+                }
+              }} title="Link">
+                <i className="fas fa-link" />
+              </button>
+              
+              {showLinkModal && (
+                <div className="inline-link-modal">
+                  <input 
+                    type="text" 
+                    placeholder="https://..." 
+                    value={linkUrl}
+                    onChange={(e) => setLinkUrl(e.target.value)}
+                    autoFocus
+                  />
+                  <div className="link-modal-actions">
+                    <button type="button" onClick={() => {
+                      if (linkUrl) {
+                        const selection = window.getSelection();
+                        if (selection && savedSelection) {
+                          selection.removeAllRanges();
+                          selection.addRange(savedSelection);
+                        }
+                        execCommand('createLink', linkUrl);
+                      }
+                      setShowLinkModal(false);
+                      setLinkUrl('');
+                    }}>Ok</button>
+                    <button type="button" onClick={() => setShowLinkModal(false)}>Annulla</button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
+
 
           <div 
             ref={editorRef}
@@ -386,6 +467,78 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
           cursor: not-allowed;
           transform: none;
         }
+
+        .date-picker-group {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .date-picker-group label {
+          font-size: 0.65rem;
+          color: rgba(255,255,255,0.4);
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+        }
+
+        .date-input {
+          background: #0f1111;
+          border: 1px solid rgba(255,255,255,0.1);
+          color: white;
+          padding: 10px;
+          border-radius: 4px;
+          font-family: inherit;
+          outline: none;
+        }
+
+        /* Inline Link Modal */
+        .inline-link-modal {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          margin-top: 10px;
+          background: #1a1a1a;
+          border: 1px solid var(--gold-accent);
+          padding: 15px;
+          border-radius: 4px;
+          z-index: 100;
+          width: 250px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .inline-link-modal input {
+          background: #000;
+          border: 1px solid rgba(255,255,255,0.1);
+          padding: 8px 12px;
+          color: white;
+          font-size: 0.9rem;
+          border-radius: 4px;
+        }
+
+        .link-modal-actions {
+          display: flex;
+          gap: 8px;
+        }
+
+        .link-modal-actions button {
+          flex: 1;
+          padding: 8px;
+          font-size: 0.75rem;
+          background: #222;
+          color: white;
+          border: none;
+          cursor: pointer;
+        }
+
+        .link-modal-actions button:first-child {
+          background: var(--gold-accent);
+          color: black;
+          font-weight: bold;
+        }
+
       `}</style>
     </div>
   );

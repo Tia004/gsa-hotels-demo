@@ -9,9 +9,9 @@ const AUTHORIZED_EMAILS = [
 
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
-  const { slug } = params;
+  const { slug } = await params;
 
   try {
     // 1. Get current post
@@ -58,19 +58,25 @@ export async function GET(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const user = await currentUser();
-    const userEmail = user?.emailAddresses[0]?.emailAddress;
-
-    if (!userEmail || !AUTHORIZED_EMAILS.includes(userEmail)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const userEmail = user.emailAddresses[0]?.emailAddress;
+    const isAdmin = user.publicMetadata?.role === 'admin';
+
+    if (!isAdmin && (!userEmail || !AUTHORIZED_EMAILS.includes(userEmail))) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    const { slug } = await params;
     await turso.execute({
       sql: 'DELETE FROM blog_posts WHERE slug = ?',
-      args: [params.slug]
+      args: [slug]
     });
 
     return NextResponse.json({ success: true });

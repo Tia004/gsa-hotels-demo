@@ -10,8 +10,9 @@ const BlogAnimate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (!containerRef.current) return;
 
     const cards = containerRef.current.querySelectorAll('.blog-card-container');
+    if (cards.length === 0) return;
     
-    gsap.fromTo(cards, 
+    const anim = gsap.fromTo(cards, 
       { 
         opacity: 0, 
         y: 40,
@@ -30,6 +31,10 @@ const BlogAnimate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
       }
     );
+
+    return () => {
+      if (anim.scrollTrigger) anim.scrollTrigger.kill();
+    };
   }, []);
 
   return <div ref={containerRef}>{children}</div>;
