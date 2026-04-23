@@ -23,6 +23,8 @@ export const metadata: Metadata = {
 };
 
 import Cursor from "@/components/Cursor";
+import Footer from "@/components/Footer";
+import LegalModals from "@/components/LegalModals";
 
 export default function RootLayout({
   children,
@@ -32,14 +34,16 @@ export default function RootLayout({
   return (
     <ClerkProvider localization={itIT}>
       <html lang="it" className={`${geistSans.variable} ${geistMono.variable}`}>
-        <body>
+        <body className="antialiased" suppressHydrationWarning>
           <link
             rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
           />
           <LangProvider>
             <Cursor />
             {children}
+            <Footer />
+            <LegalModals />
           </LangProvider>
         </body>
       </html>

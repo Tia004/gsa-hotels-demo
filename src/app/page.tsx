@@ -29,11 +29,32 @@ function SignedOut({ children }: { children: React.ReactNode }) {
 
 
 export default function Home() {
-  const { t, lang } = useLang();
+  const [activeBologna, setActiveBologna] = React.useState(0);
+  const [activeFerrara, setActiveFerrara] = React.useState(0);
+  const [activeAcademyImage, setActiveAcademyImage] = React.useState(0);
   const [activeVideo, setActiveVideo] = React.useState(0);
+  const [isVideoPlaying, setIsVideoPlaying] = React.useState(false);
   const [activeVisionImage, setActiveVisionImage] = React.useState(0);
+  const [isRevealed, setIsRevealed] = React.useState(false);
+  const [showPreloader, setShowPreloader] = React.useState(true);
+  const [alreadyShown, setAlreadyShown] = React.useState(false);
   const [scrubberHoverValue, setScrubberHoverValue] = React.useState<number | null>(null);
   const [isScrubbing, setIsScrubbing] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitStatus, setSubmitStatus] = React.useState<'success' | 'error' | null>(null);
+  const [isSelectOpen, setIsSelectOpen] = React.useState(false);
+  const [visionImages, setVisionImages] = React.useState<string[]>([]);
+  const [isMobile, setIsMobile] = React.useState(false);
+  const [formData, setFormData] = React.useState({
+    nome: '',
+    azienda: '',
+    email: '',
+    telefono: '',
+    messaggio: '',
+    interesse: ''
+  });
+
+  const { t, lang } = useLang();
 
   const videos = [
     {
@@ -80,8 +101,6 @@ export default function Home() {
     }
   ];
 
-  const [visionImages, setVisionImages] = React.useState<string[]>([]);
-
   React.useEffect(() => {
     fetch('/api/vision-images')
       .then(res => res.json())
@@ -100,10 +119,90 @@ export default function Home() {
     "assets/formazione/8.jpeg"
   ];
 
-  const [activeAcademyImage, setActiveAcademyImage] = React.useState(0);
   const [isPlayingIntro, setIsPlayingIntro] = React.useState(false);
-  const [isMobile, setIsMobile] = React.useState(false);
-  const [isRevealed, setIsRevealed] = React.useState(false);
+
+  // Handle preloader visibility on mount
+  React.useEffect(() => {
+    // Client-side check to set initial state correctly
+    const hasBeenShown = sessionStorage.getItem('gsa_preloader_shown') === 'true';
+    if (hasBeenShown) {
+      setAlreadyShown(true);
+      setShowPreloader(false);
+    }
+
+    const preloaderOverlay = document.getElementById('zoom-preloader');
+    const heroVideo = document.getElementById('hero-video');
+    const navWrapper = document.querySelector('.nav-wrapper');
+
+    if (!hasBeenShown) {
+      setIsRevealed(false);
+      document.body.style.overflow = 'hidden';
+      document.documentElement.classList.add('loading');
+      document.body.classList.add('loading');
+
+      // Animazione di ingresso originale
+      if (heroVideo) heroVideo.classList.add('initial-blur');
+
+      const tl = gsap.timeline({
+        onComplete: () => {
+          setIsRevealed(true);
+          if (preloaderOverlay) preloaderOverlay.classList.add('finished');
+          document.body.classList.add('revealed');
+          document.body.style.overflow = '';
+          document.documentElement.classList.remove('loading');
+          document.body.classList.remove('loading');
+          if (navWrapper) navWrapper.classList.add('revealed');
+          
+          // Rimuovi esplicitamente il blur se per qualche motivo la timeline non lo fa
+          if (heroVideo) heroVideo.style.filter = 'blur(0px)';
+          
+          sessionStorage.setItem('gsa_preloader_shown', 'true');
+          setAlreadyShown(true);
+          setTimeout(() => ScrollTrigger.refresh(), 500);
+          
+          // Avvia Lenis
+          const l = (window as any).lenis;
+          if (l) l.start();
+        }
+      });
+
+      // 1. Shuffling text
+      const shufflingText = document.getElementById('shuffling-text');
+      if (shufflingText) {
+        tl.to(shufflingText, { opacity: 1, duration: 0.5 })
+          .to(shufflingText, { opacity: 0, duration: 0.5, delay: 1.5 });
+      }
+
+      // 2. Zoom logo e dissolvenza preloader
+      tl.to("#zoom-preloader", {
+        opacity: 0,
+        duration: 1.5,
+        ease: "power2.inOut"
+      }, "+=0.5");
+
+      // 3. Rimuovi blur dal video
+      const blurTarget = document.querySelector('.jesko-bg-video.initial-blur');
+      if (blurTarget) {
+        tl.to(blurTarget, {
+          filter: "blur(0px)",
+          duration: 2,
+          ease: "power2.out",
+          onComplete: () => {
+            (blurTarget as HTMLElement).style.filter = 'none';
+          }
+        }, "-=1");
+      }
+    } else {
+      setIsRevealed(true);
+      if (preloaderOverlay) preloaderOverlay.classList.add('finished');
+      if (navWrapper) navWrapper.classList.add('revealed');
+      document.body.classList.add('revealed');
+      document.body.style.overflow = '';
+      setTimeout(() => ScrollTrigger.refresh(), 100);
+      const l = (window as any).lenis;
+      if (l) l.start();
+    }
+  }, []);
 
   const nextAcademyImage = () => {
     setActiveAcademyImage((prev) => (prev + 1) % academyImages.length);
@@ -118,17 +217,20 @@ export default function Home() {
     {
       title: t('exp.bo1.title'),
       desc: t('exp.bo1.desc'),
-      img: "/assets/esperienze/bologna/1.jpg"
+      img: "/assets/esperienze/bologna/1.jpg",
+      slug: "bologna-esp-1"
     },
     {
       title: t('exp.bo2.title'),
       desc: t('exp.bo2.desc'),
-      img: "/assets/esperienze/bologna/2.jpg"
+      img: "/assets/esperienze/bologna/2.jpg",
+      slug: "bologna-esp-2"
     },
     {
       title: t('exp.bo3.title'),
       desc: t('exp.bo3.desc'),
-      img: "/assets/esperienze/bologna/3.jpg"
+      img: "/assets/esperienze/bologna/3.jpg",
+      slug: "bologna-esp-3"
     }
   ];
 
@@ -136,50 +238,42 @@ export default function Home() {
     {
       title: t('exp.fe1.title'),
       desc: t('exp.fe1.desc'),
-      img: "/assets/esperienze/ferrara/1.jpg"
+      img: "/assets/esperienze/ferrara/1.jpg",
+      slug: "ferrara-esp-1"
     },
     {
       title: t('exp.fe2.title'),
       desc: t('exp.fe2.desc'),
-      img: "/assets/esperienze/ferrara/2.jpg"
+      img: "/assets/esperienze/ferrara/2.jpg",
+      slug: "ferr-esp-2"
     },
     {
       title: t('exp.fe3.title'),
       desc: t('exp.fe3.desc'),
-      img: "/assets/esperienze/ferrara/3.jpg"
+      img: "/assets/esperienze/ferrara/3.jpg",
+      slug: "ferr-esp-3"
     },
     {
       title: t('exp.fe4.title'),
       desc: t('exp.fe4.desc'),
-      img: "/assets/esperienze/ferrara/4.png"
+      img: "/assets/esperienze/ferrara/4.png",
+      slug: "ferr-esp-4"
     },
     {
       title: t('exp.fe5.title'),
       desc: t('exp.fe5.desc'),
-      img: "/assets/esperienze/ferrara/5.png"
+      img: "/assets/esperienze/ferrara/5.png",
+      slug: "ferr-esp-5"
     },
     {
       title: t('exp.fe6.title'),
       desc: t('exp.fe6.desc'),
-      img: "/assets/esperienze/ferrara/6.jpg"
+      img: "/assets/esperienze/ferrara/6.jpg",
+      slug: "ferr-esp-6"
     }
   ];
 
-  const [activeBologna, setActiveBologna] = React.useState(0);
-  const [activeFerrara, setActiveFerrara] = React.useState(0);
   const [scrolled, setScrolled] = React.useState(false);
-  const [formData, setFormData] = React.useState({
-    nome: '',
-    azienda: '',
-    email: '',
-    telefono: '',
-    messaggio: '',
-    interesse: ''
-  });
-
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [submitStatus, setSubmitStatus] = React.useState<'success' | 'error' | null>(null);
-  const [isSelectOpen, setIsSelectOpen] = React.useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -211,8 +305,14 @@ export default function Home() {
     }
   };
 
-  const nextVideo = () => setActiveVideo((prev) => (prev + 1) % videos.length);
-  const prevVideo = () => setActiveVideo((prev) => (prev - 1 + videos.length) % videos.length);
+  const nextVideo = () => {
+    setActiveVideo((prev) => (prev + 1) % videos.length);
+    setIsVideoPlaying(false);
+  };
+  const prevVideo = () => {
+    setActiveVideo((prev) => (prev - 1 + videos.length) % videos.length);
+    setIsVideoPlaying(false);
+  };
 
   const nextVisionImage = () => {
     if (visionImages.length === 0) return;
@@ -223,50 +323,57 @@ export default function Home() {
     setActiveVisionImage((prev) => (prev - 1 + visionImages.length) % visionImages.length);
   };
 
-  useEffect(() => {
-    const bolognaTimer = setInterval(() => {
-      setActiveBologna((prev) => (prev + 1) % bolognaExperiences.length);
-    }, 4000);
-    const ferraraTimer = setInterval(() => {
-      setActiveFerrara((prev) => (prev + 1) % ferraraExperiences.length);
-    }, 4500);
-    const videoTimer = setInterval(() => {
-      setActiveVideo((prev) => (prev + 1) % videos.length);
-    }, 5000);
-    const academyTimer = setInterval(() => {
-      setActiveAcademyImage((prev) => (prev + 1) % academyImages.length);
-    }, 3000);
+  // --- STABILITY & PERFORMANCE REFS ---
+  const timersRef = React.useRef<{ [key: string]: NodeJS.Timeout }>({});
+  const rafIdRef = React.useRef<number | null>(null);
+  const lenisRef = React.useRef<Lenis | null>(null);
 
-    const handleScroll = () => {
-      // Logic moved to GlobalNav or kept local if needed for other things
-    };
-    window.addEventListener('scroll', handleScroll);
+  useEffect(() => {
+    // 1. TIMERS SETUP (Safe Cleanup)
+    timersRef.current.bologna = setInterval(() => {
+      setActiveBologna((prev) => (prev + 1) % bolognaExperiences.length);
+    }, 8000);
+    timersRef.current.ferrara = setInterval(() => {
+      setActiveFerrara((prev) => (prev + 1) % ferraraExperiences.length);
+    }, 8500);
+    timersRef.current.video = setInterval(() => {
+      if (!isVideoPlaying) {
+        setActiveVideo((prev) => (prev + 1) % videos.length);
+      }
+    }, 9000);
+    timersRef.current.academy = setInterval(() => {
+      setActiveAcademyImage((prev) => (prev + 1) % academyImages.length);
+    }, 7000);
 
     return () => {
-      clearInterval(bolognaTimer);
-      clearInterval(ferraraTimer);
-      clearInterval(videoTimer);
-      clearInterval(academyTimer);
-      window.removeEventListener('scroll', handleScroll);
+      Object.values(timersRef.current).forEach(clearInterval);
+      if (timersRef.current.vision) clearInterval(timersRef.current.vision);
     };
-  }, [bolognaExperiences.length, ferraraExperiences.length, videos.length, academyImages.length]);
+  }, [isVideoPlaying, bolognaExperiences.length, ferraraExperiences.length, videos.length, academyImages.length]);
 
   useEffect(() => {
     if (visionImages.length === 0) return;
-    const visionTimer = setInterval(() => {
+    timersRef.current.vision = setInterval(() => {
       setActiveVisionImage((prev) => (prev + 1) % visionImages.length);
     }, 3500);
-    return () => clearInterval(visionTimer);
+    return () => clearInterval(timersRef.current.vision);
   }, [visionImages.length]);
 
 
 
   useEffect(() => {
-    const createdEmbers: HTMLDivElement[] = [];
+    const ctx = gsap.context(() => {
+      // Register GSAP once
+      gsap.registerPlugin(ScrollTrigger);
 
-    // Register GSAP
-    // Register GSAP once
-    gsap.registerPlugin(ScrollTrigger);
+      const createdEmbers: HTMLElement[] = [];
+      
+      // OPTIMIZATION: Reduce ScrollTrigger overhead
+      ScrollTrigger.config({ 
+        ignoreMobileResize: true,
+        limitCallbacks: true
+      });
+      ScrollTrigger.normalizeScroll(false); // Safari fix: native scroll is better with Lenis
 
 
     // 1. Animazione Testo (Sinistra)
@@ -351,14 +458,18 @@ export default function Home() {
       };
 
 
+      // Ottimizzazione RAM: Rileva dispositivi con poca RAM (<= 4GB) o Mobile
+      const isLowRAM = typeof navigator !== 'undefined' && (navigator as any).deviceMemory && (navigator as any).deviceMemory <= 4;
+      const isMobile = window.innerWidth <= 768 || isLowRAM;
+
       // 1. BOKEH (Background, Large, Blur)
-      spawn(25, 'bokeh', 40, 120, 20, 40, 0.1, 0.3);
+      spawn(isMobile ? 1 : 8, 'bokeh', 40, 120, 20, 40, 0.1, 0.3);
 
       // 2. STARS (Midground, Steady)
-      spawn(40, 'star', 3, 6, 10, 20, 0.4, 0.8);
+      spawn(isMobile ? 2 : 12, 'star', 3, 6, 10, 20, 0.4, 0.8);
 
       // 3. SPARKS (Foreground, Fast, Twinkle)
-      spawn(50, 'spark', 1, 3, 5, 10, 0.5, 1.0);
+      spawn(isMobile ? 2 : 15, 'spark', 1, 3, 5, 10, 0.5, 1.0);
     }
     const video = document.getElementById('hero-video') as HTMLVideoElement;
 
@@ -430,7 +541,7 @@ export default function Home() {
       stagger: 0.03,
       duration: 1.2,
       ease: "power4.out",
-      delay: 0.5
+      delay: alreadyShown ? 0.5 : 4.0 // Ritardo maggiore se c'è il preloader
     });
 
     gsap.from(".j-desc", {
@@ -438,7 +549,7 @@ export default function Home() {
       opacity: 0,
       duration: 1.2,
       ease: "power3.out",
-      delay: 1.2
+      delay: alreadyShown ? 1.2 : 4.7
     });
 
     // --- 2. GENERIC LUXURY REVEAL SYSTEM ---
@@ -502,14 +613,14 @@ export default function Home() {
       duration: 1.5,
       stagger: 0.2,
       ease: "power3.out",
-      delay: 1.0
+      delay: alreadyShown ? 1.0 : 4.5
     });
 
     // 4. Logo Fade In
     gsap.from(".j-logo", {
       opacity: 0,
       duration: 1,
-      delay: 0.5
+      delay: alreadyShown ? 0.5 : 4.0
     });
 
 
@@ -695,10 +806,11 @@ export default function Home() {
 
 
     // 7. PARTICLES JS CONFIG (Golden Network)
-    if (document.getElementById('particles-contact')) {
+    if (document.getElementById('particles-contact') && window.innerWidth > 768) {
+      const isLowRAM = typeof navigator !== 'undefined' && (navigator as any).deviceMemory && (navigator as any).deviceMemory <= 4;
       (window as any).particlesJS('particles-contact', {
         "particles": {
-          "number": { "value": 100, "density": { "enable": true, "value_area": 800 } },
+          "number": { "value": isLowRAM ? 10 : 25, "density": { "enable": true, "value_area": 800 } },
           "color": { "value": "#C5A059" },
           "shape": { "type": "circle" },
           "opacity": {
@@ -809,34 +921,31 @@ export default function Home() {
       window.scrollTo(0, scrollPosition);
     }
 
-    // Auto-Detect: Collega tutti i link con parole chiave
-    const allLinks = document.querySelectorAll('a');
-    allLinks.forEach(link => {
-      const href = link.getAttribute('href') || '';
-      const text = link.innerText.toLowerCase();
+    // DELEGAZIONE EVENTI UNIVERSALE: Per link legali (Privacy, Cookie, Termini)
+    const onLegalClick = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement).closest('a');
+      if (!target) return;
 
-      // Privacy Policy (include cookie banner link)
+      const href = target.getAttribute('href') || '';
+      const text = target.innerText.toLowerCase();
+
+      // Privacy Policy
       if (text.includes('privacy') || href.includes('privacy')) {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          openModal('privacy-modal');
-        });
+        e.preventDefault();
+        openModal('privacy-modal');
       }
       // Termini e Condizioni
       else if (text.includes('termini') || text.includes('condizioni') || href.includes('terms')) {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          openModal('terms-modal');
-        });
+        e.preventDefault();
+        openModal('terms-modal');
       }
       // Cookie Policy
-      else if (text.includes('cookie')) {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          openModal('cookie-policy-modal');
-        });
+      else if (text.includes('cookie') || href.includes('cookie')) {
+        e.preventDefault();
+        openModal('cookie-policy-modal');
       }
-    });
+    };
+    document.addEventListener('click', onLegalClick);
 
     // Chiudi con X e Backdrop
     document.querySelectorAll('.legal-close-btn, .legal-modal-backdrop').forEach(el => {
@@ -849,249 +958,120 @@ export default function Home() {
     };
     document.addEventListener('keydown', onEscKey);
 
-    // EXPLICIT HANDLER per cookie banner privacy link
-    const cookieBannerLink = document.querySelector('.cookie-link');
-    if (cookieBannerLink) {
-      cookieBannerLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        openModal('privacy-modal');
-      });
-    }
-
-
     // Timing tracking for cleanup
     let phase1Timeout: any, phase2Timeout: any, revealTimeout: any, recalculateTimeout: any, removeTimeout: any, shuffleInterval: any;
 
-    // 0. CHECK IF PRELOADER ALREADY SHOWN IN THIS SESSION (FOR BACK BUTTON STABILITY)
-    const alreadyShown = sessionStorage.getItem('gsa_preloader_shown') === 'true';
-    
-    if (alreadyShown) {
-      setIsRevealed(true);
-      if ((window as any).lenis) (window as any).lenis.start();
-      document.body.style.overflow = '';
-      document.body.classList.add('revealed');
-      document.body.classList.remove('loading');
-      document.documentElement.classList.remove('loading');
-      setTimeout(() => ScrollTrigger.refresh(), 100);
-    } else {
-      // Blocca scroll
-      document.body.style.overflow = 'hidden';
+    // 0. CHECK IF PRELOADER ALREADY SHOWN IN THIS SESSION
+    // FORZATO A FALSE PER DEBUG: Permette di vedere l'animazione a ogni refresh
+    const preloaderPlayed = false; // Era: sessionStorage.getItem('gsa_preloader_shown') === 'true';
 
+    if (!preloaderPlayed) {
       const preloaderOverlay = document.getElementById('zoom-preloader');
       const shuffler = document.getElementById('shuffling-text');
       const logoGold = document.getElementById('logo-gold');
       const logoHole = document.getElementById('logo-hole');
 
-      // Le "Robe diverse" che compongono il caricamento (Italiano)
-      const words = [
-        t('preloader.w1'),
-        t('preloader.w2'),
-        t('preloader.w3'),
-        t('preloader.w4'),
-        t('preloader.w5'),
-        t('preloader.w6'),
-        t('preloader.w7')
-      ];
+      if (preloaderOverlay) {
+        preloaderOverlay.style.display = 'flex';
+        preloaderOverlay.style.opacity = '1';
+        preloaderOverlay.style.visibility = 'visible';
+        preloaderOverlay.classList.remove('finished');
+      }
 
+      document.body.style.overflow = 'hidden';
+
+      const words = [
+        t('preloader.w1'), t('preloader.w2'), t('preloader.w3'),
+        t('preloader.w4'), t('preloader.w5'), t('preloader.w6'), t('preloader.w7')
+      ];
       let wordIndex = 0;
 
-      // 1. FASE SHUFFLE (Composizione veloce)
+      // START SHUFFLE
       shuffleInterval = setInterval(() => {
         if (shuffler) {
+          shuffler.style.opacity = '1';
+          shuffler.style.display = 'block';
           shuffler.innerText = words[wordIndex];
-          wordIndex++;
-          if (wordIndex >= words.length) wordIndex = 0;
+          wordIndex = (wordIndex + 1) % words.length;
         }
-      }, 280);
+      }, 250);
 
-      // Dopo 1.8 secondi, stoppa lo shuffle e mostra GSA
+      // SEQUENCE
       phase1Timeout = setTimeout(() => {
         clearInterval(shuffleInterval);
-        if (shuffler) shuffler.classList.add('hidden'); // Via le parole
+        if (shuffler) {
+          shuffler.style.opacity = '0';
+          setTimeout(() => shuffler.classList.add('hidden'), 300);
+        }
 
-        // Appare GSA (Assemblaggio)
-        if (logoGold) logoGold.classList.add('visible');
-        if (logoHole) logoHole.classList.add('visible');
+        // MOSTRA LOGO
+        if (logoGold) {
+          logoGold.style.opacity = '1';
+          logoGold.classList.add('visible');
+        }
+        if (logoHole) {
+          logoHole.style.opacity = '1';
+          logoHole.classList.add('visible');
+        }
 
-        // 2. FASE ZOOM (L'entrata nel sito)
         phase2Timeout = setTimeout(() => {
-          if (logoGold) logoGold.classList.add('zoom-in');
-          if (logoHole) logoHole.classList.add('zoom-in');
+          // ZOOM + BLUR + FADE OUT
+          if (logoGold) {
+            logoGold.classList.add('zoom-in');
+            logoGold.style.filter = 'blur(15px)';
+            logoGold.style.transform = 'translate(-50%, -50%) scale(2.5)';
+            logoGold.style.opacity = '0';
+          }
 
-          // 3. FASE REVEAL (Pulizia finale)
           revealTimeout = setTimeout(() => {
-            if (preloaderOverlay) preloaderOverlay.classList.add('finished');
-            document.body.style.overflow = ''; 
-
-            if ((window as any).lenis) {
-              (window as any).lenis.start();
+            if (preloaderOverlay) {
+              preloaderOverlay.classList.add('finished');
+              preloaderOverlay.style.opacity = '0';
+              setTimeout(() => {
+                preloaderOverlay.style.display = 'none';
+              }, 1000);
             }
+            document.body.style.overflow = '';
+            if ((window as any).lenis) (window as any).lenis.start();
 
             document.documentElement.classList.remove('loading');
             document.body.classList.remove('loading');
             document.body.classList.add('revealed');
             
-            // Persistent flag for session
-            sessionStorage.setItem('gsa_preloader_shown', 'true');
             setIsRevealed(true);
+            setTimeout(() => ScrollTrigger.refresh(), 100);
+          }, 1000);
+        }, 1500);
+      }, 500);
+    } // End if (!alreadyShown)
+  }); // End GSAP Context
 
-            recalculateTimeout = setTimeout(() => {
-              ScrollTrigger.refresh();
-            }, 100);
-
-          }, 1000); 
-
-        }, 800); 
-
-      }, 1800); 
-    }
-    const contextMenu = document.getElementById('gsa-context-menu');
-    const ctxPartner = document.getElementById('ctx-partner');
-    const ctxNewTab = document.getElementById('ctx-newtab');
-    const ctxSubmit = document.getElementById('ctx-submit');
-
-    // Variabili per salvare l'elemento cliccato
-    let targetLink: HTMLAnchorElement | null = null;
-    let targetAction: HTMLElement | null = null;
-
-    // 1. ASCOLTA IL CLICK DESTRO
-    const onContextMenu = (e: MouseEvent) => {
-      e.preventDefault(); // BLOCCA il menu nativo del browser
-
-      // Resetta le voci dinamiche (nascondi tutto tranne Partner)
-      if (ctxNewTab) ctxNewTab.classList.add('hidden');
-      if (ctxSubmit) ctxSubmit.classList.add('hidden');
-
-      // --- ANALISI CONTESTO ---
-
-      // Caso A: L'utente ha cliccato su un LINK (o dentro un link)
-      targetLink = (e.target as HTMLElement).closest('a');
-      if (targetLink && ctxNewTab) {
-        ctxNewTab.classList.remove('hidden');
-      }
-
-      // Caso B: L'utente ha cliccato su un BUTTON o SUBMIT
-      targetAction = (e.target as HTMLElement).closest('button, input[type="submit"], .btn');
-      if (targetAction && ctxSubmit) {
-        ctxSubmit.classList.remove('hidden');
-      }
-
-      // --- POSIZIONAMENTO MENU ---
-      if (contextMenu) {
-        // Calcola posizione per non uscire dallo schermo
-        let x = e.clientX;
-        let y = e.clientY;
-
-        const menuWidth = contextMenu.offsetWidth || 260; // Fallback se nascosto
-        const menuHeight = contextMenu.offsetHeight || 150;
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-
-        // Se esce a destra, spostalo a sinistra
-        if (x + menuWidth > windowWidth) x -= menuWidth;
-        // Se esce sotto, spostalo sopra
-        if (y + menuHeight > windowHeight) y -= menuHeight;
-
-        contextMenu.style.left = `${x}px`;
-        contextMenu.style.top = `${y}px`;
-
-        // MOSTRA IL MENU
-        contextMenu.classList.add('active');
-      }
-    };
-    document.addEventListener('contextmenu', onContextMenu);
-
-    // 2. CHIUDI IL MENU (Al click ovunque o scroll)
-    const onDocClick = () => { if (contextMenu) contextMenu.classList.remove('active') };
-    const onWinScroll = () => { if (contextMenu) contextMenu.classList.remove('active') };
-    document.addEventListener('click', onDocClick);
-    window.addEventListener('scroll', onWinScroll);
-
-    // 3. AZIONI DEL MENU
-
-    // Azione 1: Diventa Partner (Vai al form)
-    if (ctxPartner) {
-      ctxPartner.addEventListener('click', () => {
-        // Si può fare scroll o redirect
-        const formSection = document.getElementById('features'); // Usiamo una sezione esistente come target
-        if (formSection) formSection.scrollIntoView({ behavior: 'smooth' });
-      });
-    }
-
-    // Azione 2: Apri in Nuova Scheda
-    if (ctxNewTab) {
-      ctxNewTab.addEventListener('click', () => {
-        if (targetLink) {
-          window.open(targetLink.href, '_blank');
-        }
-      });
-    }
-
-    // Azione 3: Invia / Clicca Bottone
-    if (ctxSubmit) {
-      ctxSubmit.addEventListener('click', () => {
-        if (targetAction) {
-          targetAction.click(); // Simula il click sinistro sull'elemento
-        }
-      });
-    }
-
-
-    // Cleanup function
     return () => {
-      // Clear all timers
-      clearInterval(shuffleInterval);
-      clearTimeout(phase1Timeout);
-      clearTimeout(phase2Timeout);
-      clearTimeout(revealTimeout);
-      clearTimeout(recalculateTimeout);
-      clearTimeout(removeTimeout);
+      ctx.revert();
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
+      if (lenisRef.current) {
+        try {
+          lenisRef.current.destroy();
+        } catch (e) {
+          console.warn("Lenis cleanup error:", e);
+        }
+      }
 
-      cancelAnimationFrame(rafId);
-      ScrollTrigger.getAll().forEach(t => t.kill());
-      lenis.destroy();
-      delete (window as any).lenis;
-
-      // REVERT SPLIT TYPE (Avoid DOM corruption on re-navigation)
-      if (heroHeadline) heroHeadline.revert();
-      if (heroDesc) heroDesc.revert();
-      if (textStats) textStats.revert();
-
-      // Ensure loading classes are gone
-      document.documentElement.classList.remove('loading');
-      document.body.classList.remove('loading');
-      document.body.style.overflow = '';
-
-      // Clean up global listeners
-      document.removeEventListener('keydown', onEscKey);
-      document.removeEventListener('contextmenu', onContextMenu);
-      window.removeEventListener('scroll', onWinScroll);
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('load', handleResize);
-      document.removeEventListener('click', onDocClick);
-
-      // Clean up embers
-      createdEmbers.forEach((emp: HTMLDivElement) => emp.remove());
-
-      // Clean up ParticlesJS
+      // Explicit cleanup for any remaining manual additions
+      const embers = document.querySelectorAll('.dynamic-ember');
+      embers.forEach(e => e.remove());
+      
       const pJS = (window as any).pJSDom;
       if (Array.isArray(pJS)) {
-        for (let i = 0; i < pJS.length; i++) {
-          const instance = pJS[i];
-          if (instance && instance.pJS && instance.pJS.fn && instance.pJS.fn.vendors) {
-            try {
-              instance.pJS.fn.vendors.destroypJS();
-            } catch (e) {
-              console.warn("ParticlesJS cleanup error:", e);
-            }
+        pJS.forEach((instance: any) => {
+          if (instance?.pJS?.fn?.vendors?.destroypJS) {
+            try { instance.pJS.fn.vendors.destroypJS(); } catch(e) {}
           }
-        }
+        });
         (window as any).pJSDom = [];
       }
     };
-
-  }, [lang]);
+  }, [lang, visionImages.length, bolognaExperiences.length, ferraraExperiences.length, videos.length, academyImages.length]);
 
   return (
     <div>
@@ -1131,38 +1111,32 @@ export default function Home() {
         </filter>
       </svg>
       {/* SVG Filter for Metaball (Gooey Effect) */}
-      <svg style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }} aria-hidden="true">
-        <filter id="goo">
-          <feGaussianBlur in="SourceGraphic" stdDeviation={5} result="blur" />
-          <feColorMatrix in="blur" mode="matrix" values="2 0 0 0 0  
-                                                     0 2 0 0 0  
-                                                     0 0 2 0 0  
-                                                     0 0 0 18 -7" result="goo" />
-          <feComposite in="SourceGraphic" in2="goo" operator="atop" />
-        </filter>
-      </svg>
       {/* Styles */}
-
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-      {/* PRELOADER: THE GSA REVEAL (Typographic) */}
-      {/* PRELOADER: THE ZOOM-THROUGH REVEAL (Cutout Mask Edition) */}
-      {!isRevealed && (
-        <div id="zoom-preloader" className="zoom-overlay">
-          <div className="zoom-bg" />
-          <div className="zoom-content">
-            <div id="shuffling-text" className="shuffle-word">{t('preloader.w1')}</div>
-            {/* Layer 1: GOLD (Visible initially) */}
-            <div id="logo-gold" className="gsa-huge-logo gsa-logo-layer gold">
-              <Image src="/assets/logo.png" alt="GSA Hotels" width={1200} height={450} priority style={{ width: '35vw', height: 'auto' }} />
-            </div>
-            {/* Layer 2: HOLE (Visible during zoom to cut the mask) */}
-            <div id="logo-hole" className="gsa-huge-logo gsa-logo-layer hole">
-              <Image src="/assets/logo.png" alt="GSA Hotels" width={1200} height={450} priority style={{ width: '35vw', height: 'auto' }} />
-            </div>
+
+      {/* PRELOADER: THE ZOOM-THROUGH REVEAL (Original Logo Edition) */}
+      <div id="zoom-preloader" className="zoom-overlay" style={{ display: alreadyShown ? 'none' : 'flex' }}>
+        {/* The Black Mask Layer */}
+        <div className="zoom-bg" style={{ zIndex: 5, backgroundColor: '#000' }} />
+
+        <div className="zoom-content" style={{ zIndex: 10 }}>
+          <div id="shuffling-text" className="shuffle-word" style={{ zIndex: 100 }}>{t('preloader.w1')}</div>
+
+          {/* THE ONLY LAYER: THE ORIGINAL LOGO - Optimized for RAM */}
+          <div id="logo-gold" className="gsa-huge-logo gsa-logo-layer gold" style={{ zIndex: 15 }}>
+            <Image
+              src="/assets/logo.png"
+              alt="GSA Hotels"
+              width={1200}
+              height={450}
+              priority
+              quality={85}
+              style={{ width: '30vw', height: 'auto', display: 'block' }}
+            />
           </div>
         </div>
-      )}
+      </div>
       <svg style={{ width: 0, height: 0, position: 'absolute', pointerEvents: 'none' }}>
         <defs>
           <filter id="goo">
@@ -1194,7 +1168,7 @@ export default function Home() {
           <div className="jesko-ui-layer">
             {/* TOP LEFT: Logo */}
             <div className="j-logo-container">
-              <Link href="/" onClick={() => window.location.reload()}><Image src="/assets/logo.png" alt="GSA Logo" className="j-logo" style={{ transform: 'scale(1.1)', transformOrigin: 'left center' }} width={140} height={50} priority /></Link>
+              <Link href="/" onClick={() => window.location.reload()}><Image src="/assets/logo.png" alt="GSA Logo" className="j-logo" style={{ transform: 'scale(1.1)', transformOrigin: 'left center', opacity: 0 }} width={140} height={50} priority quality={80} /></Link>
             </div>
             {/* CENTER LEFT: Headline */}
             <div className="j-headline-container">
@@ -1259,6 +1233,8 @@ export default function Home() {
                       fill
                       className="video-thumbnail"
                       style={{ objectFit: 'cover' }}
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      loading="lazy"
                     />
                     <div className="play-btn-luxury">
                       <i className="fas fa-play" />
@@ -1434,7 +1410,7 @@ export default function Home() {
                 <div className="exp-city-label">BOLOGNA</div>
                 <div className="exp-slider-luxury">
                   <div className="exp-image-wrapper">
-                    <a href={`/esperienze/bologna/${encodeURIComponent(bolognaExperiences[activeBologna].title.split(': ')[1]?.toLowerCase().replace(/ /g, '-') || '')}`} className="exp-image-link" style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
+                    <a href={`/esperienze/bologna/${bolognaExperiences[activeBologna].slug}`} className="exp-image-link" style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
                       <Image
                         src={bolognaExperiences[activeBologna].img}
                         alt={bolognaExperiences[activeBologna].title}
@@ -1443,6 +1419,7 @@ export default function Home() {
                         className="exp-slide-img"
                         style={{ objectFit: 'cover' }}
                         sizes="(max-width: 768px) 100vw, 50vw"
+                        priority={true} // Priority loading for visible elements
                       />
                       <div className="exp-overlay-luxury">
                         <div className="exp-content-box">
@@ -1482,7 +1459,7 @@ export default function Home() {
                 <div className="exp-city-label">FERRARA</div>
                 <div className="exp-slider-luxury">
                   <div className="exp-image-wrapper">
-                    <a href={`/esperienze/ferrara/${encodeURIComponent(ferraraExperiences[activeFerrara].title.split(': ')[1]?.toLowerCase().replace(/ /g, '-') || '')}`} className="exp-image-link" style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
+                    <a href={`/esperienze/ferrara/${ferraraExperiences[activeFerrara].slug}`} className="exp-image-link" style={{ position: 'absolute', inset: 0, zIndex: 2 }}>
                       <Image
                         src={ferraraExperiences[activeFerrara].img}
                         alt={ferraraExperiences[activeFerrara].title}
@@ -1491,6 +1468,7 @@ export default function Home() {
                         className="exp-slide-img"
                         style={{ objectFit: 'cover' }}
                         sizes="(max-width: 768px) 100vw, 50vw"
+                        priority={true} // Priority loading
                       />
                       <div className="exp-overlay-luxury">
                         <div className="exp-content-box">
@@ -1554,23 +1532,25 @@ export default function Home() {
             <div className="founder-media reveal">
               <div className="video-slider-wrapper">
                 <div className="slider-video-container">
-                  <a href={videos[activeVideo].url} target="_blank" className="video-preview-card">
-                    <div className="video-overlay" />
-                    <Image
-                      src={`https://img.youtube.com/vi/${videos[activeVideo].id}/maxresdefault.jpg`}
-                      alt={videos[activeVideo].title}
-                      fill
-                      className="video-thumbnail"
-                      style={{ objectFit: 'cover' }}
-                    />
-                    <div className="podcast-badge">
-                      <span>{videos[activeVideo].badge}</span>
-                      <strong>{videos[activeVideo].title}</strong>
-                    </div>
-                    <div className="play-btn-luxury">
-                      <i className="fas fa-play" />
-                    </div>
-                  </a>
+                  <div
+                    className="video-responsive-wrapper shadow-luxury"
+                    onMouseDown={() => setIsVideoPlaying(true)}
+                    onTouchStart={() => setIsVideoPlaying(true)}
+                  >
+                    <iframe
+                      key={`video-v2-${activeVideo}`}
+                      width="100%"
+                      height="100%"
+                      src={`https://www.youtube.com/embed/${videos[activeVideo].id}?rel=0&modestbranding=1&enablejsapi=1&origin=${typeof window !== 'undefined' ? window.location.origin : ''}`}
+                      title={videos[activeVideo].title}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="video-iframe"
+                      suppressHydrationWarning={true}
+                      loading="lazy"
+                    ></iframe>
+                  </div>
                 </div>
 
                 <p className="video-description-text">
@@ -1578,23 +1558,25 @@ export default function Home() {
                 </p>
 
                 <div className="video-slider-controls">
-                  <button onClick={prevVideo} className="slider-arrow" aria-label="Annulla">
-                    <i className="fas fa-chevron-left" />
-                  </button>
+                  <div className="video-controls-flex" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '30px', marginTop: '20px' }}>
+                    <button onClick={prevVideo} className="slider-arrow" aria-label="Annulla" style={{ position: 'static', transform: 'none' }}>
+                      <i className="fas fa-chevron-left" />
+                    </button>
 
-                  <div className="slider-dots">
-                    {videos.map((_, index) => (
-                      <div
-                        key={index}
-                        className={`slider-dot ${index === activeVideo ? 'active' : ''}`}
-                        onClick={() => setActiveVideo(index)}
-                      />
-                    ))}
+                    <div className="slider-dots" style={{ margin: 0 }}>
+                      {videos.map((_, index) => (
+                        <div
+                          key={index}
+                          className={`slider-dot ${index === activeVideo ? 'active' : ''}`}
+                          onClick={() => setActiveVideo(index)}
+                        />
+                      ))}
+                    </div>
+
+                    <button onClick={nextVideo} className="slider-arrow" aria-label="Avanti" style={{ position: 'static', transform: 'none' }}>
+                      <i className="fas fa-chevron-right" />
+                    </button>
                   </div>
-
-                  <button onClick={nextVideo} className="slider-arrow" aria-label="Avanti">
-                    <i className="fas fa-chevron-right" />
-                  </button>
                 </div>
               </div>
             </div>
@@ -1621,7 +1603,7 @@ export default function Home() {
                   className="hotel-bg"
                   style={{ objectFit: 'cover' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  loading="lazy"
+                  priority={true}
                 />
               </div>
               <div className="hotel-overlay" />
@@ -1641,7 +1623,7 @@ export default function Home() {
                   className="hotel-bg"
                   style={{ objectFit: 'cover' }}
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  loading="lazy"
+                  priority={true}
                 />
               </div>
               <div className="hotel-overlay" />
@@ -1709,7 +1691,18 @@ export default function Home() {
               <div className="hotel-content">
                 <span className="hotel-location">Ferrara</span>
                 <h2 className="hotel-name">Duchessa Isabella Eventi</h2>
-                <a href="https://www.duchessaisabella.com/meeting-eventi/" target="_blank" className="btn-explore">{t('hotel.eventi')}</a>
+                <a 
+                  href="https://www.duchessaisabella.com/it/servizi.html" 
+                  target="_blank" 
+                  className="btn-explore external-link"
+                  onClick={(e) => {
+                    const target = e.currentTarget;
+                    target.classList.add('loading');
+                    setTimeout(() => target.classList.remove('loading'), 2000);
+                  }}
+                >
+                  {t('hotel.eventi')}
+                </a>
               </div>
             </section>
           </div>
@@ -1754,47 +1747,49 @@ export default function Home() {
                 </div>
 
                 <div className="video-slider-controls">
-                  <button onClick={prevVisionImage} className="slider-arrow" aria-label="Annulla" disabled={visionImages.length === 0}>
-                    <i className="fas fa-chevron-left" />
-                  </button>
+                  <div className="video-controls-flex" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '30px', marginTop: '20px' }}>
+                    <button onClick={prevVisionImage} className="slider-arrow" aria-label="Annulla" disabled={visionImages.length === 0} style={{ position: 'static', transform: 'none' }}>
+                      <i className="fas fa-chevron-left" />
+                    </button>
 
-                  <div className="vision-scrubber-wrapper">
-                    {/* Floating Tooltip */}
-                    {(visionImages.length > 0 && (scrubberHoverValue !== null || isScrubbing)) && (
-                      <div
-                        className="vision-scrubber-tooltip"
-                        style={{
-                          left: `${((scrubberHoverValue !== null ? scrubberHoverValue : activeVisionImage) / (visionImages.length - 1)) * 100}%`
+                    <div className="vision-scrubber-wrapper" style={{ flex: 1, maxWidth: '200px' }}>
+                      {/* Floating Tooltip */}
+                      {(visionImages.length > 0 && (scrubberHoverValue !== null || isScrubbing)) && (
+                        <div
+                          className="vision-scrubber-tooltip"
+                          style={{
+                            left: `${((scrubberHoverValue !== null ? scrubberHoverValue : activeVisionImage) / (visionImages.length - 1)) * 100}%`
+                          }}
+                        >
+                          {String((scrubberHoverValue !== null ? scrubberHoverValue : activeVisionImage) + 1).padStart(2, '0')} / {visionImages.length}
+                        </div>
+                      )}
+                      <input
+                        type="range"
+                        min="0"
+                        max={visionImages.length > 0 ? visionImages.length - 1 : 0}
+                        value={activeVisionImage}
+                        disabled={visionImages.length === 0}
+                        onChange={(e) => setActiveVisionImage(parseInt(e.target.value))}
+                        onMouseEnter={() => visionImages.length > 0 && setScrubberHoverValue(activeVisionImage)}
+                        onMouseLeave={() => setScrubberHoverValue(null)}
+                        onMouseMove={(e) => {
+                          if (visionImages.length === 0) return;
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const x = e.clientX - rect.left;
+                          const val = Math.round((x / rect.width) * (visionImages.length - 1));
+                          setScrubberHoverValue(Math.max(0, Math.min(visionImages.length - 1, val)));
                         }}
-                      >
-                        {String((scrubberHoverValue !== null ? scrubberHoverValue : activeVisionImage) + 1).padStart(2, '0')} / {visionImages.length}
-                      </div>
-                    )}
-                    <input
-                      type="range"
-                      min="0"
-                      max={visionImages.length > 0 ? visionImages.length - 1 : 0}
-                      value={activeVisionImage}
-                      disabled={visionImages.length === 0}
-                      onChange={(e) => setActiveVisionImage(parseInt(e.target.value))}
-                      onMouseEnter={() => visionImages.length > 0 && setScrubberHoverValue(activeVisionImage)}
-                      onMouseLeave={() => setScrubberHoverValue(null)}
-                      onMouseMove={(e) => {
-                        if (visionImages.length === 0) return;
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        const val = Math.round((x / rect.width) * (visionImages.length - 1));
-                        setScrubberHoverValue(Math.max(0, Math.min(visionImages.length - 1, val)));
-                      }}
-                      onMouseDown={() => visionImages.length > 0 && setIsScrubbing(true)}
-                      onMouseUp={() => setIsScrubbing(false)}
-                      className="vision-scrubber"
-                    />
-                  </div>
+                        onMouseDown={() => visionImages.length > 0 && setIsScrubbing(true)}
+                        onMouseUp={() => setIsScrubbing(false)}
+                        className="vision-scrubber"
+                      />
+                    </div>
 
-                  <button onClick={nextVisionImage} className="slider-arrow" aria-label="Avanti" disabled={visionImages.length === 0}>
-                    <i className="fas fa-chevron-right" />
-                  </button>
+                    <button onClick={nextVisionImage} className="slider-arrow" aria-label="Avanti" disabled={visionImages.length === 0} style={{ position: 'static', transform: 'none' }}>
+                      <i className="fas fa-chevron-right" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2003,167 +1998,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <footer className="luxury-footer">
-          <div className="container">
-            <div className="footer-grid">
-              {/* Category 1: GSA Hotels Socials */}
-              <div className="footer-col social-col">
-                <h4 className="footer-heading">GSA HOTELS</h4>
-                <div className="social-links-grid">
-                  <a href="https://instagram.com/gsahotels" target="_blank" className="social-link-item">
-                    <i className="fab fa-instagram" /> <span>Instagram</span>
-                  </a>
-                  <a href="https://facebook.com/gsahotels" target="_blank" className="social-link-item">
-                    <i className="fab fa-facebook-f" /> <span>Facebook</span>
-                  </a>
-                  <a href="https://youtube.com/@gsahotels" target="_blank" className="social-link-item">
-                    <i className="fab fa-youtube" /> <span>YouTube</span>
-                  </a>
-                </div>
-              </div>
-
-              {/* Category 2: Duchessa Isabella Socials */}
-              <div className="footer-col social-col">
-                <h4 className="footer-heading">DUCHESSA ISABELLA</h4>
-                <div className="social-links-grid">
-                  <a href="https://facebook.com/duchessaisabellaferrara" target="_blank" className="social-link-item">
-                    <i className="fab fa-facebook-f" /> <span>Facebook</span>
-                  </a>
-                  <a href="https://instagram.com/duchessaisabella" target="_blank" className="social-link-item">
-                    <i className="fab fa-instagram" /> <span>Instagram</span>
-                  </a>
-                  <a href="https://www.tripadvisor.it/Hotel_Review-g187803-d232851-Reviews-Duchessa_Isabella_Hotel-Ferrara_Province_of_Ferrara_Emilia_Romagna.html" target="_blank" className="social-link-item">
-                    <i className="fa fa-tripadvisor" /> <span>TripAdvisor</span>
-                  </a>
-                </div>
-              </div>
-
-              {/* Category 3: Quick Links */}
-              <div className="footer-col">
-                <h4 className="footer-heading">{t('footer.navigazione')}</h4>
-                <ul className="footer-links">
-                  <li><a href="#intro">{t('menu.chiSiamo')}</a></li>
-                  <li><a href="#services">{t('menu.academy')}</a></li>
-                  <li><a href="#besafe">{t('menu.besafe')}</a></li>
-                  <li><a href="#experiences">{t('menu.esperienze')}</a></li>
-                  <li><a href="#founder">{t('menu.fondatore')}</a></li>
-                  <li><a href="#partner">{t('menu.partner')}</a></li>
-                  <li><a href="#b2b-section">{t('menu.lavora')}</a></li>
-                  <li><a href="#philosophy">{t('menu.dna')}</a></li>
-                  <li><a href="/blog">{t('menu.blog')}</a></li>
-                </ul>
-              </div>
-            </div> {/* Closes footer-grid */}
-
-            <div className="footer-bottom-line">
-              <div className="j-line" />
-              <span className="footer-brand">GSA HOTELS</span>
-              <div className="j-line" />
-            </div>
-
-            <div className="footer-legal" style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', flexWrap: 'wrap', gap: '30px', width: '100%', marginTop: '5px' }}>
-              <div className="legal-left" style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
-                <a href="#" className="cookie-link">{t('footer.legal.privacy')}</a>
-                <a href="#" className="cookie-link">{t('footer.legal.cookie')}</a>
-                <a href="#" className="cookie-link">{t('footer.legal.terms')}</a>
-                <span style={{ opacity: 0.5 }}>|</span>
-                <p style={{ margin: 0 }}>&copy; 2026 GSA Hotels. All Rights Reserved.</p>
-              </div>
-              <p className="footer-credits" style={{ margin: 10, textAlign: 'start' }}>
-                Powered by: <a href="mailto:tiachinaglia@gmail.com" style={{ color: '#C5A059', textDecoration: 'none' }}>tiachinaglia@gmail.com</a>
-              </p>
-            </div>
-          </div> {/* Closes container */}
-
-          <div className="footer-signature" style={{ color: 'transparent', WebkitTextStroke: '1px #C5A059' }}>
-            GSA HOTELS
-          </div>
-        </footer>
-
       </main>
-      {/* Scripts */}
-      {/* GSAP Core */}
-      {/* WebGL Shaders for Liquid Glass Cursor */}
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet" />
-      {/* ScrollTrigger */}
-      {/* BESAFE RATE GSAP ANIMATION */}
-      {/* iOS VIDEO AUTOPLAY ENFORCER */}
-      {/* Lenis Smooth Scroll */}
-      {/* SplitType for Text Animation */}
-      {/* --- MOBILE HAMBURGER MENU JS (Overlay Logic) --- */}
-      {/* PRIVACY CONCIERGE (Cookie Banner) */}
-      <div id="cookie-banner" className="cookie-banner">
-        <div className="cookie-content">
-          <h4 className="cookie-title">{t('cookie.title')}</h4>
-          <p className="cookie-text">
-            {t('cookie.text')} <a href="#" className="cookie-link">{t('footer.legal.privacy')}</a>.
-          </p>
-        </div>
-        <div className="cookie-actions">
-          <button id="cookie-decline" className="btn-cookie-ghost">{t('cookie.necessary')}</button>
-          <button id="cookie-accept" className="btn-cookie-gold">{t('cookie.accept')}</button>
-        </div>
-      </div>
-      {/* LEGAL MODAL (Privacy Policy) */}
-      <div id="privacy-modal" className="legal-modal">
-        <div className="legal-modal-backdrop" />
-        <div className="legal-modal-content">
-          <div className="legal-header">
-            <h2 className="legal-title">{t('footer.legal.privacy')}</h2>
-            <button className="legal-close-btn" aria-label={t('legal.close')}>
-              <i className="fas fa-times" />
-            </button>
-          </div>
-          <div className="legal-body" dangerouslySetInnerHTML={{ __html: t('legal.privacy.html') }} />
-        </div>
-      </div>
-      {/* LEGAL MODAL (Terms) */}
-      <div id="terms-modal" className="legal-modal">
-        <div className="legal-modal-backdrop" />
-        <div className="legal-modal-content">
-          <div className="legal-header">
-            <h2 className="legal-title">{t('footer.legal.terms')}</h2>
-            <button className="legal-close-btn" aria-label={t('legal.close')}>
-              <i className="fas fa-times" />
-            </button>
-          </div>
-          <div className="legal-body" dangerouslySetInnerHTML={{ __html: t('legal.terms.html') }} />
-        </div>
-      </div>
-      {/* LEGAL MODAL (Cookie Policy) */}
-      <div id="cookie-policy-modal" className="legal-modal">
-        <div className="legal-modal-backdrop" />
-        <div className="legal-modal-content">
-          <div className="legal-header">
-            <h2 className="legal-title">{t('footer.legal.cookie')}</h2>
-            <button className="legal-close-btn" aria-label={t('legal.close')}>
-              <i className="fas fa-times" />
-            </button>
-          </div>
-          <div className="legal-body" dangerouslySetInnerHTML={{ __html: t('legal.cookie.html') }} />
-        </div>
-      </div>
-      {/* PRELOADER LOGIC (The Zoom-Through Reveal) */}
-      {/* CUSTOM LUXURY CONTEXT MENU */}
-      <div id="gsa-context-menu" className="context-menu">
-        <ul className="context-menu-list">
-          <li className="ctx-item" id="ctx-partner">
-            <span className="ctx-icon">✦</span>
-            <a href="#contact"><span className="ctx-text">{t('ctx.partner')}</span></a>
-          </li>
-          <li className="ctx-item ctx-dynamic" id="ctx-newtab">
-            <span className="ctx-icon"><i className="fas fa-external-link-alt" /></span>
-            <span className="ctx-text">{t('ctx.newtab')}</span>
-          </li>
-          <li className="ctx-item ctx-dynamic" id="ctx-submit">
-            <span className="ctx-icon"><i className="fas fa-paper-plane" /></span>
-            <span className="ctx-text">{t('ctx.submit')}</span>
-          </li>
-        </ul>
-      </div>
-      {/* CONTEXT MENU LOGIC */}
     </div>
   );
 }

@@ -65,13 +65,26 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false }) => {
             { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power4.out', delay: 0.3 }
           );
         } else {
+          // Closing animation for links
+          gsap.to('.glass-link', {
+            y: -30,
+            opacity: 0,
+            duration: 0.5,
+            stagger: 0.05,
+            ease: 'power4.in'
+          });
+
           overlay.classList.remove('active');
-          document.documentElement.style.overflowY = '';
-          document.body.style.overflowY = '';
-          document.body.style.position = '';
-          document.body.style.top = '';
-          document.body.style.width = '';
-          window.scrollTo(0, menuScrollY);
+          
+          // Delay body scroll restoration to match overlay CSS transition (0.8s)
+          setTimeout(() => {
+            document.documentElement.style.overflowY = '';
+            document.body.style.overflowY = '';
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+            window.scrollTo(0, menuScrollY);
+          }, 800);
         }
       }
 
@@ -102,6 +115,7 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false }) => {
       st = ScrollTrigger.create({
         trigger: ".j-logo-container",
         start: "bottom top",
+        end: 99999, // Persistent until top
         onEnter: () => {
           const navWrapper = document.querySelector('.nav-wrapper');
           if (navWrapper) navWrapper.classList.add('active');
@@ -109,6 +123,15 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false }) => {
         onLeaveBack: () => {
           const navWrapper = document.querySelector('.nav-wrapper');
           if (navWrapper) navWrapper.classList.remove('active');
+        },
+        onUpdate: (self) => {
+          // Extra safety: force active if we are scrolled past a certain point even if trigger fails
+          if (self.scroll() > 500) {
+            const navWrapper = document.querySelector('.nav-wrapper');
+            if (navWrapper && !navWrapper.classList.contains('active')) {
+              navWrapper.classList.add('active');
+            }
+          }
         }
       });
     }

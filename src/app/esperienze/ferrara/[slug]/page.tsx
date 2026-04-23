@@ -7,13 +7,24 @@ import { useParams } from "next/navigation";
 import GlobalNav from "@/components/GlobalNav";
 import { useLang } from "@/context/LangContext";
 
+import ExperienceSlider from "@/components/ExperienceSlider";
+
 const slugToKey: Record<string, string> = {
-  "icone-estensi": "exp.fe1",
-  "schifanoia": "exp.fe2",
-  "ombre-e-luci": "exp.fe3",
-  "comacchio": "exp.fe4",
-  "food-tour": "exp.fe5",
-  "bike-tour": "exp.fe6"
+  "ferrara-esp-1": "exp.fe1",
+  "ferr-esp-2": "exp.fe2",
+  "ferr-esp-3": "exp.fe3",
+  "ferr-esp-4": "exp.fe4",
+  "ferr-esp-5": "exp.fe5",
+  "ferr-esp-6": "exp.fe6"
+};
+
+const slugToImages: Record<string, string[]> = {
+  "ferrara-esp-1": Array.from({length: 4}, (_,i) => `/assets/esperienze/ferrara-1/${i+1}.jpg`),
+  "ferr-esp-2": Array.from({length: 4}, (_,i) => `/assets/esperienze/ferrara-2/${i+1}.jpg`),
+  "ferr-esp-3": Array.from({length: 4}, (_,i) => `/assets/esperienze/ferrara-3/${i+1}.jpg`),
+  "ferr-esp-4": Array.from({length: 8}, (_,i) => `/assets/esperienze/ferrara-4/${i+1}.png`),
+  "ferr-esp-5": Array.from({length: 7}, (_,i) => `/assets/esperienze/ferrara-5/${i+1}.jpeg`),
+  "ferr-esp-6": Array.from({length: 5}, (_,i) => `/assets/esperienze/ferrara-6/${i+1}.jpg`)
 };
 
 export default function FerraraExperienceArticle() {
@@ -32,30 +43,30 @@ export default function FerraraExperienceArticle() {
     );
   }
 
+  const expImages = slugToImages[slug] || slugToImages[slug.toLowerCase()] || [];
+
   const exp = {
     title: t(`${key}.title`),
     desc: t(`${key}.desc`),
     content: t(`${key}.content`),
-    img: `/assets/esperienze/ferrara/${key === 'exp.fe1' ? '1.jpg' : key === 'exp.fe2' ? '2.jpg' : key === 'exp.fe3' ? '3.jpg' : key === 'exp.fe4' ? '4.png' : key === 'exp.fe5' ? '5.png' : '6.jpg'}`
+    images: expImages
   };
 
   return (
     <main style={{ minHeight: "100vh", background: "#050505", color: "white" }}>
       <GlobalNav />
-      {/* Header removal */}
 
-      <div style={{ position: "relative", width: "100%", height: "70vh", minHeight: "500px" }}>
-        <Image src={exp.img} alt={exp.title} fill style={{ objectFit: "cover" }} priority />
-        <div className="video-overlay" style={{ background: "linear-gradient(to top, rgba(5, 5, 5, 0.9), transparent)", zIndex: 1 }} />
-        <div style={{ position: "absolute", bottom: 60, left: "6vw", right: "6vw", zIndex: 10 }}>
-           <span className="label-gold">FERRARA</span>
-           <h1 className="vision-headline" style={{ fontSize: "clamp(3rem, 6vw, 6rem)", margin: "10px 0", color: "white", textShadow: "0 10px 30px rgba(0,0,0,0.5)" }}>{exp.title}</h1>
-        </div>
-      </div>
+      <ExperienceSlider 
+        images={exp.images} 
+        cityLabel="FERRARA" 
+        title={exp.title} 
+      />
 
       <section className="container" style={{ padding: "60px 6vw 120px", maxWidth: "900px", margin: "0 auto" }}>
-        <h3 className="vision-subtitle" style={{ color: "#C5A059", marginBottom: "20px", fontSize: "1.5rem" }}>{exp.desc}</h3>
-        <p className="vision-body" style={{ lineHeight: 1.8, fontSize: "1.1rem" }}>
+        <h3 className="vision-subtitle" style={{ color: "#C5A059", marginBottom: "30px", fontSize: "1.6rem", lineHeight: 1.4 }}>
+          {exp.desc}
+        </h3>
+        <p className="vision-body" style={{ lineHeight: 1.8, fontSize: "1.15rem", whiteSpace: "pre-wrap" }}>
           {exp.content}
         </p>
 
