@@ -106,6 +106,25 @@ body.loading {
   overflow: hidden !important;
   height: 100vh !important;
   touch-action: none;
+  background-color: #000 !important;
+}
+
+/* ANTI-FLASH: Hide everything except the preloader until revealed */
+html.loading main,
+html.loading footer,
+html.loading .jesko-bg-layer,
+html.loading .nav-wrapper,
+html.loading #main-content {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+body.revealed main,
+body.revealed footer,
+body.revealed .jesko-bg-layer,
+body.revealed .nav-wrapper {
+  opacity: 1 !important;
+  transition: opacity 1.5s ease-in-out;
 }
 
 /* Force Hide Default Cursor on ALL Interactive Elements */

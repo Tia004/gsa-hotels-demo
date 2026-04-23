@@ -366,6 +366,9 @@ export default function Home() {
       // Register GSAP once
       gsap.registerPlugin(ScrollTrigger);
 
+      // FORZATO A FALSE PER DEBUG: Permette di vedere l'animazione a ogni refresh
+      const preloaderPlayed = false;
+
       const createdEmbers: HTMLElement[] = [];
       
       // OPTIMIZATION: Reduce ScrollTrigger overhead
@@ -541,7 +544,7 @@ export default function Home() {
       stagger: 0.03,
       duration: 1.2,
       ease: "power4.out",
-      delay: alreadyShown ? 0.5 : 4.0 // Ritardo maggiore se c'è il preloader
+      delay: preloaderPlayed ? 0.5 : 2.8 // Ritardo sincronizzato con il nuovo preloader veloce (~3s)
     });
 
     gsap.from(".j-desc", {
@@ -549,7 +552,7 @@ export default function Home() {
       opacity: 0,
       duration: 1.2,
       ease: "power3.out",
-      delay: alreadyShown ? 1.2 : 4.7
+      delay: preloaderPlayed ? 1.2 : 3.5
     });
 
     // --- 2. GENERIC LUXURY REVEAL SYSTEM ---
@@ -613,14 +616,14 @@ export default function Home() {
       duration: 1.5,
       stagger: 0.2,
       ease: "power3.out",
-      delay: alreadyShown ? 1.0 : 4.5
+      delay: preloaderPlayed ? 1.0 : 9.3
     });
 
     // 4. Logo Fade In
     gsap.from(".j-logo", {
       opacity: 0,
       duration: 1,
-      delay: alreadyShown ? 0.5 : 4.0
+      delay: preloaderPlayed ? 0.5 : 8.8
     });
 
 
@@ -961,10 +964,6 @@ export default function Home() {
     // Timing tracking for cleanup
     let phase1Timeout: any, phase2Timeout: any, revealTimeout: any, recalculateTimeout: any, removeTimeout: any, shuffleInterval: any;
 
-    // 0. CHECK IF PRELOADER ALREADY SHOWN IN THIS SESSION
-    // FORZATO A FALSE PER DEBUG: Permette di vedere l'animazione a ogni refresh
-    const preloaderPlayed = false; // Era: sessionStorage.getItem('gsa_preloader_shown') === 'true';
-
     if (!preloaderPlayed) {
       const preloaderOverlay = document.getElementById('zoom-preloader');
       const shuffler = document.getElementById('shuffling-text');
@@ -984,9 +983,7 @@ export default function Home() {
         t('preloader.w1'), t('preloader.w2'), t('preloader.w3'),
         t('preloader.w4'), t('preloader.w5'), t('preloader.w6'), t('preloader.w7')
       ];
-      let wordIndex = 0;
-
-      // START SHUFFLE
+      let wordIndex = 0;      // START SHUFFLE - Deliberate Luxury Pace
       shuffleInterval = setInterval(() => {
         if (shuffler) {
           shuffler.style.opacity = '1';
@@ -994,56 +991,58 @@ export default function Home() {
           shuffler.innerText = words[wordIndex];
           wordIndex = (wordIndex + 1) % words.length;
         }
-      }, 250);
+      }, 100); // 100ms per word (x4 speedup)
 
       // SEQUENCE
       phase1Timeout = setTimeout(() => {
         clearInterval(shuffleInterval);
         if (shuffler) {
           shuffler.style.opacity = '0';
-          setTimeout(() => shuffler.classList.add('hidden'), 300);
+          setTimeout(() => shuffler.classList.add('hidden'), 200);
         }
 
-        // MOSTRA LOGO
-        if (logoGold) {
-          logoGold.style.opacity = '1';
-          logoGold.classList.add('visible');
-        }
-        if (logoHole) {
-          logoHole.style.opacity = '1';
-          logoHole.classList.add('visible');
-        }
-
-        phase2Timeout = setTimeout(() => {
-          // ZOOM + BLUR + FADE OUT
+        // MOSTRA LOGO - Solo dopo la fine delle parole
+        setTimeout(() => {
           if (logoGold) {
-            logoGold.classList.add('zoom-in');
-            logoGold.style.filter = 'blur(15px)';
-            logoGold.style.transform = 'translate(-50%, -50%) scale(2.5)';
-            logoGold.style.opacity = '0';
+            logoGold.style.opacity = '1';
+            logoGold.classList.add('visible');
+          }
+          if (logoHole) {
+            logoHole.style.opacity = '1';
+            logoHole.classList.add('visible');
           }
 
-          revealTimeout = setTimeout(() => {
-            if (preloaderOverlay) {
-              preloaderOverlay.classList.add('finished');
-              preloaderOverlay.style.opacity = '0';
-              setTimeout(() => {
-                preloaderOverlay.style.display = 'none';
-              }, 1000);
+          phase2Timeout = setTimeout(() => {
+            // ZOOM + BLUR + FADE OUT
+            if (logoGold) {
+              logoGold.classList.add('zoom-in');
+              logoGold.style.filter = 'blur(15px)';
+              logoGold.style.transform = 'translate(-50%, -50%) scale(2.5)';
+              logoGold.style.opacity = '0';
             }
-            document.body.style.overflow = '';
-            if ((window as any).lenis) (window as any).lenis.start();
 
-            document.documentElement.classList.remove('loading');
-            document.body.classList.remove('loading');
-            document.body.classList.add('revealed');
-            
-            setIsRevealed(true);
-            setTimeout(() => ScrollTrigger.refresh(), 100);
-          }, 1000);
-        }, 1500);
-      }, 500);
-    } // End if (!alreadyShown)
+            revealTimeout = setTimeout(() => {
+              if (preloaderOverlay) {
+                preloaderOverlay.classList.add('finished');
+                preloaderOverlay.style.opacity = '0';
+                setTimeout(() => {
+                  preloaderOverlay.style.display = 'none';
+                }, 500);
+              }
+              document.body.style.overflow = '';
+              if ((window as any).lenis) (window as any).lenis.start();
+
+              document.documentElement.classList.remove('loading');
+              document.body.classList.remove('loading');
+              document.body.classList.add('revealed');
+              
+              setIsRevealed(true);
+              setTimeout(() => ScrollTrigger.refresh(), 100);
+            }, 600); // Zoom animation duration 0.6s
+          }, 1000); // Tieni il logo per 1 secondo
+        }, 200); // Attendi 200ms dopo la dissolvenza delle parole prima di mostrare logo
+      }, 1200); // Fine fase parole (1.2 secondi)
+    } // End if (!preloaderPlayed)(!alreadyShown)
   }); // End GSAP Context
 
     return () => {
@@ -1116,7 +1115,7 @@ export default function Home() {
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 
       {/* PRELOADER: THE ZOOM-THROUGH REVEAL (Original Logo Edition) */}
-      <div id="zoom-preloader" className="zoom-overlay" style={{ display: alreadyShown ? 'none' : 'flex' }}>
+      <div id="zoom-preloader" className="zoom-overlay" style={{ display: isRevealed ? 'none' : 'flex' }}>
         {/* The Black Mask Layer */}
         <div className="zoom-bg" style={{ zIndex: 5, backgroundColor: '#000' }} />
 
@@ -1148,10 +1147,10 @@ export default function Home() {
       </svg>
 
 
-      <GlobalNav isHomePage={true} />
+      <GlobalNav isHomePage={true} isRevealed={isRevealed} />
 
       {/* GLOBAL BACKGROUND LAYER */}
-      <div className="jesko-bg-layer">
+      <div className="jesko-bg-layer" style={{ opacity: isRevealed ? 1 : 0, visibility: isRevealed ? 'visible' : 'hidden', transition: 'opacity 1.5s ease' }}>
         <video id="hero-video" className="jesko-bg-video" autoPlay muted loop playsInline>
           <source src="assets/wallpaperherosection.mp4" type="video/mp4" />
         </video>
@@ -1159,7 +1158,7 @@ export default function Home() {
       </div>
 
       {/* Main Content */}
-      <main>
+      <main style={{ opacity: isRevealed ? 1 : 0, visibility: isRevealed ? 'visible' : 'hidden', transition: 'opacity 1.5s ease' }}>
         {/* Hero Section (Jesko Clone) */}
         {/* Hero Section (Senior Dev Repair) */}
         <section className="jesko-hero-final">

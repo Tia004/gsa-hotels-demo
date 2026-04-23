@@ -24,9 +24,10 @@ function SignedOut({ children }: { children: React.ReactNode }) {
 
 interface GlobalNavProps {
   isHomePage?: boolean;
+  isRevealed?: boolean;
 }
 
-const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false }) => {
+const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = true }) => {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
@@ -136,6 +137,12 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false }) => {
       });
     }
 
+    // Safety: if we are not on home page, remove loading class immediately
+    if (pathname !== '/') {
+      document.documentElement.classList.remove('loading');
+      document.body.classList.remove('loading');
+    }
+
     return () => {
       window.removeEventListener('scroll', onScroll);
       document.removeEventListener('keydown', onEsc);
@@ -187,7 +194,14 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false }) => {
       </div>
 
       {/* Floating Navbar Capsule */}
-      <div className={`nav-wrapper ${!isHomePage ? 'active' : ''}`}>
+      <div 
+        className={`nav-wrapper ${(!isHomePage || isRevealed) && !pathname.includes('/login') ? 'revealed' : ''}`}
+        style={{ 
+          opacity: (isRevealed || !isHomePage) ? 1 : 0,
+          visibility: (isRevealed || !isHomePage) ? 'visible' : 'hidden',
+          transition: 'opacity 1s ease, visibility 1s ease'
+        }}
+      >
         {/* SPOTLIGHT LOGO */}
         <Link href="/" className={`nav-logo spotlight-mode scroll-appear ${scrolled || !isHomePage ? 'visible' : ''}`} style={{ position: 'fixed', top: '40px', left: '40px', zIndex: 100000, height: '55px', width: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000000', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)' }}>
           <Image src="/assets/logo.png" alt="GSA" width={80} height={28} style={{ height: '28px', width: 'auto' }} />

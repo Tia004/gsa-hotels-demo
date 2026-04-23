@@ -33,8 +33,8 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider localization={itIT}>
-      <html lang="it" className={`${geistSans.variable} ${geistMono.variable}`}>
-        <body className="antialiased" suppressHydrationWarning>
+      <html lang="it" className={`${geistSans.variable} ${geistMono.variable} loading`}>
+        <body className="antialiased loading" suppressHydrationWarning>
           <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
