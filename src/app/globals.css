@@ -1650,6 +1650,11 @@ img {
   width: 100%;
   height: 100%;
   z-index: 1;
+  /* GPU composite layer isolation to prevent black screen flashes during scroll */
+  transform: translateZ(0);
+  isolation: isolate;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .jesko-bg-img {
@@ -4407,6 +4412,8 @@ body {
   color: white;
   backdrop-filter: blur(18px) saturate(140%);
   -webkit-backdrop-filter: blur(18px) saturate(140%);
+  overscroll-behavior: contain; /* Prevent scroll propagation to background */
+  -webkit-overflow-scrolling: touch;
 
   /* Initial State (Hidden) */
   clip-path: circle(0% at 95% 5%);

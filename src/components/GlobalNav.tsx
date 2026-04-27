@@ -55,11 +55,10 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
         if (open) {
           overlay.classList.add('active');
           menuScrollY = window.scrollY || window.pageYOffset || 0;
-          document.documentElement.style.overflowY = 'hidden';
-          document.body.style.overflowY = 'hidden';
-          document.body.style.position = 'fixed';
-          document.body.style.top = `-${menuScrollY}px`;
-          document.body.style.width = '100%';
+          // Use overscroll-behavior instead of body:fixed to avoid Safari repaint crashes
+          overlay.style.overscrollBehavior = 'contain';
+          document.documentElement.style.overflow = 'hidden';
+          document.body.style.overflow = 'hidden';
 
           gsap.fromTo('.glass-link',
             { y: 50, opacity: 0 },
@@ -77,14 +76,10 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
 
           overlay.classList.remove('active');
           
-          // Delay body scroll restoration to match overlay CSS transition (0.8s)
+          // Restore scroll after overlay CSS transition (0.8s)
           setTimeout(() => {
-            document.documentElement.style.overflowY = '';
-            document.body.style.overflowY = '';
-            document.body.style.position = '';
-            document.body.style.top = '';
-            document.body.style.width = '';
-            window.scrollTo(0, menuScrollY);
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
           }, 800);
         }
       }
@@ -143,9 +138,53 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
       document.body.classList.remove('loading');
     }
 
+    // ANCHOR LINK INTERCEPTOR: Route all hash links through Lenis for smooth scroll
+    const handleAnchorClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest('a') as HTMLAnchorElement | null;
+      if (!anchor) return;
+
+      const href = anchor.getAttribute('href') || '';
+      let hash = '';
+
+      // Match href like '/#section' or '#section'
+      if (href.startsWith('/#')) {
+        hash = href.slice(1); // '#section'
+      } else if (href.startsWith('#')) {
+        hash = href;
+      } else {
+        return; // Not an anchor link, let Next.js handle it
+      }
+
+      e.preventDefault();
+
+      // Close the menu if it's open
+      if (overlay && overlay.classList.contains('active')) {
+        toggleMenu(false);
+      }
+
+      // Wait for menu to close, then scroll
+      const scrollDelay = (overlay && overlay.classList.contains('active')) ? 900 : 0;
+      setTimeout(() => {
+        const targetEl = document.querySelector(hash) as HTMLElement | null;
+        if (!targetEl) return;
+
+        const lenis = (window as any).lenis;
+        if (lenis) {
+          lenis.scrollTo(targetEl, { offset: -80, duration: 1.4, easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+        } else {
+          // Fallback: native smooth scroll
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, scrollDelay);
+    };
+
+    document.addEventListener('click', handleAnchorClick);
+
     return () => {
       window.removeEventListener('scroll', onScroll);
       document.removeEventListener('keydown', onEsc);
+      document.removeEventListener('click', handleAnchorClick);
       if (trigger) trigger.removeEventListener('click', handleTrigger);
       if (desktopTrigger && desktopTrigger !== trigger) desktopTrigger.removeEventListener('click', handleTrigger);
       if (mobileTrigger) mobileTrigger.removeEventListener('click', handleTrigger);

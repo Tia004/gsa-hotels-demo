@@ -30,7 +30,7 @@ export default function ExperienceSlider({ images, cityLabel, title }: Experienc
   };
 
   return (
-    <div className="experience-slider-luxury" style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }}>
+    <div className="experience-slider-luxury" style={{ position: "relative", width: "100%", height: "100vh", minHeight: "500px", overflow: "hidden" }}>
       <div 
         ref={scrollRef}
         onScroll={handleScroll}

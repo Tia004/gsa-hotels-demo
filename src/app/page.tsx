@@ -119,25 +119,11 @@ export default function Home() {
 
   const [isPlayingIntro, setIsPlayingIntro] = React.useState(false);
 
-  // On mount: if preloader already shown this session, skip directly to revealed state
+  // On mount: ensure loading state is active for preloader (preloader always plays)
   React.useEffect(() => {
-    const hasBeenShown = sessionStorage.getItem('gsa_preloader_shown') === 'true';
-    if (hasBeenShown) {
-      setIsRevealed(true);
-      document.body.classList.add('revealed');
-      document.body.style.overflow = '';
-      document.documentElement.classList.remove('loading');
-      document.body.classList.remove('loading');
-      const navWrapper = document.querySelector('.nav-wrapper');
-      if (navWrapper) navWrapper.classList.add('revealed');
-      const l = (window as any).lenis;
-      if (l) l.start();
-    } else {
-      // Ensure locked state before preloader starts
-      document.documentElement.classList.add('loading');
-      document.body.classList.add('loading');
-      document.body.style.overflow = 'hidden';
-    }
+    document.documentElement.classList.add('loading');
+    document.body.classList.add('loading');
+    document.body.style.overflow = 'hidden';
   }, []);
 
 
@@ -633,19 +619,7 @@ export default function Home() {
         }
       });
 
-      // GOOEY LOGO REVEAL (CSS Keyframes Trigger)
-      ScrollTrigger.create({
-        trigger: ".jesko-statement-container",
-        start: "top bottom",
-        onEnter: () => {
-          const nav = document.querySelector('.nav-wrapper');
-          if (nav) nav.classList.add('active');
-        },
-        onLeaveBack: () => {
-          const nav = document.querySelector('.nav-wrapper');
-          if (nav) nav.classList.remove('active');
-        }
-      });
+      // Note: Nav reveal is handled exclusively by GlobalNav.tsx ScrollTrigger to avoid conflicts
 
       // Content Fade Up
       gsap.from(content, {
@@ -796,10 +770,10 @@ export default function Home() {
 
     // 1. Controlla se abbiamo già il consenso
     if (!localStorage.getItem(COOKIE_KEY)) {
-      // Aspetta un attimo per estetica, poi mostra (1.5s delay)
+      // Mostra il banner solo dopo il completamento del preloader (8s)
       setTimeout(() => {
         if (banner) banner.classList.add('visible');
-      }, 1500);
+      }, 8000);
     }
 
     // 2. Funzione per chiudere e salvare
@@ -983,9 +957,6 @@ export default function Home() {
               document.documentElement.classList.remove('loading');
               document.body.classList.remove('loading');
               document.body.classList.add('revealed');
-
-              // Mark as shown for this browser session
-              sessionStorage.setItem('gsa_preloader_shown', 'true');
 
               setIsRevealed(true);
               setTimeout(() => ScrollTrigger.refresh(), 100);
