@@ -7592,13 +7592,11 @@ video {
     width: 100% !important;
   }
 
-  /* --- CORPORATE INTRO VIDEO: Force 16:9 landscape, not portrait --- */
   .video-preview-card {
-    position: relative !important;
     height: 0 !important;
     padding-bottom: 56.25% !important;
+    position: relative !important;
     overflow: hidden !important;
-    cursor: pointer !important;
   }
 
   .video-preview-card iframe,
@@ -7608,21 +7606,7 @@ video {
     left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important;
   }
-
-  .video-preview-card .video-overlay,
-  .video-preview-card .play-btn-luxury {
-    position: absolute !important;
-    z-index: 2 !important;
-  }
-
-  .video-preview-card .play-btn-luxury {
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-  }
-
 
   /* --- EXPERIENCE SLIDER: Landscape ratio not 75vh portrait --- */
   .experience-slider-luxury {
@@ -7653,14 +7637,11 @@ video {
     position: static !important;
     display: flex !important;
     justify-content: center !important;
-    align-items: center !important;
     gap: 8px !important;
-    margin: 12px auto !important;
-    width: 100% !important;       /* ensure parent doesn't left-align it */
+    margin: 12px 0 !important;
     padding: 0 !important;
     background: none !important;
     backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
   }
 
   /* exp-image-wrapper: relative height for proper aspect ratio */
@@ -7771,12 +7752,11 @@ video {
     line-height: 1.5 !important;
   }
 
-  /* --- HOTEL SECTIONS: Each hotel fills one full screen on mobile (like desktop) --- */
+  /* --- HOTEL SECTIONS: Landscape ratio not 100vh --- */
   .hotel-section {
-    height: 100dvh !important;
-    min-height: 100dvh !important;
-    max-height: 100dvh !important;
-    contain: strict !important; /* prevent paint overflow lag at end of list */
+    height: 60vw !important;
+    min-height: 260px !important;
+    max-height: 420px !important;
   }
 
   /* Force images in sliders to fill correctly */
