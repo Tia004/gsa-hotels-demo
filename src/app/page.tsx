@@ -43,6 +43,8 @@ export default function Home() {
   const [isSelectOpen, setIsSelectOpen] = React.useState(false);
   const [visionImages, setVisionImages] = React.useState<string[]>([]);
   const [isMobile, setIsMobile] = React.useState(false);
+  // Guard against React Strict Mode double-mounting the GSAP preloader
+  const hasAnimated = React.useRef(false);
   const [formData, setFormData] = React.useState({
     nome: '',
     azienda: '',
@@ -285,6 +287,10 @@ export default function Home() {
 
 
   useEffect(() => {
+    // Guard: only run GSAP animations once (React Strict Mode mounts twice in dev)
+    if (hasAnimated.current) return;
+    hasAnimated.current = true;
+
     const ctx = gsap.context(() => {
       // Register GSAP once
       gsap.registerPlugin(ScrollTrigger);
@@ -513,39 +519,13 @@ export default function Home() {
       ScrollTrigger.refresh();
     }, 500); // Increased timeout for better stability
 
-    // Hero Reveal Animation — desktop only.
-    // On mobile we keep .jesko-ui-layer always visible (no cinematic scroll fade)
-    // because mobile doesn't have the depth to trigger the reveal cleanly.
-    const isMobile = window.innerWidth <= 768;
-    if (!isMobile) {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: ".jesko-hero-final",
-          start: "top 80%",
-          toggleActions: "play none none none"
-        }
-      });
-
-      tl.to(".jesko-bg-layer", {
-        clipPath: "inset(0vh 0vw round 0px)",
-        ease: "power2.out",
-        duration: 1.2
-      })
-        .to(".jesko-ui-layer", {
-          opacity: 0,
-          y: -50,
-          duration: 0.5
-        }, "<")
-        .to(".jesko-bg-video", {
-          filter: "blur(0px)",
-          scale: 1.0,
-          duration: 1
-        });
-    } else {
-      // Mobile: just expand the bg-layer fully, leave UI layer visible
-      gsap.set(".jesko-bg-layer", { clipPath: "inset(0vh 0vw round 0px)" });
-      gsap.set(".jesko-ui-layer", { opacity: 1 });
-    }
+    // Hero: ensure bg-layer is expanded and ui-layer is always visible on ALL devices.
+    // We removed the cinematic scroll-triggered fade because the ScrollTrigger fires
+    // immediately (hero is at the very top of the page), causing ui-layer to go opacity:0
+    // before the user can read it.
+    gsap.set(".jesko-bg-layer", { clipPath: "inset(0vh 0vw round 0px)" });
+    gsap.set(".jesko-ui-layer", { opacity: 1, y: 0 });
+    gsap.set(".jesko-bg-video", { filter: "blur(0px)", scale: 1.0 });
 
     // 3. Info & CTA Fade In
     gsap.from(".j-info-container, .j-cta-container", {
@@ -609,11 +589,17 @@ export default function Home() {
         }
       );
     } else {
-      // Mobile: just fade in the whole block
-      gsap.from('.jesko-statement-container', {
-        opacity: 0, y: 30, duration: 0.8, ease: "power2.out",
-        scrollTrigger: { trigger: '.jesko-statement-container', start: 'top 80%', toggleActions: 'play none none none' }
-      });
+      // Mobile: animate the whole block color from dim → white (same effect, no SplitType per-word)
+      gsap.fromTo('.jesko-statement',
+        { opacity: 0.2, color: 'rgba(255,255,255,0.2)' },
+        {
+          opacity: 1,
+          color: '#ffffff',
+          duration: 1.2,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: '.jesko-statement-container', start: 'top 80%', toggleActions: 'play none none none' }
+        }
+      );
     }
 
     // Navbar Animation - REMOVED for Visibility Assurance
@@ -623,7 +609,7 @@ export default function Home() {
 
 
     // Hotel Parallax & Reveal — Remove parallax on mobile (too expensive)
-    // isMobile already declared above
+    const isMobile = window.innerWidth <= 768;
     (gsap.utils.toArray('.hotel-section') as HTMLElement[]).forEach(section => {
       const bg = section.querySelector('.hotel-bg');
       const content = section.querySelector('.hotel-content');
