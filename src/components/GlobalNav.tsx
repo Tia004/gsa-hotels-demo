@@ -95,14 +95,14 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
       toggleMenu(!overlay?.classList.contains('active'));
     };
 
-    const handleClose = () => toggleMenu(false);
     const onEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') toggleMenu(false); };
 
     if (trigger) trigger.addEventListener('click', handleTrigger);
     if (desktopTrigger && desktopTrigger !== trigger) desktopTrigger.addEventListener('click', handleTrigger);
     if (mobileTrigger) mobileTrigger.addEventListener('click', handleTrigger);
-    if (closeTrigger) closeTrigger.addEventListener('click', handleClose);
-    glassLinks.forEach(link => link.addEventListener('click', handleClose));
+    if (closeTrigger) closeTrigger.addEventListener('click', () => toggleMenu(false));
+    // NOTE: glass-link clicks are handled exclusively by handleAnchorClick below
+    // to avoid double-close glitches (two handlers firing on the same event)
     document.addEventListener('keydown', onEsc);
 
     // Spotlight logo reveal logic
@@ -138,45 +138,60 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
       document.body.classList.remove('loading');
     }
 
-    // ANCHOR LINK INTERCEPTOR: Route all hash links through Lenis for smooth scroll
+    // UNIFIED CLICK HANDLER: handles both glass-menu links and footer anchor links
+    // Consolidating into ONE handler prevents the double-close glitch where
+    // both a per-link listener and this handler would both call toggleMenu(false)
+    // on the same click event, interrupting the GSAP close animation.
     const handleAnchorClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const anchor = target.closest('a') as HTMLAnchorElement | null;
       if (!anchor) return;
 
       const href = anchor.getAttribute('href') || '';
-      let hash = '';
+      const isInsideMenu = overlay && overlay.contains(anchor);
+      const isMenuOpen = overlay && overlay.classList.contains('active');
 
-      // Match href like '/#section' or '#section'
+      // Determine if this is a hash/anchor link
+      let hash = '';
       if (href.startsWith('/#')) {
-        hash = href.slice(1); // '#section'
+        hash = href.slice(1);
       } else if (href.startsWith('#')) {
         hash = href;
-      } else {
-        return; // Not an anchor link, let Next.js handle it
       }
 
-      e.preventDefault();
+      if (hash) {
+        // HASH LINK: prevent default, close menu if open, then smooth-scroll
+        e.preventDefault();
 
-      // Close the menu if it's open
-      if (overlay && overlay.classList.contains('active')) {
+        if (isMenuOpen) {
+          toggleMenu(false);
+          // Wait for menu close animation (clip-path 0.8s + small buffer)
+          setTimeout(() => {
+            const targetEl = document.querySelector(hash) as HTMLElement | null;
+            if (!targetEl) return;
+            const lenis = (window as any).lenis;
+            if (lenis && typeof lenis.scrollTo === 'function') {
+              lenis.scrollTo(targetEl, { offset: -80, duration: 1.2, easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+            } else {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }, 900);
+        } else {
+          // Menu not open, scroll immediately
+          const targetEl = document.querySelector(hash) as HTMLElement | null;
+          if (!targetEl) return;
+          const lenis = (window as any).lenis;
+          if (lenis && typeof lenis.scrollTo === 'function') {
+            lenis.scrollTo(targetEl, { offset: -80, duration: 1.2, easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+          } else {
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      } else if (isInsideMenu && isMenuOpen && href && !href.startsWith('#')) {
+        // NON-HASH LINK inside the menu (e.g. /blog): just close the menu
+        // Let Next.js handle the navigation normally
         toggleMenu(false);
       }
-
-      // Wait for menu to close, then scroll
-      const scrollDelay = (overlay && overlay.classList.contains('active')) ? 900 : 0;
-      setTimeout(() => {
-        const targetEl = document.querySelector(hash) as HTMLElement | null;
-        if (!targetEl) return;
-
-        const lenis = (window as any).lenis;
-        if (lenis) {
-          lenis.scrollTo(targetEl, { offset: -80, duration: 1.4, easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
-        } else {
-          // Fallback: native smooth scroll
-          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, scrollDelay);
     };
 
     document.addEventListener('click', handleAnchorClick);
@@ -188,8 +203,6 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
       if (trigger) trigger.removeEventListener('click', handleTrigger);
       if (desktopTrigger && desktopTrigger !== trigger) desktopTrigger.removeEventListener('click', handleTrigger);
       if (mobileTrigger) mobileTrigger.removeEventListener('click', handleTrigger);
-      if (closeTrigger) closeTrigger.removeEventListener('click', handleClose);
-      glassLinks.forEach(link => link.removeEventListener('click', handleClose));
       if (st) st.kill();
     };
   }, [isHomePage]);

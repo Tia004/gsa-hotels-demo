@@ -420,30 +420,42 @@ export default function Home() {
           });
       }
     }
-    // Init Lenis
-    const lenis = new Lenis({
-      duration: 1.0,             // Slightly shorter for Windows mouse wheel feel
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 0.8,      // Lower = less per-scroll-notch jump (better for Windows)
-      touchMultiplier: 1.5,      // Fluid touch scroll on mobile/tablet
-      infinite: false,
-    } as any);
+    // Only enable Lenis on non-touch devices. On touch (phone/tablet), Lenis
+    // intercepts touchstart/touchmove at document level and blocks native scroll.
+    const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 1;
 
-    // Initialize LOCKED (Wait for Preloader)
-    lenis.stop();
-    (window as any).lenis = lenis; // EXPOSE TO WINDOW FOR PRELOADER
-    window.scrollTo(0, 0); // Force top
+    let lenis: any = null;
+    let rafId = 0;
 
-    let rafId: number;
-    function raf(time: number) {
-      lenis.raf(time);
-      ScrollTrigger.update(); // CRITICAL: Keep ScrollTrigger in sync with Lenis
+    if (!isTouchDevice) {
+      lenis = new Lenis({
+        duration: 1.0,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 0.8,
+        infinite: false,
+      } as any);
+
+      lenis.stop(); // Hold until preloader finishes
+      (window as any).lenis = lenis;
+
+      function raf(time: number) {
+        lenis.raf(time);
+        ScrollTrigger.update();
+        rafId = requestAnimationFrame(raf);
+      }
       rafId = requestAnimationFrame(raf);
+    } else {
+      // Touch device: expose a no-op lenis to window so preloader code doesn't crash
+      (window as any).lenis = { start: () => {}, stop: () => {}, destroy: () => {} };
+      // Ensure native scroll is enabled
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
     }
-    rafId = requestAnimationFrame(raf);
+
+    window.scrollTo(0, 0);
 
     // Refresh ScrollTrigger on window resize to fix misalignments
     const handleResize = () => ScrollTrigger.refresh();
@@ -501,34 +513,28 @@ export default function Home() {
       ScrollTrigger.refresh();
     }, 500); // Increased timeout for better stability
 
-    // 2. Window Reveal Animation (Pin & Expand)
-    // We pin the hero so the expansion happens "in place" before scrolling down
+    // 2. Hero Reveal Animation — simplified: no pin (pin = FPS killer), one-shot on enter
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: ".jesko-hero-final",
-        start: "top top",
-        end: "+=100%", // Scroll distance to complete expansion (reduced for speed)
-        pin: true,
-        scrub: 1,
-        anticipatePin: 1
+        start: "top 80%",
+        toggleActions: "play none none none"
       }
     });
 
-    // Step A: Expand the Window
     tl.to(".jesko-bg-layer", {
       clipPath: "inset(0vh 0vw round 0px)",
-      ease: "none",
-      duration: 1
+      ease: "power2.out",
+      duration: 1.2
     })
-      // Step B: Fade Out Hero Text (Optional but cleaner) & Reduce Blur
       .to(".jesko-ui-layer", {
         opacity: 0,
         y: -50,
         duration: 0.5
-      }, "<") // Start with previous
+      }, "<")
       .to(".jesko-bg-video", {
-        filter: "blur(0px)", // Focus the video as it opens
-        scale: 1.0, // Existing zoom out
+        filter: "blur(0px)",
+        scale: 1.0,
         duration: 1
       });
 
@@ -574,27 +580,32 @@ export default function Home() {
     // Hero Reveal (Updated Class)
     // const heroTitle = new SplitType('.j-headline', { types: 'chars' }); // Skipping SplitType for robustness/performance
 
-    // Jesko Text Statement Reveal
-    // Jesko Text Statement Reveal (Progressive)
-    const textStats = new SplitType('.jesko-statement', { types: 'words' });
-
-    gsap.fromTo(textStats.words,
-      {
-        opacity: 0.2,
-        color: "rgba(255, 255, 255, 0.2)"
-      },
-      {
-        opacity: 1,
-        color: "#FFFFFF",
-        stagger: 0.1,
-        scrollTrigger: {
-          trigger: ".jesko-statement-container",
-          start: "top 70%",
-          end: "center 50%", // Slightly adjusted for better flow
-          scrub: 1
+    // Jesko Text Statement Reveal — simple fade, no scrub (scrub on words = heavy SplitType + RAF)
+    const isMobileText = window.innerWidth <= 768;
+    if (!isMobileText) {
+      const textStats = new SplitType('.jesko-statement', { types: 'words' });
+      gsap.fromTo(textStats.words,
+        { opacity: 0.2, color: "rgba(255, 255, 255, 0.2)" },
+        {
+          opacity: 1,
+          color: "#FFFFFF",
+          stagger: 0.08,
+          duration: 0.6,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".jesko-statement-container",
+            start: "top 70%",
+            toggleActions: "play none none none"
+          }
         }
-      }
-    );
+      );
+    } else {
+      // Mobile: just fade in the whole block
+      gsap.from('.jesko-statement-container', {
+        opacity: 0, y: 30, duration: 0.8, ease: "power2.out",
+        scrollTrigger: { trigger: '.jesko-statement-container', start: 'top 80%', toggleActions: 'play none none none' }
+      });
+    }
 
     // Navbar Animation - REMOVED for Visibility Assurance
     gsap.set('.nav-capsule', { opacity: 1, y: 0 });
@@ -602,36 +613,38 @@ export default function Home() {
     // Parallax Images - Removed Conflicting Loop
 
 
-    // Hotel Parallax & Reveal
+    // Hotel Parallax & Reveal — Remove parallax on mobile (too expensive)
+    const isMobile = window.innerWidth <= 768;
     (gsap.utils.toArray('.hotel-section') as HTMLElement[]).forEach(section => {
       const bg = section.querySelector('.hotel-bg');
       const content = section.querySelector('.hotel-content');
 
-      // Parallax BG
-      gsap.to(bg, {
-        y: "20%",
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 1
-        }
-      });
+      // Parallax BG — desktop only, scrub is too expensive on mobile
+      if (!isMobile && bg) {
+        gsap.to(bg, {
+          y: "15%",
+          ease: "none",
+          scrollTrigger: {
+            trigger: section,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 2   // Higher scrub = less frequent updates = better FPS
+          }
+        });
+      }
 
       // Note: Nav reveal is handled exclusively by GlobalNav.tsx ScrollTrigger to avoid conflicts
 
-      // Content Fade Up
+      // Content Fade Up — simple one-shot, no scrub
       gsap.from(content, {
-        y: 100,
+        y: 60,
         opacity: 0,
-        duration: 1.5,
-        ease: "power4.out",
+        duration: 1.2,
+        ease: "power3.out",
         scrollTrigger: {
           trigger: section,
-          start: "top 70%",
-          end: "top 20%",
-          scrub: 1
+          start: "top 75%",
+          toggleActions: "play none none none"
         }
       });
     });

@@ -100,6 +100,33 @@ body.revealed .reveal {
   transform: translateY(0) !important;
 }
 
+/* ============================================================
+   PERFORMANCE: Touch/Mobile Optimizations
+   - Disable backdrop-filter on all touch devices (each one = full GPU restacking)
+   - Add CSS containment on scroll sections to reduce repaint scope
+   ============================================================ */
+@media (pointer: coarse), (max-width: 768px) {
+  /* Disable ALL backdrop-filter — the #1 cause of mobile scroll lag */
+  * {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Constrain repaint to individual sections, not the full page */
+  section {
+    contain: layout style;
+  }
+
+  /* Disable heavy box-shadows on scroll — force GPU compositing issues */
+  .hotel-section,
+  .besafe-section,
+  .experiences-section,
+  .partner-section,
+  .vision-section-bugatti {
+    will-change: auto;
+  }
+}
+
 /* QUESTO BLOCCA LO SCROLL SOLO DURANTE L'ANIMAZIONE DI CARICAMENTO */
 html.loading,
 body.loading {
@@ -2134,7 +2161,7 @@ body.revealed .j-logo {
   border-radius: 50px;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.35s ease, border-color 0.35s ease;
 }
 
 .btn-bugatti .btn-text {
@@ -2195,11 +2222,12 @@ body.revealed .j-logo {
 }
 
 .btn-bugatti:hover {
+  background-color: var(--gold);
   border-color: var(--gold);
 }
 
 .btn-bugatti:hover .btn-text {
-  color: var(--gold);
+  color: #000;
 }
 
 /* --- UNIFIED SLIDER COMPONENTS (Video & Vision) --- */
