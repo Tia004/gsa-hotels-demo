@@ -36,10 +36,8 @@ export default function Home() {
   const [isVideoPlaying, setIsVideoPlaying] = React.useState(false);
   const [activeVisionImage, setActiveVisionImage] = React.useState(0);
   const [isRevealed, setIsRevealed] = React.useState(false);
-  const [showPreloader, setShowPreloader] = React.useState(true);
-  const [alreadyShown, setAlreadyShown] = React.useState(false);
-  const [scrubberHoverValue, setScrubberHoverValue] = React.useState<number | null>(null);
   const [isScrubbing, setIsScrubbing] = React.useState(false);
+  const [scrubberHoverValue, setScrubberHoverValue] = React.useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitStatus, setSubmitStatus] = React.useState<'success' | 'error' | null>(null);
   const [isSelectOpen, setIsSelectOpen] = React.useState(false);
@@ -121,88 +119,27 @@ export default function Home() {
 
   const [isPlayingIntro, setIsPlayingIntro] = React.useState(false);
 
-  // Handle preloader visibility on mount
+  // On mount: if preloader already shown this session, skip directly to revealed state
   React.useEffect(() => {
-    // Client-side check to set initial state correctly
     const hasBeenShown = sessionStorage.getItem('gsa_preloader_shown') === 'true';
     if (hasBeenShown) {
-      setAlreadyShown(true);
-      setShowPreloader(false);
-    }
-
-    const preloaderOverlay = document.getElementById('zoom-preloader');
-    const heroVideo = document.getElementById('hero-video');
-    const navWrapper = document.querySelector('.nav-wrapper');
-
-    if (!hasBeenShown) {
-      setIsRevealed(false);
-      document.body.style.overflow = 'hidden';
-      document.documentElement.classList.add('loading');
-      document.body.classList.add('loading');
-
-      // Animazione di ingresso originale
-      if (heroVideo) heroVideo.classList.add('initial-blur');
-
-      const tl = gsap.timeline({
-        onComplete: () => {
-          setIsRevealed(true);
-          if (preloaderOverlay) preloaderOverlay.classList.add('finished');
-          document.body.classList.add('revealed');
-          document.body.style.overflow = '';
-          document.documentElement.classList.remove('loading');
-          document.body.classList.remove('loading');
-          if (navWrapper) navWrapper.classList.add('revealed');
-          
-          // Rimuovi esplicitamente il blur se per qualche motivo la timeline non lo fa
-          if (heroVideo) heroVideo.style.filter = 'blur(0px)';
-          
-          sessionStorage.setItem('gsa_preloader_shown', 'true');
-          setAlreadyShown(true);
-          setTimeout(() => ScrollTrigger.refresh(), 500);
-          
-          // Avvia Lenis
-          const l = (window as any).lenis;
-          if (l) l.start();
-        }
-      });
-
-      // 1. Shuffling text
-      const shufflingText = document.getElementById('shuffling-text');
-      if (shufflingText) {
-        tl.to(shufflingText, { opacity: 1, duration: 0.5 })
-          .to(shufflingText, { opacity: 0, duration: 0.5, delay: 1.5 });
-      }
-
-      // 2. Zoom logo e dissolvenza preloader
-      tl.to("#zoom-preloader", {
-        opacity: 0,
-        duration: 1.5,
-        ease: "power2.inOut"
-      }, "+=0.5");
-
-      // 3. Rimuovi blur dal video
-      const blurTarget = document.querySelector('.jesko-bg-video.initial-blur');
-      if (blurTarget) {
-        tl.to(blurTarget, {
-          filter: "blur(0px)",
-          duration: 2,
-          ease: "power2.out",
-          onComplete: () => {
-            (blurTarget as HTMLElement).style.filter = 'none';
-          }
-        }, "-=1");
-      }
-    } else {
       setIsRevealed(true);
-      if (preloaderOverlay) preloaderOverlay.classList.add('finished');
-      if (navWrapper) navWrapper.classList.add('revealed');
       document.body.classList.add('revealed');
       document.body.style.overflow = '';
-      setTimeout(() => ScrollTrigger.refresh(), 100);
+      document.documentElement.classList.remove('loading');
+      document.body.classList.remove('loading');
+      const navWrapper = document.querySelector('.nav-wrapper');
+      if (navWrapper) navWrapper.classList.add('revealed');
       const l = (window as any).lenis;
       if (l) l.start();
+    } else {
+      // Ensure locked state before preloader starts
+      document.documentElement.classList.add('loading');
+      document.body.classList.add('loading');
+      document.body.style.overflow = 'hidden';
     }
   }, []);
+
 
   const nextAcademyImage = () => {
     setActiveAcademyImage((prev) => (prev + 1) % academyImages.length);
@@ -544,7 +481,7 @@ export default function Home() {
       stagger: 0.03,
       duration: 1.2,
       ease: "power4.out",
-      delay: preloaderPlayed ? 0.5 : 2.8 // Ritardo sincronizzato con il nuovo preloader veloce (~3s)
+      delay: preloaderPlayed ? 0.5 : 6.2 // Sincronizzato con il nuovo preloader (~6.2s totale)
     });
 
     gsap.from(".j-desc", {
@@ -552,7 +489,7 @@ export default function Home() {
       opacity: 0,
       duration: 1.2,
       ease: "power3.out",
-      delay: preloaderPlayed ? 1.2 : 3.5
+      delay: preloaderPlayed ? 1.2 : 7.0
     });
 
     // --- 2. GENERIC LUXURY REVEAL SYSTEM ---
@@ -616,14 +553,14 @@ export default function Home() {
       duration: 1.5,
       stagger: 0.2,
       ease: "power3.out",
-      delay: preloaderPlayed ? 1.0 : 9.3
+      delay: preloaderPlayed ? 1.0 : 6.8 // Synced to new 6.2s preloader
     });
 
     // 4. Logo Fade In
     gsap.from(".j-logo", {
       opacity: 0,
       duration: 1,
-      delay: preloaderPlayed ? 0.5 : 8.8
+      delay: preloaderPlayed ? 0.5 : 6.2 // Synced to new 6.2s preloader
     });
 
 
@@ -983,7 +920,8 @@ export default function Home() {
         t('preloader.w1'), t('preloader.w2'), t('preloader.w3'),
         t('preloader.w4'), t('preloader.w5'), t('preloader.w6'), t('preloader.w7')
       ];
-      let wordIndex = 0;      // START SHUFFLE - Deliberate Luxury Pace
+      let wordIndex = 0;
+      // START SHUFFLE — Elegant pace: 220ms per word
       shuffleInterval = setInterval(() => {
         if (shuffler) {
           shuffler.style.opacity = '1';
@@ -991,17 +929,23 @@ export default function Home() {
           shuffler.innerText = words[wordIndex];
           wordIndex = (wordIndex + 1) % words.length;
         }
-      }, 100); // 100ms per word (x4 speedup)
+      }, 220); // 220ms: fast enough to feel alive, slow enough to read
 
       // SEQUENCE
       phase1Timeout = setTimeout(() => {
         clearInterval(shuffleInterval);
+        // FIX 4: Hide words *immediately* before logo appears — no lingering overlap
         if (shuffler) {
+          shuffler.style.transition = 'opacity 0.25s ease';
           shuffler.style.opacity = '0';
-          setTimeout(() => shuffler.classList.add('hidden'), 200);
+          // Remove from layout immediately so it can't overlap logo
+          setTimeout(() => {
+            shuffler.style.display = 'none';
+            shuffler.classList.add('hidden');
+          }, 250);
         }
 
-        // MOSTRA LOGO - Solo dopo la fine delle parole
+        // MOSTRA LOGO - Solo dopo la fine delle parole (aspetta fade-out)
         setTimeout(() => {
           if (logoGold) {
             logoGold.style.opacity = '1';
@@ -1012,22 +956,26 @@ export default function Home() {
             logoHole.classList.add('visible');
           }
 
+          // Hold the logo, then cinematic zoom+blur out
           phase2Timeout = setTimeout(() => {
-            // ZOOM + BLUR + FADE OUT
+            // CINEMATIC ZOOM + BLUR + FADE OUT — let CSS transitions handle the beauty
             if (logoGold) {
               logoGold.classList.add('zoom-in');
-              logoGold.style.filter = 'blur(15px)';
-              logoGold.style.transform = 'translate(-50%, -50%) scale(2.5)';
               logoGold.style.opacity = '0';
             }
+            if (logoHole) {
+              logoHole.classList.add('zoom-in');
+            }
 
+            // Wait for CSS transition (1.8s) then fade out overlay
             revealTimeout = setTimeout(() => {
               if (preloaderOverlay) {
                 preloaderOverlay.classList.add('finished');
                 preloaderOverlay.style.opacity = '0';
+                // Allow CSS transition (1.2s) then remove from DOM
                 setTimeout(() => {
                   preloaderOverlay.style.display = 'none';
-                }, 500);
+                }, 1200);
               }
               document.body.style.overflow = '';
               if ((window as any).lenis) (window as any).lenis.start();
@@ -1035,13 +983,16 @@ export default function Home() {
               document.documentElement.classList.remove('loading');
               document.body.classList.remove('loading');
               document.body.classList.add('revealed');
-              
+
+              // Mark as shown for this browser session
+              sessionStorage.setItem('gsa_preloader_shown', 'true');
+
               setIsRevealed(true);
               setTimeout(() => ScrollTrigger.refresh(), 100);
-            }, 600); // Zoom animation duration 0.6s
-          }, 1000); // Tieni il logo per 1 secondo
-        }, 200); // Attendi 200ms dopo la dissolvenza delle parole prima di mostrare logo
-      }, 1200); // Fine fase parole (1.2 secondi)
+            }, 1800); // Wait for zoom CSS transition to nearly complete
+          }, 1800); // Hold logo for 1.8s — premium pause
+        }, 350); // Wait for words to fully disappear
+      }, 2200); // Shuffle phase: 2.2s (covers ~10 cycles at 220ms)
     } // End if (!preloaderPlayed)(!alreadyShown)
   }); // End GSAP Context
 
@@ -1109,10 +1060,7 @@ export default function Home() {
           <feBlend mode="screen" in="red" in2="blue" />
         </filter>
       </svg>
-      {/* SVG Filter for Metaball (Gooey Effect) */}
-      {/* Styles */}
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+      {/* FontAwesome loaded once in layout.tsx — no duplicate needed here */}
 
       {/* PRELOADER: THE ZOOM-THROUGH REVEAL (Original Logo Edition) */}
       <div id="zoom-preloader" className="zoom-overlay" style={{ display: isRevealed ? 'none' : 'flex' }}>
@@ -1131,7 +1079,7 @@ export default function Home() {
               height={450}
               priority
               quality={85}
-              style={{ width: '30vw', height: 'auto', display: 'block' }}
+              style={{ width: '100%', height: 'auto', display: 'block' }}
             />
           </div>
         </div>
