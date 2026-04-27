@@ -475,75 +475,49 @@ export default function Home() {
 
     // --- SENIOR DEV: STRICT JESKO ANIMATIONS ---
 
-    // --- 1. HERO ANIMATIONS ---
-    // On mobile: skip character-level SplitType (creates 100s of DOM nodes,
-    // thrashes layout engine, causes scroll jank / jump-back behaviour)
-    const isMobileAnim = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 768;
+    // 1. Headline & Desc Progressive Reveal
+    const heroHeadline = new SplitType('.j-headline', { types: 'words,chars' });
+    const heroDesc = new SplitType('.j-desc', { types: 'lines' });
 
-    if (!isMobileAnim) {
-      const heroHeadline = new SplitType('.j-headline', { types: 'words,chars' });
-      const heroDesc = new SplitType('.j-desc', { types: 'lines' });
+    gsap.from(heroHeadline.chars, {
+      y: 50,
+      opacity: 0,
+      stagger: 0.03,
+      duration: 1.2,
+      ease: "power4.out",
+      delay: preloaderPlayed ? 0.5 : 6.2 // Sincronizzato con il nuovo preloader (~6.2s totale)
+    });
 
-      gsap.from(heroHeadline.chars, {
-        y: 50,
-        opacity: 0,
-        stagger: 0.03,
-        duration: 1.2,
-        ease: "power4.out",
-        delay: preloaderPlayed ? 0.5 : 6.2
-      });
-
-      gsap.from(".j-desc", {
-        y: 20,
-        opacity: 0,
-        duration: 1.2,
-        ease: "power3.out",
-        delay: preloaderPlayed ? 1.2 : 7.0
-      });
-    } else {
-      // Mobile: just ensure headline is fully visible immediately
-      gsap.set('.j-headline', { opacity: 1, y: 0 });
-      gsap.set('.j-desc', { opacity: 1, y: 0 });
-    }
+    gsap.from(".j-desc", {
+      y: 20,
+      opacity: 0,
+      duration: 1.2,
+      ease: "power3.out",
+      delay: preloaderPlayed ? 1.2 : 7.0
+    });
 
     // --- 2. GENERIC LUXURY REVEAL SYSTEM ---
+    // Wrapped in timeout to ensure layout is settled
     setTimeout(() => {
       const revealElements = gsap.utils.toArray('.reveal') as HTMLElement[];
       revealElements.forEach(elem => {
-        if (isMobileAnim) {
-          // Mobile: simple opacity-only fade, no y movement (avoids layout recalc during scroll)
-          gsap.fromTo(elem,
-            { opacity: 0 },
-            {
-              opacity: 1,
-              duration: 0.8,
-              ease: "power2.out",
-              scrollTrigger: {
-                trigger: elem,
-                start: "top 95%",
-                toggleActions: "play none none none"
-              }
+        gsap.fromTo(elem,
+          { y: 60, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1.4,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: elem,
+              start: "top 90%",
+              toggleActions: "play none none none" // Changed from reverse to none for stability
             }
-          );
-        } else {
-          gsap.fromTo(elem,
-            { y: 60, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 1.4,
-              ease: "power3.out",
-              scrollTrigger: {
-                trigger: elem,
-                start: "top 90%",
-                toggleActions: "play none none none"
-              }
-            }
-          );
-        }
+          }
+        );
       });
       ScrollTrigger.refresh();
-    }, 500);
+    }, 500); // Increased timeout for better stability
 
     // Hero: ensure bg-layer is expanded and ui-layer is always visible on ALL devices.
     // We removed the cinematic scroll-triggered fade because the ScrollTrigger fires
@@ -1542,8 +1516,8 @@ export default function Home() {
         </section>
 
         {/* 5. I NOSTRI PARTNER (HOTEL SECTION) */}
-        <section id="partner" style={{ padding: isMobile ? '0' : '80px 0 0', background: '#080808' }}>
-          <div className="container" style={{ marginBottom: isMobile ? '30px' : '60px', textAlign: 'center', paddingTop: isMobile ? '50px' : '0' }}>
+        <section id="partner" style={{ padding: '80px 0 0', background: '#080808' }}>
+          <div className="container" style={{ marginBottom: '60px', textAlign: 'center' }}>
             <span className="label-gold">{t('partners.label')}</span>
             <h2 className="academy-title" style={{ marginTop: '10px' }}>{t('partners.title')}</h2>
             <p style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '600px', margin: '15px auto 0', fontSize: '1.1rem' }}>
