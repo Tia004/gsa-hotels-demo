@@ -5054,12 +5054,13 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0.88);
-  /* Start close to final size to avoid upscale grain */
+  transform: translate(-50%, -50%) scale(0.7);
   transform-origin: center center;
   will-change: transform, opacity, filter;
-  filter: blur(0px);
+  filter: blur(20px);
   opacity: 0;
+  /* JS controls all transitions via inline styles for the new animation sequence */
+  display: none;
 }
 
 .gsa-logo-layer img {
@@ -6591,6 +6592,17 @@ body.cursor-hover-active .luxury-cursor-dot {
   opacity: 0.5;
 }
 
+/* Hide custom cursor on ALL touch/stylus/coarse pointer devices (phone, tablet, Samsung Tab, iPad) */
+@media (pointer: coarse), (hover: none) {
+  #luxury-cursor-container,
+  .luxury-cursor-dot,
+  .luxury-cursor-follower {
+    display: none !important;
+  }
+  * {
+    cursor: auto !important;
+  }
+}
 
 /* ==========================================================================
    BLOG & EDITORIAL SYSTEM (GSA INSIGHTS)

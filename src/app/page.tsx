@@ -422,13 +422,13 @@ export default function Home() {
     }
     // Init Lenis
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 1.0,             // Slightly shorter for Windows mouse wheel feel
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
+      wheelMultiplier: 0.8,      // Lower = less per-scroll-notch jump (better for Windows)
+      touchMultiplier: 1.5,      // Fluid touch scroll on mobile/tablet
       infinite: false,
     } as any);
 
@@ -700,9 +700,9 @@ export default function Home() {
 
     visionTimeline
       .from(".vision-headline", { y: 100, opacity: 0, duration: 1, ease: "power4.out" })
-      .from(".vision-desc", { y: 50, opacity: 0, duration: 1, ease: "power3.out" }, "-=0.8")
+      .from(".vision-body-wrapper", { y: 50, opacity: 0, duration: 1, ease: "power3.out" }, "-=0.8")
       .from(".visual-frame", { scale: 0.9, opacity: 0, duration: 1.2, ease: "expo.out" }, "-=0.8")
-      .from(".vision-data", { y: 50, opacity: 0, duration: 1, ease: "power3.out" }, "-=0.8");
+      .from(".video-slider-controls", { y: 50, opacity: 0, duration: 1, ease: "power3.out" }, "-=0.8");
 
 
     // 6. Contact Form Reveal (Luxury Split)
@@ -878,8 +878,7 @@ export default function Home() {
     if (!preloaderPlayed) {
       const preloaderOverlay = document.getElementById('zoom-preloader');
       const shuffler = document.getElementById('shuffling-text');
-      const logoGold = document.getElementById('logo-gold');
-      const logoHole = document.getElementById('logo-hole');
+      const logoGold = document.getElementById('logo-gold') as HTMLElement | null;
 
       if (preloaderOverlay) {
         preloaderOverlay.style.display = 'flex';
@@ -895,7 +894,7 @@ export default function Home() {
         t('preloader.w4'), t('preloader.w5'), t('preloader.w6'), t('preloader.w7')
       ];
       let wordIndex = 0;
-      // START SHUFFLE — Elegant pace: 220ms per word
+      // PHASE 1: Word shuffle — elegant 220ms pace
       shuffleInterval = setInterval(() => {
         if (shuffler) {
           shuffler.style.opacity = '1';
@@ -903,67 +902,74 @@ export default function Home() {
           shuffler.innerText = words[wordIndex];
           wordIndex = (wordIndex + 1) % words.length;
         }
-      }, 220); // 220ms: fast enough to feel alive, slow enough to read
+      }, 220);
 
-      // SEQUENCE
+      // After 2.2s of words, fade out to pure black
       phase1Timeout = setTimeout(() => {
         clearInterval(shuffleInterval);
-        // FIX 4: Hide words *immediately* before logo appears — no lingering overlap
+
+        // Fade words out smoothly
         if (shuffler) {
-          shuffler.style.transition = 'opacity 0.25s ease';
+          shuffler.style.transition = 'opacity 0.4s ease';
           shuffler.style.opacity = '0';
-          // Remove from layout immediately so it can't overlap logo
           setTimeout(() => {
-            shuffler.style.display = 'none';
-            shuffler.classList.add('hidden');
-          }, 250);
+            if (shuffler) shuffler.style.display = 'none';
+          }, 400);
         }
 
-        // MOSTRA LOGO - Solo dopo la fine delle parole (aspetta fade-out)
+        // PHASE 2: After 0.6s of pure black, logo appears blurred+small then deblurs
         setTimeout(() => {
           if (logoGold) {
+            // Start from blurred, slightly small state
+            logoGold.style.filter = 'blur(20px)';
+            logoGold.style.transform = 'translate(-50%, -50%) scale(0.7)';
+            logoGold.style.opacity = '0';
+            logoGold.style.transition = 'none';
+            logoGold.style.display = 'block';
+
+            // Force reflow so transition fires
+            void (logoGold as HTMLElement).offsetHeight;
+
+            // Animate IN: deblur, scale to 1, fade in
+            logoGold.style.transition = 'opacity 1.2s ease, filter 1.4s cubic-bezier(0.22,1,0.36,1), transform 1.4s cubic-bezier(0.22,1,0.36,1)';
             logoGold.style.opacity = '1';
-            logoGold.classList.add('visible');
-          }
-          if (logoHole) {
-            logoHole.style.opacity = '1';
-            logoHole.classList.add('visible');
+            logoGold.style.filter = 'blur(0px)';
+            logoGold.style.transform = 'translate(-50%, -50%) scale(1)';
           }
 
-          // Hold the logo, then cinematic zoom+blur out
+          // PHASE 3: After holding for 1.8s, zoom+blur out cinematically
           phase2Timeout = setTimeout(() => {
-            // CINEMATIC ZOOM + BLUR + FADE OUT — let CSS transitions handle the beauty
             if (logoGold) {
-              logoGold.classList.add('zoom-in');
+              logoGold.style.transition = 'opacity 1.4s ease-out, filter 1.8s ease-out, transform 1.8s cubic-bezier(0.165,0.84,0.44,1)';
               logoGold.style.opacity = '0';
-            }
-            if (logoHole) {
-              logoHole.classList.add('zoom-in');
+              logoGold.style.filter = 'blur(24px)';
+              logoGold.style.transform = 'translate(-50%, -50%) scale(2.2)';
             }
 
-            // Wait for CSS transition (1.8s) then fade out overlay
+            // PHASE 4: After zoom completes, fade overlay and reveal site
             revealTimeout = setTimeout(() => {
               if (preloaderOverlay) {
                 preloaderOverlay.classList.add('finished');
                 preloaderOverlay.style.opacity = '0';
-                // Allow CSS transition (1.2s) then remove from DOM
                 setTimeout(() => {
-                  preloaderOverlay.style.display = 'none';
+                  if (preloaderOverlay) preloaderOverlay.style.display = 'none';
                 }, 1200);
               }
+
               document.body.style.overflow = '';
               if ((window as any).lenis) (window as any).lenis.start();
-
               document.documentElement.classList.remove('loading');
               document.body.classList.remove('loading');
               document.body.classList.add('revealed');
+              const navWrapper = document.querySelector('.nav-wrapper');
+              if (navWrapper) navWrapper.classList.add('revealed');
 
               setIsRevealed(true);
-              setTimeout(() => ScrollTrigger.refresh(), 100);
-            }, 1800); // Wait for zoom CSS transition to nearly complete
-          }, 1800); // Hold logo for 1.8s — premium pause
-        }, 350); // Wait for words to fully disappear
-      }, 2200); // Shuffle phase: 2.2s (covers ~10 cycles at 220ms)
+              setTimeout(() => ScrollTrigger.refresh(), 200);
+            }, 1800); // Wait for zoom to finish
+          }, 1800); // Hold logo for 1.8s
+        }, 600); // Black pause before logo appears
+      }, 2200); // Shuffle phase duration
     } // End if (!preloaderPlayed)(!alreadyShown)
   }); // End GSAP Context
 
