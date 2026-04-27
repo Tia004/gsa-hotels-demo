@@ -513,30 +513,39 @@ export default function Home() {
       ScrollTrigger.refresh();
     }, 500); // Increased timeout for better stability
 
-    // 2. Hero Reveal Animation — simplified: no pin (pin = FPS killer), one-shot on enter
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".jesko-hero-final",
-        start: "top 80%",
-        toggleActions: "play none none none"
-      }
-    });
-
-    tl.to(".jesko-bg-layer", {
-      clipPath: "inset(0vh 0vw round 0px)",
-      ease: "power2.out",
-      duration: 1.2
-    })
-      .to(".jesko-ui-layer", {
-        opacity: 0,
-        y: -50,
-        duration: 0.5
-      }, "<")
-      .to(".jesko-bg-video", {
-        filter: "blur(0px)",
-        scale: 1.0,
-        duration: 1
+    // Hero Reveal Animation — desktop only.
+    // On mobile we keep .jesko-ui-layer always visible (no cinematic scroll fade)
+    // because mobile doesn't have the depth to trigger the reveal cleanly.
+    const isMobile = window.innerWidth <= 768;
+    if (!isMobile) {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".jesko-hero-final",
+          start: "top 80%",
+          toggleActions: "play none none none"
+        }
       });
+
+      tl.to(".jesko-bg-layer", {
+        clipPath: "inset(0vh 0vw round 0px)",
+        ease: "power2.out",
+        duration: 1.2
+      })
+        .to(".jesko-ui-layer", {
+          opacity: 0,
+          y: -50,
+          duration: 0.5
+        }, "<")
+        .to(".jesko-bg-video", {
+          filter: "blur(0px)",
+          scale: 1.0,
+          duration: 1
+        });
+    } else {
+      // Mobile: just expand the bg-layer fully, leave UI layer visible
+      gsap.set(".jesko-bg-layer", { clipPath: "inset(0vh 0vw round 0px)" });
+      gsap.set(".jesko-ui-layer", { opacity: 1 });
+    }
 
     // 3. Info & CTA Fade In
     gsap.from(".j-info-container, .j-cta-container", {
@@ -614,7 +623,7 @@ export default function Home() {
 
 
     // Hotel Parallax & Reveal — Remove parallax on mobile (too expensive)
-    const isMobile = window.innerWidth <= 768;
+    // isMobile already declared above
     (gsap.utils.toArray('.hotel-section') as HTMLElement[]).forEach(section => {
       const bg = section.querySelector('.hotel-bg');
       const content = section.querySelector('.hotel-content');
@@ -1105,7 +1114,7 @@ export default function Home() {
           <div className="jesko-ui-layer">
             {/* TOP LEFT: Logo */}
             <div className="j-logo-container">
-              <Link href="/" onClick={() => window.location.reload()}><Image src="/assets/logo.png" alt="GSA Logo" className="j-logo" style={{ transform: 'scale(1.1)', transformOrigin: 'left center', opacity: 0 }} width={140} height={50} priority quality={80} /></Link>
+              <Link href="/" onClick={() => window.location.reload()}><Image src="/assets/logo.png" alt="GSA Logo" className="j-logo" style={{ transform: 'scale(1.1)', transformOrigin: 'left center', opacity: 0 }} width={140} height={50} priority quality={95} /></Link>
             </div>
             {/* CENTER LEFT: Headline */}
             <div className="j-headline-container">

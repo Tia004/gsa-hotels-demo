@@ -7480,3 +7480,293 @@ video {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* ================================================================
+   MOBILE OVERHAUL — All fixes for phones/tablets (≤768px)
+   Covers: nav, hero, sliders, video, BeSafe, sections, hamburger
+   ================================================================ */
+@media (max-width: 768px) {
+
+  /* --- NAV: Compact capsule for mobile screens --- */
+  /* nav-capsule is position:fixed inline via JSX; override sizing */
+  .nav-capsule {
+    top: 14px !important;
+    right: 14px !important;
+    padding: 10px 16px !important;
+    gap: 12px !important;
+  }
+
+  /* Nav logo (spotlight) */
+  .nav-logo {
+    top: 14px !important;
+    left: 14px !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  /* Hamburger touch target — minimum 44×44px for reliability */
+  .desktop-menu-trigger {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    cursor: pointer !important;
+  }
+
+  /* --- HERO: Always show content on mobile --- */
+  .jesko-hero-final {
+    min-height: 100dvh;
+    height: 100dvh;
+  }
+
+  .jesko-ui-layer {
+    opacity: 1 !important;  /* Never hide on mobile */
+    visibility: visible !important;
+  }
+
+  /* Hero headline sizing */
+  .j-headline {
+    font-size: clamp(2.2rem, 8vw, 3.5rem) !important;
+    line-height: 1.15 !important;
+  }
+
+  /* Hero bg video: always full-width on mobile */
+  .jesko-bg-layer {
+    clip-path: inset(0vh 0vw round 0px) !important;
+  }
+
+  /* --- FOUNDER VIDEO: Force 16:9 — no more portrait black bars --- */
+  .video-responsive-wrapper {
+    position: relative !important;
+    width: 100% !important;
+    height: 0 !important;
+    padding-bottom: 56.25% !important; /* 16:9 */
+    overflow: hidden !important;
+    border-radius: 12px !important;
+  }
+
+  .video-responsive-wrapper iframe,
+  .video-responsive-wrapper .video-iframe {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* --- VISION SLIDER: Landscape aspect ratio, not 70vh tall --- */
+  .visual-frame.slider-frame {
+    height: 0 !important;
+    padding-bottom: 60% !important; /* ~16:10 feels better than 16:9 for photos */
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .vision-slide-img {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+
+  /* --- VISION SECTION: Stack vertically on mobile --- */
+  .vision-container {
+    flex-direction: column !important;
+    gap: 40px !important;
+  }
+
+  .vision-content,
+  .vision-visual {
+    flex: unset !important;
+    width: 100% !important;
+  }
+
+  /* --- VIDEO SECTION (Corporate intro): Force landscape --- */
+  .spotlight-container {
+    flex-direction: column !important;
+  }
+
+  .spotlight-video-wrapper {
+    flex: unset !important;
+    width: 100% !important;
+  }
+
+  .video-preview-card {
+    height: 0 !important;
+    padding-bottom: 56.25% !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  .video-preview-card iframe,
+  .video-preview-card .video-thumbnail {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* --- EXPERIENCE SLIDER: Landscape ratio not 75vh portrait --- */
+  .experience-slider-luxury {
+    height: auto !important;
+    min-height: unset !important;
+  }
+
+  .experience-scroll-container {
+    height: 56vw !important; /* 16:9 of viewport width */
+    min-height: 220px !important;
+  }
+
+  .experience-slide {
+    height: 56vw !important;
+    min-height: 220px !important;
+  }
+
+  /* Experience dots: always visible below slider, no blurry bar */
+  .experience-pagination {
+    position: static !important;
+    margin-top: 12px !important;
+    background: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* --- SLIDER DOTS: Below image, not overlapping --- */
+  .slider-dots {
+    position: static !important;
+    display: flex !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    margin: 12px 0 !important;
+    padding: 0 !important;
+    background: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* exp-image-wrapper: relative height for proper aspect ratio */
+  .exp-image-wrapper {
+    height: 56vw !important;
+    min-height: 220px !important;
+  }
+
+  /* --- BESAFE CARDS: Add gap between them --- */
+  .safety-cards-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    padding: 0 !important;
+  }
+
+  .safety-card {
+    margin-bottom: 0 !important; /* gap handles it */
+  }
+
+  /* --- SECTION PADDING: Reasonable for mobile viewport --- */
+  .academy-section,
+  .besafe-section,
+  .experiences-section,
+  .founder-section,
+  .vision-section-bugatti,
+  .partner-section,
+  .career-section,
+  .luxury-form-section {
+    padding: 60px 0 !important;
+  }
+
+  .intro-banner-section {
+    padding: 60px 0 !important;
+  }
+
+  /* Section header margin */
+  .section-header {
+    margin-bottom: 40px !important;
+  }
+
+  /* --- ACADEMY: Stack vertically --- */
+  .academy-container {
+    flex-direction: column !important;
+    gap: 40px !important;
+  }
+
+  .academy-content,
+  .academy-visual {
+    flex: unset !important;
+    width: 100% !important;
+  }
+
+  /* Academy image wrapper: landscape ratio */
+  .academy-image-wrapper {
+    height: 0 !important;
+    padding-bottom: 56.25% !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  /* --- CONTACT FORM: Stack vertically --- */
+  .form-intro,
+  .form-wrapper {
+    flex: unset !important;
+    width: 100% !important;
+  }
+
+  /* --- PARTNER CARDS (B2B): Stack vertically with breathing room --- */
+  .partner-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .partner-card {
+    padding: 30px 20px !important;
+  }
+
+  /* --- FOUNDER SECTION: Stack vertically --- */
+  .founder-container {
+    flex-direction: column !important;
+    gap: 40px !important;
+  }
+
+  .founder-bio,
+  .founder-media {
+    flex: unset !important;
+    width: 100% !important;
+  }
+
+  /* --- COOKIE BANNER: More compact on small phones --- */
+  .cookie-banner {
+    padding: 16px 20px !important;
+    border-radius: 16px 16px 0 0 !important;
+  }
+
+  /* --- GLASS MENU: full screen on mobile --- */
+  .glass-menu-overlay {
+    width: 100vw !important;
+    right: 0 !important;
+    left: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  /* --- JESKO STATEMENT: readable font size --- */
+  .jesko-statement {
+    font-size: clamp(1.4rem, 5vw, 2.4rem) !important;
+    line-height: 1.5 !important;
+  }
+
+  /* --- HOTEL SECTIONS: Landscape ratio not 100vh --- */
+  .hotel-section {
+    height: 60vw !important;
+    min-height: 260px !important;
+    max-height: 420px !important;
+  }
+
+  /* Force images in sliders to fill correctly */
+  .hotel-bg {
+    object-fit: cover !important;
+  }
+
+  /* --- WHITESPACE: Consistent container padding on mobile --- */
+  .container {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
