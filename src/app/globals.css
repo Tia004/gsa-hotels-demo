@@ -7483,116 +7483,144 @@ video {
 
 /* ================================================================
    MOBILE OVERHAUL — All fixes for phones/tablets (≤768px)
-   Covers: nav, hero, sliders, video, BeSafe, sections, hamburger
    ================================================================ */
 @media (max-width: 768px) {
 
-  /* --- NAV: Compact capsule for mobile screens --- */
-  /* nav-capsule is position:fixed inline via JSX; override sizing */
+  /* -------------------------------------------------------
+     1. NAV CAPSULE: compact, leaves room for floating logo
+     ------------------------------------------------------- */
   .nav-capsule {
     top: 14px !important;
     right: 14px !important;
-    padding: 10px 16px !important;
-    gap: 12px !important;
+    padding: 10px 14px !important;
+    gap: 10px !important;
+    max-width: calc(100vw - 70px) !important; /* always leaves 70px gap for float logo */
   }
 
-  /* Nav logo (spotlight) */
+  /* Shrink CONTATTI button text if present */
+  .nav-capsule .nav-btn-contatti {
+    padding: 8px 14px !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.06em !important;
+  }
+
+  /* Floating logo */
   .nav-logo {
     top: 14px !important;
     left: 14px !important;
     width: 44px !important;
     height: 44px !important;
   }
+  /* j-logo-container (in-hero logo) */
+  .j-logo-container {
+    top: 14px !important;
+    left: 14px !important;
+  }
 
-  /* Hamburger touch target — minimum 44×44px for reliability */
+  /* Hamburger touch target */
   .desktop-menu-trigger {
     width: 44px !important;
     height: 44px !important;
     min-width: 44px !important;
-    cursor: pointer !important;
   }
 
-  /* --- HERO: Always show content on mobile --- */
+  /* -------------------------------------------------------
+     2. HERO SECTION: fits within 100dvh + title no weird wrap
+     ------------------------------------------------------- */
   .jesko-hero-final {
-    min-height: 100dvh;
-    height: 100dvh;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    min-height: unset !important;
+    overflow: hidden !important;
   }
 
   .jesko-ui-layer {
-    opacity: 1 !important;  /* Never hide on mobile */
+    opacity: 1 !important;
     visibility: visible !important;
+    height: 100% !important;
+    overflow: hidden !important;
   }
 
-  /* Hero headline sizing */
+  /* Hero headline: smaller + no weird mid-word break */
   .j-headline {
-    font-size: clamp(2.2rem, 8vw, 3.5rem) !important;
-    line-height: 1.15 !important;
+    font-size: clamp(2rem, 8.5vw, 3rem) !important;
+    line-height: 1.1 !important;
+    word-break: keep-all !important;
+    hyphens: none !important;
+    overflow-wrap: normal !important;
   }
 
-  /* Hero bg video: always full-width on mobile */
+  /* The italic gold span (DELL'OSPITALITÀ) should never orphan */
+  .j-italic {
+    display: inline !important;
+    white-space: normal !important;
+    word-break: keep-all !important;
+    hyphens: none !important;
+  }
+
+  /* Limit hero desc + info container */
+  .j-info-container {
+    max-width: 85vw !important;
+  }
+
+  .j-desc {
+    font-size: 0.9rem !important;
+    line-height: 1.6 !important;
+  }
+
+  /* Hero bg video: always full-width */
   .jesko-bg-layer {
     clip-path: inset(0vh 0vw round 0px) !important;
   }
 
-  /* --- FOUNDER VIDEO: Force 16:9 — no more portrait black bars --- */
-  .video-responsive-wrapper {
-    position: relative !important;
-    width: 100% !important;
-    height: 0 !important;
-    padding-bottom: 56.25% !important; /* 16:9 */
-    overflow: hidden !important;
-    border-radius: 12px !important;
+  /* -------------------------------------------------------
+     3. JESKO STATEMENT: always white as baseline
+        (GSAP animates FROM grey → white, but CSS ensures
+         the text is always readable even if GSAP doesn't run)
+     ------------------------------------------------------- */
+  .jesko-statement {
+    font-size: clamp(1.4rem, 5vw, 2.4rem) !important;
+    line-height: 1.5 !important;
+    /* color/opacity controlled by GSAP fromTo — no CSS override here */
   }
 
-  .video-responsive-wrapper iframe,
-  .video-responsive-wrapper .video-iframe {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
+  /* -------------------------------------------------------
+     4. VISION SECTION
+     ------------------------------------------------------- */
+  .vision-container {
+    flex-direction: column !important;
+    gap: 40px !important;
   }
-
-  /* --- VISION SLIDER: Landscape aspect ratio, not 70vh tall --- */
+  .vision-content, .vision-visual {
+    flex: unset !important;
+    width: 100% !important;
+  }
+  /* Vision slider 16:10 */
   .visual-frame.slider-frame {
     height: 0 !important;
-    padding-bottom: 60% !important; /* ~16:10 feels better than 16:9 for photos */
+    padding-bottom: 60% !important;
     position: relative !important;
     overflow: hidden !important;
   }
-
   .vision-slide-img {
     position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
+    inset: 0 !important;
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
   }
 
-  /* --- VISION SECTION: Stack vertically on mobile --- */
-  .vision-container {
-    flex-direction: column !important;
-    gap: 40px !important;
-  }
-
-  .vision-content,
-  .vision-visual {
-    flex: unset !important;
-    width: 100% !important;
-  }
-
-  /* --- VIDEO SECTION (Corporate intro): Force landscape --- */
+  /* -------------------------------------------------------
+     5. CORPORATE SPOTLIGHT VIDEO: Force 16:9, no portrait
+     ------------------------------------------------------- */
   .spotlight-container {
     flex-direction: column !important;
+    gap: 30px !important;
   }
-
   .spotlight-video-wrapper {
     flex: unset !important;
     width: 100% !important;
   }
-
-  /* --- CORPORATE INTRO VIDEO: Force 16:9 landscape, not portrait --- */
   .video-preview-card {
     position: relative !important;
     height: 0 !important;
@@ -7600,88 +7628,208 @@ video {
     overflow: hidden !important;
     cursor: pointer !important;
   }
-
   .video-preview-card iframe,
   .video-preview-card .video-thumbnail {
     position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
+    inset: 0 !important;
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
   }
-
   .video-preview-card .video-overlay,
   .video-preview-card .play-btn-luxury {
     position: absolute !important;
     z-index: 2 !important;
   }
-
   .video-preview-card .play-btn-luxury {
     top: 50% !important;
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
   }
 
-
-  /* --- EXPERIENCE SLIDER: Landscape ratio not 75vh portrait --- */
-  .experience-slider-luxury {
-    height: auto !important;
-    min-height: unset !important;
+  /* -------------------------------------------------------
+     6. FOUNDER VIDEO SLIDER: 16:9 + working controls
+     ------------------------------------------------------- */
+  .video-responsive-wrapper {
+    position: relative !important;
+    width: 100% !important;
+    height: 0 !important;
+    padding-bottom: 56.25% !important;
+    overflow: hidden !important;
+    border-radius: 10px !important;
+  }
+  .video-responsive-wrapper iframe,
+  .video-responsive-wrapper .video-iframe {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
   }
 
-  .experience-scroll-container {
-    height: 56vw !important; /* 16:9 of viewport width */
-    min-height: 220px !important;
+  /* Video slider controls: arrows and dots visible below video */
+  .video-controls-flex {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    margin-top: 16px !important;
   }
-
-  .experience-slide {
-    height: 56vw !important;
-    min-height: 220px !important;
-  }
-
-  /* Experience dots: always visible below slider, no blurry bar */
-  .experience-pagination {
+  .slider-arrow {
     position: static !important;
-    margin-top: 12px !important;
-    background: none !important;
-    backdrop-filter: none !important;
+    transform: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 44px !important;
+    height: 44px !important;
+    background: rgba(197, 160, 89, 0.15) !important;
+    border: 1px solid rgba(197, 160, 89, 0.4) !important;
+    border-radius: 50% !important;
+    color: #C5A059 !important;
+    font-size: 1rem !important;
+    cursor: pointer !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  .slider-arrow:hover {
+    background: rgba(197, 160, 89, 0.35) !important;
   }
 
-  /* --- SLIDER DOTS: Below image, not overlapping --- */
+  /* -------------------------------------------------------
+     7. ALL SLIDER DOTS: centered below slider
+     ------------------------------------------------------- */
   .slider-dots {
     position: static !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     gap: 8px !important;
-    margin: 12px auto !important;
-    width: 100% !important;       /* ensure parent doesn't left-align it */
+    width: 100% !important;
+    margin: 10px auto !important;
     padding: 0 !important;
     background: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
 
-  /* exp-image-wrapper: relative height for proper aspect ratio */
-  .exp-image-wrapper {
-    height: 56vw !important;
-    min-height: 220px !important;
+  /* Wrappers that contain dots must fill full width */
+  .academy-slider-wrapper,
+  .video-slider-wrapper,
+  .exp-slider-luxury,
+  .experience-slider-luxury {
+    width: 100% !important;
   }
 
-  /* --- BESAFE CARDS: Add gap between them --- */
+  /* -------------------------------------------------------
+     8. EXPERIENCE SLIDERS: landscape ratio
+     ------------------------------------------------------- */
+  .experience-slider-luxury {
+    height: auto !important;
+    min-height: unset !important;
+  }
+  .experience-scroll-container {
+    height: 56vw !important;
+    min-height: 200px !important;
+  }
+  .experience-slide {
+    height: 56vw !important;
+    min-height: 200px !important;
+  }
+  .experience-pagination {
+    position: static !important;
+    margin-top: 12px !important;
+    background: none !important;
+    backdrop-filter: none !important;
+  }
+  .exp-image-wrapper {
+    height: 56vw !important;
+    min-height: 200px !important;
+  }
+  /* Arrows inside exp-image-wrapper: push to edges */
+  .exp-controls-internal {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    position: absolute !important;
+    bottom: 12px !important;
+    left: 12px !important;
+    right: 12px !important;
+    pointer-events: none !important;
+  }
+  .exp-controls-internal .exp-arrow-btn {
+    pointer-events: auto !important;
+    width: 40px !important;
+    height: 40px !important;
+    background: rgba(0,0,0,0.55) !important;
+    border: 1px solid rgba(255,255,255,0.25) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: white !important;
+    font-size: 0.9rem !important;
+  }
+  .academy-arrow {
+    width: 36px !important;
+    height: 36px !important;
+    background: rgba(0,0,0,0.55) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    color: white !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* -------------------------------------------------------
+     9. ACADEMY SECTION
+     ------------------------------------------------------- */
+  .academy-container {
+    flex-direction: column !important;
+    gap: 40px !important;
+  }
+  .academy-content, .academy-visual {
+    flex: unset !important;
+    width: 100% !important;
+  }
+  .academy-image-wrapper {
+    height: 0 !important;
+    padding-bottom: 56.25% !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  /* -------------------------------------------------------
+     10. BESAFE CARDS: separated with clear whitespace
+     ------------------------------------------------------- */
   .safety-cards-grid {
     display: flex !important;
     flex-direction: column !important;
-    gap: 16px !important;
+    gap: 20px !important;          /* breathing room between cards */
     padding: 0 !important;
   }
-
   .safety-card {
-    margin-bottom: 0 !important; /* gap handles it */
+    margin-bottom: 0 !important;   /* let gap handle spacing */
+    padding: 18px 16px !important;
   }
 
-  /* --- SECTION PADDING: Reasonable for mobile viewport --- */
+  /* -------------------------------------------------------
+     11. HOTEL SECTIONS: full viewport height per section
+     ------------------------------------------------------- */
+  /* NOTE: contain:strict removed — caused scroll paint issues */
+  .hotel-section {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    max-height: 100dvh !important;
+  }
+  .hotel-bg {
+    object-fit: cover !important;
+  }
+
+  /* -------------------------------------------------------
+     12. SECTION PADDING & LAYOUT
+     ------------------------------------------------------- */
   .academy-section,
   .besafe-section,
   .experiences-section,
@@ -7692,72 +7840,43 @@ video {
   .luxury-form-section {
     padding: 60px 0 !important;
   }
+  .intro-banner-section { padding: 60px 0 !important; }
+  .section-header { margin-bottom: 40px !important; }
 
-  .intro-banner-section {
-    padding: 60px 0 !important;
-  }
-
-  /* Section header margin */
-  .section-header {
-    margin-bottom: 40px !important;
-  }
-
-  /* --- ACADEMY: Stack vertically --- */
-  .academy-container {
-    flex-direction: column !important;
-    gap: 40px !important;
-  }
-
-  .academy-content,
-  .academy-visual {
-    flex: unset !important;
-    width: 100% !important;
-  }
-
-  /* Academy image wrapper: landscape ratio */
-  .academy-image-wrapper {
-    height: 0 !important;
-    padding-bottom: 56.25% !important;
-    position: relative !important;
-    overflow: hidden !important;
-  }
-
-  /* --- CONTACT FORM: Stack vertically --- */
-  .form-intro,
-  .form-wrapper {
-    flex: unset !important;
-    width: 100% !important;
-  }
-
-  /* --- PARTNER CARDS (B2B): Stack vertically with breathing room --- */
-  .partner-grid {
-    grid-template-columns: 1fr !important;
-    gap: 20px !important;
-  }
-
-  .partner-card {
-    padding: 30px 20px !important;
-  }
-
-  /* --- FOUNDER SECTION: Stack vertically --- */
   .founder-container {
     flex-direction: column !important;
     gap: 40px !important;
   }
-
-  .founder-bio,
-  .founder-media {
+  .founder-bio, .founder-media {
+    flex: unset !important;
+    width: 100% !important;
+  }
+  .partner-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  .partner-card { padding: 28px 18px !important; }
+  .form-intro, .form-wrapper {
     flex: unset !important;
     width: 100% !important;
   }
 
-  /* --- COOKIE BANNER: More compact on small phones --- */
+  /* -------------------------------------------------------
+     13. PERFORMANCE: disable GPU-heavy effects on touch
+     ------------------------------------------------------- */
+  /* backdrop-filter causes massive GPU restacking on mobile */
+  .nav-capsule {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
   .cookie-banner {
     padding: 16px 20px !important;
     border-radius: 16px 16px 0 0 !important;
   }
 
-  /* --- GLASS MENU: full screen on mobile --- */
+  /* -------------------------------------------------------
+     14. GLASS MENU: full screen
+     ------------------------------------------------------- */
   .glass-menu-overlay {
     width: 100vw !important;
     right: 0 !important;
@@ -7765,28 +7884,153 @@ video {
     border-radius: 0 !important;
   }
 
-  /* --- JESKO STATEMENT: readable font size --- */
-  .jesko-statement {
-    font-size: clamp(1.4rem, 5vw, 2.4rem) !important;
-    line-height: 1.5 !important;
-  }
-
-  /* --- HOTEL SECTIONS: Each hotel fills one full screen on mobile (like desktop) --- */
-  .hotel-section {
-    height: 100dvh !important;
-    min-height: 100dvh !important;
-    max-height: 100dvh !important;
-    contain: strict !important; /* prevent paint overflow lag at end of list */
-  }
-
-  /* Force images in sliders to fill correctly */
-  .hotel-bg {
-    object-fit: cover !important;
-  }
-
-  /* --- WHITESPACE: Consistent container padding on mobile --- */
+  /* -------------------------------------------------------
+     15. CONTAINER PADDING
+     ------------------------------------------------------- */
   .container {
     padding-left: 20px !important;
     padding-right: 20px !important;
+  }
+}
+
+
+/* ================================================================
+   MOBILE SUPPLEMENTARY — Academy slider, Hotel sections, Video controls
+   ================================================================ */
+@media (max-width: 768px) {
+
+  /* ACADEMY SLIDER: centered */
+  .academy-visual {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  .academy-slider-wrapper {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  .academy-image-wrapper {
+    position: relative !important;
+    width: 100% !important;
+    height: 0 !important;
+    padding-bottom: 65% !important;
+    overflow: hidden !important;
+    border-radius: 10px !important;
+  }
+  .academy-slide-img {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+  .academy-arrow {
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 36px !important;
+    height: 36px !important;
+    background: rgba(0,0,0,0.6) !important;
+    border: 1px solid rgba(197,160,89,0.5) !important;
+    border-radius: 50% !important;
+    color: #C5A059 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    z-index: 10 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    font-size: 0.85rem !important;
+  }
+  .academy-arrow.prev { left: 10px !important; }
+  .academy-arrow.next { right: 10px !important; }
+  .academy-slider-wrapper .slider-dots {
+    margin-top: 12px !important;
+    justify-content: center !important;
+    width: 100% !important;
+  }
+  .academy-badge { display: none !important; }
+
+  /* HOTEL SECTIONS: full 100dvh per dimora */
+  section#partner {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  section#partner > .container {
+    padding: 60px 20px !important;
+  }
+  #fleet {
+    display: block !important;
+    overflow: hidden !important;
+  }
+  .hotel-section {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    min-height: unset !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  .hotel-bg-wrapper {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 0 !important;
+  }
+  .hotel-overlay {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 1 !important;
+    background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 60%) !important;
+  }
+  .hotel-content {
+    position: relative !important;
+    z-index: 2 !important;
+    padding: 0 24px 48px !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  /* VIDEO SLIDER CONTROLS (Golisano section) */
+  .video-slider-wrapper { overflow: visible !important; }
+  .slider-video-container { overflow: visible !important; }
+  .video-slider-controls { display: block !important; overflow: visible !important; }
+  .video-controls-flex {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    margin-top: 16px !important;
+  }
+  .video-controls-flex .slider-arrow {
+    position: static !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: flex !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(197,160,89,0.15) !important;
+    border: 1px solid rgba(197,160,89,0.5) !important;
+    border-radius: 50% !important;
+    color: #C5A059 !important;
+    font-size: 1rem !important;
+  }
+  .video-controls-flex .slider-dots {
+    margin: 0 !important;
+    flex: auto !important;
+    max-width: 120px !important;
+    justify-content: center !important;
+    display: flex !important;
+    gap: 8px !important;
   }
 }

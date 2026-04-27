@@ -29,6 +29,7 @@ interface GlobalNavProps {
 
 const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = true }) => {
   const [scrolled, setScrolled] = useState(false);
+  const [isMobileNav, setIsMobileNav] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useLang();
@@ -36,6 +37,11 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
+
+    // Mobile detection for positioning
+    const checkMobile = () => setIsMobileNav(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
 
     const onScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -289,7 +295,7 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
           </Link>
         )}
 
-        <nav className="nav-capsule navbar nav-menu" style={{ pointerEvents: 'auto', position: 'fixed', top: '40px', right: '40px', display: 'flex', flexDirection: 'row', alignItems: 'center', whiteSpace: 'nowrap', justifyContent: 'flex-end', gap: '20px', padding: '12px 24px', zIndex: 100000, background: '#000000', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.2)' }}>
+        <nav className="nav-capsule navbar nav-menu" style={{ pointerEvents: 'auto', position: 'fixed', top: isMobileNav ? '14px' : '40px', right: isMobileNav ? '14px' : '40px', display: 'flex', flexDirection: 'row', alignItems: 'center', whiteSpace: 'nowrap', justifyContent: 'flex-end', gap: isMobileNav ? '10px' : '20px', padding: isMobileNav ? '10px 14px' : '12px 24px', zIndex: 100000, background: '#000000', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.2)', maxWidth: isMobileNav ? 'calc(100vw - 70px)' : 'none' }}>
           <LangSwitcher />
           <Link href="/#contact" className="nav-cta">{t('nav.contatti')}</Link>
           <div className="nav-auth-inline" style={{ display: 'flex', alignItems: 'center' }}>

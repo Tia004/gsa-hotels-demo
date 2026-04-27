@@ -475,49 +475,75 @@ export default function Home() {
 
     // --- SENIOR DEV: STRICT JESKO ANIMATIONS ---
 
-    // 1. Headline & Desc Progressive Reveal
-    const heroHeadline = new SplitType('.j-headline', { types: 'words,chars' });
-    const heroDesc = new SplitType('.j-desc', { types: 'lines' });
+    // --- 1. HERO ANIMATIONS ---
+    // On mobile: skip character-level SplitType (creates 100s of DOM nodes,
+    // thrashes layout engine, causes scroll jank / jump-back behaviour)
+    const isMobileAnim = window.matchMedia('(pointer: coarse)').matches || window.innerWidth <= 768;
 
-    gsap.from(heroHeadline.chars, {
-      y: 50,
-      opacity: 0,
-      stagger: 0.03,
-      duration: 1.2,
-      ease: "power4.out",
-      delay: preloaderPlayed ? 0.5 : 6.2 // Sincronizzato con il nuovo preloader (~6.2s totale)
-    });
+    if (!isMobileAnim) {
+      const heroHeadline = new SplitType('.j-headline', { types: 'words,chars' });
+      const heroDesc = new SplitType('.j-desc', { types: 'lines' });
 
-    gsap.from(".j-desc", {
-      y: 20,
-      opacity: 0,
-      duration: 1.2,
-      ease: "power3.out",
-      delay: preloaderPlayed ? 1.2 : 7.0
-    });
+      gsap.from(heroHeadline.chars, {
+        y: 50,
+        opacity: 0,
+        stagger: 0.03,
+        duration: 1.2,
+        ease: "power4.out",
+        delay: preloaderPlayed ? 0.5 : 6.2
+      });
+
+      gsap.from(".j-desc", {
+        y: 20,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power3.out",
+        delay: preloaderPlayed ? 1.2 : 7.0
+      });
+    } else {
+      // Mobile: just ensure headline is fully visible immediately
+      gsap.set('.j-headline', { opacity: 1, y: 0 });
+      gsap.set('.j-desc', { opacity: 1, y: 0 });
+    }
 
     // --- 2. GENERIC LUXURY REVEAL SYSTEM ---
-    // Wrapped in timeout to ensure layout is settled
     setTimeout(() => {
       const revealElements = gsap.utils.toArray('.reveal') as HTMLElement[];
       revealElements.forEach(elem => {
-        gsap.fromTo(elem,
-          { y: 60, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1.4,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: elem,
-              start: "top 90%",
-              toggleActions: "play none none none" // Changed from reverse to none for stability
+        if (isMobileAnim) {
+          // Mobile: simple opacity-only fade, no y movement (avoids layout recalc during scroll)
+          gsap.fromTo(elem,
+            { opacity: 0 },
+            {
+              opacity: 1,
+              duration: 0.8,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: elem,
+                start: "top 95%",
+                toggleActions: "play none none none"
+              }
             }
-          }
-        );
+          );
+        } else {
+          gsap.fromTo(elem,
+            { y: 60, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1.4,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: elem,
+                start: "top 90%",
+                toggleActions: "play none none none"
+              }
+            }
+          );
+        }
       });
       ScrollTrigger.refresh();
-    }, 500); // Increased timeout for better stability
+    }, 500);
 
     // Hero: ensure bg-layer is expanded and ui-layer is always visible on ALL devices.
     // We removed the cinematic scroll-triggered fade because the ScrollTrigger fires
@@ -569,38 +595,24 @@ export default function Home() {
     // Hero Reveal (Updated Class)
     // const heroTitle = new SplitType('.j-headline', { types: 'chars' }); // Skipping SplitType for robustness/performance
 
-    // Jesko Text Statement Reveal — simple fade, no scrub (scrub on words = heavy SplitType + RAF)
-    const isMobileText = window.innerWidth <= 768;
-    if (!isMobileText) {
-      const textStats = new SplitType('.jesko-statement', { types: 'words' });
-      gsap.fromTo(textStats.words,
-        { opacity: 0.2, color: "rgba(255, 255, 255, 0.2)" },
-        {
-          opacity: 1,
-          color: "#FFFFFF",
-          stagger: 0.08,
-          duration: 0.6,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: ".jesko-statement-container",
-            start: "top 70%",
-            toggleActions: "play none none none"
-          }
+    // Jesko Text Statement Reveal — word-by-word on all devices
+    const textStats = new SplitType('.jesko-statement', { types: 'words' });
+    gsap.fromTo(textStats.words,
+      { opacity: 0.15, color: 'rgba(255,255,255,0.15)' },
+      {
+        opacity: 1,
+        color: '#FFFFFF',
+        stagger: 0.08,
+        duration: 0.6,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: '.jesko-statement-container',
+          start: 'top 80%',
+          toggleActions: 'play none none none'
         }
-      );
-    } else {
-      // Mobile: animate the whole block color from dim → white (same effect, no SplitType per-word)
-      gsap.fromTo('.jesko-statement',
-        { opacity: 0.2, color: 'rgba(255,255,255,0.2)' },
-        {
-          opacity: 1,
-          color: '#ffffff',
-          duration: 1.2,
-          ease: 'power2.out',
-          scrollTrigger: { trigger: '.jesko-statement-container', start: 'top 80%', toggleActions: 'play none none none' }
-        }
-      );
-    }
+      }
+    );
+
 
     // Navbar Animation - REMOVED for Visibility Assurance
     gsap.set('.nav-capsule', { opacity: 1, y: 0 });
@@ -608,14 +620,13 @@ export default function Home() {
     // Parallax Images - Removed Conflicting Loop
 
 
-    // Hotel Parallax & Reveal — Remove parallax on mobile (too expensive)
-    const isMobile = window.innerWidth <= 768;
+    // Hotel Parallax & Reveal — enabled on all devices
     (gsap.utils.toArray('.hotel-section') as HTMLElement[]).forEach(section => {
       const bg = section.querySelector('.hotel-bg');
       const content = section.querySelector('.hotel-content');
 
-      // Parallax BG — desktop only, scrub is too expensive on mobile
-      if (!isMobile && bg) {
+      // Parallax BG — same scrub as desktop on all devices
+      if (bg) {
         gsap.to(bg, {
           y: "15%",
           ease: "none",
@@ -623,14 +634,12 @@ export default function Home() {
             trigger: section,
             start: "top bottom",
             end: "bottom top",
-            scrub: 2   // Higher scrub = less frequent updates = better FPS
+            scrub: 1.5
           }
         });
       }
 
-      // Note: Nav reveal is handled exclusively by GlobalNav.tsx ScrollTrigger to avoid conflicts
-
-      // Content Fade Up — simple one-shot, no scrub
+      // Content Fade Up — one-shot reveal
       gsap.from(content, {
         y: 60,
         opacity: 0,
@@ -643,6 +652,7 @@ export default function Home() {
         }
       });
     });
+
 
 
 
@@ -1516,8 +1526,8 @@ export default function Home() {
         </section>
 
         {/* 5. I NOSTRI PARTNER (HOTEL SECTION) */}
-        <section id="partner" style={{ padding: '80px 0 0', background: '#080808' }}>
-          <div className="container" style={{ marginBottom: '60px', textAlign: 'center' }}>
+        <section id="partner" style={{ padding: isMobile ? '0' : '80px 0 0', background: '#080808' }}>
+          <div className="container" style={{ marginBottom: isMobile ? '30px' : '60px', textAlign: 'center', paddingTop: isMobile ? '50px' : '0' }}>
             <span className="label-gold">{t('partners.label')}</span>
             <h2 className="academy-title" style={{ marginTop: '10px' }}>{t('partners.title')}</h2>
             <p style={{ color: 'rgba(255,255,255,0.6)', maxWidth: '600px', margin: '15px auto 0', fontSize: '1.1rem' }}>
