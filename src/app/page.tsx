@@ -595,24 +595,38 @@ export default function Home() {
     // Hero Reveal (Updated Class)
     // const heroTitle = new SplitType('.j-headline', { types: 'chars' }); // Skipping SplitType for robustness/performance
 
-    // Jesko Text Statement Reveal — word-by-word on all devices
-    const textStats = new SplitType('.jesko-statement', { types: 'words' });
-    gsap.fromTo(textStats.words,
-      { opacity: 0.15, color: 'rgba(255,255,255,0.15)' },
-      {
-        opacity: 1,
-        color: '#FFFFFF',
-        stagger: 0.08,
-        duration: 0.6,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: '.jesko-statement-container',
-          start: 'top 80%',
-          toggleActions: 'play none none none'
+    // Jesko Text Statement Reveal — simple fade, no scrub (scrub on words = heavy SplitType + RAF)
+    const isMobileText = window.innerWidth <= 768;
+    if (!isMobileText) {
+      const textStats = new SplitType('.jesko-statement', { types: 'words' });
+      gsap.fromTo(textStats.words,
+        { opacity: 0.2, color: "rgba(255, 255, 255, 0.2)" },
+        {
+          opacity: 1,
+          color: "#FFFFFF",
+          stagger: 0.08,
+          duration: 0.6,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".jesko-statement-container",
+            start: "top 70%",
+            toggleActions: "play none none none"
+          }
         }
-      }
-    );
-
+      );
+    } else {
+      // Mobile: animate the whole block color from dim → white (same effect, no SplitType per-word)
+      gsap.fromTo('.jesko-statement',
+        { opacity: 0.2, color: 'rgba(255,255,255,0.2)' },
+        {
+          opacity: 1,
+          color: '#ffffff',
+          duration: 1.2,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: '.jesko-statement-container', start: 'top 80%', toggleActions: 'play none none none' }
+        }
+      );
+    }
 
     // Navbar Animation - REMOVED for Visibility Assurance
     gsap.set('.nav-capsule', { opacity: 1, y: 0 });
@@ -620,13 +634,14 @@ export default function Home() {
     // Parallax Images - Removed Conflicting Loop
 
 
-    // Hotel Parallax & Reveal — enabled on all devices
+    // Hotel Parallax & Reveal — Remove parallax on mobile (too expensive)
+    const isMobile = window.innerWidth <= 768;
     (gsap.utils.toArray('.hotel-section') as HTMLElement[]).forEach(section => {
       const bg = section.querySelector('.hotel-bg');
       const content = section.querySelector('.hotel-content');
 
-      // Parallax BG — same scrub as desktop on all devices
-      if (bg) {
+      // Parallax BG — desktop only, scrub is too expensive on mobile
+      if (!isMobile && bg) {
         gsap.to(bg, {
           y: "15%",
           ease: "none",
@@ -634,12 +649,14 @@ export default function Home() {
             trigger: section,
             start: "top bottom",
             end: "bottom top",
-            scrub: 1.5
+            scrub: 2   // Higher scrub = less frequent updates = better FPS
           }
         });
       }
 
-      // Content Fade Up — one-shot reveal
+      // Note: Nav reveal is handled exclusively by GlobalNav.tsx ScrollTrigger to avoid conflicts
+
+      // Content Fade Up — simple one-shot, no scrub
       gsap.from(content, {
         y: 60,
         opacity: 0,
@@ -652,7 +669,6 @@ export default function Home() {
         }
       });
     });
-
 
 
 

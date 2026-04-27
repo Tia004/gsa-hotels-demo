@@ -7581,7 +7581,8 @@ video {
   .jesko-statement {
     font-size: clamp(1.4rem, 5vw, 2.4rem) !important;
     line-height: 1.5 !important;
-    /* color/opacity controlled by GSAP fromTo — no CSS override here */
+    color: rgba(255, 255, 255, 0.85) !important; /* fallback always visible */
+    opacity: 1 !important;
   }
 
   /* -------------------------------------------------------
