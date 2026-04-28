@@ -913,7 +913,7 @@ export default function Home() {
         t('preloader.w4'), t('preloader.w5'), t('preloader.w6'), t('preloader.w7')
       ];
       let wordIndex = 0;
-      // PHASE 1: Word shuffle — elegant 220ms pace
+      // PHASE 1: Word shuffle
       shuffleInterval = setInterval(() => {
         if (shuffler) {
           shuffler.style.opacity = '1';
@@ -923,49 +923,46 @@ export default function Home() {
         }
       }, 220);
 
-      // After 2.2s of words, fade out to pure black
+      // After 2.4s of words, fade out to pure black (ensuring no overlap)
       phase1Timeout = setTimeout(() => {
         clearInterval(shuffleInterval);
 
-        // Fade words out smoothly
+        // Fade words out completely
         if (shuffler) {
-          shuffler.style.transition = 'opacity 0.4s ease';
+          shuffler.style.transition = 'opacity 0.5s ease-out';
           shuffler.style.opacity = '0';
           setTimeout(() => {
             if (shuffler) shuffler.style.display = 'none';
-          }, 400);
+          }, 500);
         }
 
-        // PHASE 2: After 0.6s of pure black, logo appears blurred+small then deblurs
+        // PHASE 2: Wait 0.8s in pure black, then logo appears (ZERO OVERLAP)
         setTimeout(() => {
           if (logoGold) {
-            // Start from blurred, slightly small state
             logoGold.style.filter = 'blur(20px)';
             logoGold.style.transform = 'translate(-50%, -50%) scale(0.7)';
             logoGold.style.opacity = '0';
             logoGold.style.transition = 'none';
             logoGold.style.display = 'block';
 
-            // Force reflow so transition fires
             void (logoGold as HTMLElement).offsetHeight;
 
-            // Animate IN: deblur, scale to 1, fade in
-            logoGold.style.transition = 'opacity 1.2s ease, filter 1.4s cubic-bezier(0.22,1,0.36,1), transform 1.4s cubic-bezier(0.22,1,0.36,1)';
+            logoGold.style.transition = 'opacity 1.5s ease, filter 1.6s cubic-bezier(0.22,1,0.36,1), transform 1.6s cubic-bezier(0.22,1,0.36,1)';
             logoGold.style.opacity = '1';
             logoGold.style.filter = 'blur(0px)';
             logoGold.style.transform = 'translate(-50%, -50%) scale(1)';
           }
 
-          // PHASE 3: After holding for 1.8s, zoom+blur out cinematically
+          // PHASE 3: Hold for 2s, then zoom out
           phase2Timeout = setTimeout(() => {
             if (logoGold) {
-              logoGold.style.transition = 'opacity 1.4s ease-out, filter 1.8s ease-out, transform 1.8s cubic-bezier(0.165,0.84,0.44,1)';
+              logoGold.style.transition = 'opacity 1.5s ease-out, filter 1.8s ease-out, transform 1.8s cubic-bezier(0.165,0.84,0.44,1)';
               logoGold.style.opacity = '0';
               logoGold.style.filter = 'blur(24px)';
-              logoGold.style.transform = 'translate(-50%, -50%) scale(2.2)';
+              logoGold.style.transform = 'translate(-50%, -50%) scale(2.5)';
             }
 
-            // PHASE 4: After zoom completes, fade overlay and reveal site
+            // PHASE 4: Reveal site
             revealTimeout = setTimeout(() => {
               if (preloaderOverlay) {
                 preloaderOverlay.classList.add('finished');
@@ -985,11 +982,11 @@ export default function Home() {
 
               setIsRevealed(true);
               setTimeout(() => ScrollTrigger.refresh(), 200);
-            }, 1800); // Wait for zoom to finish
-          }, 1800); // Hold logo for 1.8s
-        }, 600); // Black pause before logo appears
-      }, 2200); // Shuffle phase duration
-    } // End if (!preloaderPlayed)(!alreadyShown)
+            }, 1800);
+          }, 2000);
+        }, 800); // Pure black wait
+      }, 2400); // Shuffling duration
+    }
   }); // End GSAP Context
 
     return () => {
@@ -1237,9 +1234,10 @@ export default function Home() {
                     src={academyImages[activeAcademyImage]}
                     alt="GSA Academy Highlight"
                     key={activeAcademyImage}
-                    fill
+                    width={1200}
+                    height={675}
                     className="academy-slide-img"
-                    style={{ objectFit: 'contain', objectPosition: 'center', background: 'transparent' }}
+                    style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%', display: 'block', margin: 'auto' }}
                     sizes="(max-width: 768px) 100vw, 80vw"
                   />
 
@@ -1513,12 +1511,8 @@ export default function Home() {
                   </div>
                 </div>
 
-                <p className="video-description-text">
-                  {videos[activeVideo].description}
-                </p>
-
-                <div className="video-slider-controls">
-                  <div className="slider-dots" style={{ marginTop: '20px', display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                <div className="video-slider-controls" style={{ marginBottom: '10px' }}>
+                  <div className="slider-dots" style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
                     {videos.map((_, index) => (
                       <div
                         key={index}
@@ -1528,6 +1522,10 @@ export default function Home() {
                     ))}
                   </div>
                 </div>
+
+                <p className="video-description-text">
+                  {videos[activeVideo].description}
+                </p>
               </div>
             </div>
           </div>
