@@ -1553,12 +1553,12 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto,f_auto,w_1920/v1777385703/duchessa-isabella_oohhdg.webp"
+                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto:best,f_auto/v1777385703/duchessa-isabella_oohhdg.webp"
                   alt="Hotel Duchessa Isabella"
                   fill
                   className="hotel-bg"
                   style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="100vw"
                   priority={true}
                 />
               </div>
@@ -1573,12 +1573,12 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto,f_auto,w_1920/v1777385715/blumen_sq4ldu.webp"
+                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto:best,f_auto/v1777385715/blumen_sq4ldu.webp"
                   alt="Hotel Blumen"
                   fill
                   className="hotel-bg"
                   style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="100vw"
                   priority={true}
                 />
               </div>
@@ -1593,12 +1593,12 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto,f_auto,w_1920/v1777385726/santorsola_ebtwpm.webp"
+                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto:best,f_auto/v1777385726/santorsola_ebtwpm.webp"
                   alt="Hotel Sant'Orsola"
                   fill
                   className="hotel-bg"
                   style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="100vw"
                   loading="lazy"
                 />
               </div>
@@ -1613,12 +1613,12 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto,f_auto,w_1920/v1777385737/wellness_joxcwr.webp"
+                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto:best,f_auto/v1777385737/wellness_joxcwr.webp"
                   alt="Oasi Isabella Wellness SPA"
                   fill
                   className="hotel-bg"
                   style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="100vw"
                   loading="lazy"
                 />
               </div>
@@ -1634,12 +1634,12 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto,f_auto,w_1920/v1777340402/eventi_dtnsic.webp"
+                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto:best,f_auto/v1777340402/eventi_dtnsic.webp"
                   alt="Duchessa Isabella Eventi"
                   fill
                   className="hotel-bg"
                   style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="100vw"
                   loading="lazy"
                 />
               </div>

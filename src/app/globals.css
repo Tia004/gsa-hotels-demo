@@ -1988,10 +1988,10 @@ body.revealed .j-logo {
 .jesko-statement-container {
   max-width: 90vw;
   margin: 0 auto;
-  margin-bottom: 70vh;
+  margin-top: 20vh; /* Increased top space from Hero */
+  margin-bottom: 90vh; /* Vast gap to reveal video after text */
   padding: 0;
   font-family: var(--font-primary);
-  /* Reset padding, let flexbox center it */
 }
 
 .jesko-statement {
@@ -2019,14 +2019,12 @@ body.revealed .j-logo {
 /* Revert Pillars BG to Transparent to show video */
 .pillars-section {
   background: transparent !important;
-  min-height: 100vh;
-  /* More space */
+  min-height: 140vh; /* Increased overall height for more breathing room */
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  /* Center Vertically (Halfway) */
-  padding-bottom: 10vh;
-  /* Push hotels down slightly */
+  justify-content: flex-start; /* Start higher up */
+  padding-top: 15vh;
+  padding-bottom: 20vh;
 }
 
 /* Ensure proper spacing for the next black section */
