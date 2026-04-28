@@ -153,25 +153,30 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
       const anchor = target.closest('a') as HTMLAnchorElement | null;
       if (!anchor) return;
 
-      const href = anchor.getAttribute('href') || '';
+      const href = anchor.getAttribute('href') || anchor.getAttribute('data-href') || '';
       const isInsideMenu = overlay && overlay.contains(anchor);
       const isMenuOpen = overlay && overlay.classList.contains('active');
 
-      // Determine if this is a hash/anchor link
       let hash = '';
       if (href.startsWith('/#')) {
+        // If we're not on the homepage, let Next.js handle the routing to "/" first
+        if (window.location.pathname !== '/') {
+          if (isMenuOpen) toggleMenu(false);
+          return; // Do not prevent default!
+        }
         hash = href.slice(1);
       } else if (href.startsWith('#')) {
         hash = href;
       }
 
       if (hash) {
-        // HASH LINK: prevent default, close menu if open, then smooth-scroll
+        // HASH LINK on the same page: prevent default, close menu if open, then smooth-scroll
         e.preventDefault();
 
+        // Se siamo su mobile e l'hamburger menu è aperto, togligli la transizione se occorre, ma qui usiamo il timeout
         if (isMenuOpen) {
           toggleMenu(false);
-          // Wait for menu close animation (clip-path 0.8s + small buffer)
+          // Wait for menu close animation
           setTimeout(() => {
             const targetEl = document.querySelector(hash) as HTMLElement | null;
             if (!targetEl) return;
@@ -183,7 +188,6 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
             }
           }, 900);
         } else {
-          // Menu not open, scroll immediately
           const targetEl = document.querySelector(hash) as HTMLElement | null;
           if (!targetEl) return;
           const lenis = (window as any).lenis;
@@ -195,7 +199,6 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
         }
       } else if (isInsideMenu && isMenuOpen && href && !href.startsWith('#')) {
         // NON-HASH LINK inside the menu (e.g. /blog): just close the menu
-        // Let Next.js handle the navigation normally
         toggleMenu(false);
       }
     };
@@ -260,9 +263,27 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
           transition: 'opacity 1s ease, visibility 1s ease'
         }}
       >
-        {/* SPOTLIGHT LOGO */}
-        <Link href="/" className={`nav-logo spotlight-mode scroll-appear ${scrolled || !isHomePage ? 'visible' : ''}`} style={{ position: 'fixed', top: '40px', left: '40px', zIndex: 100000, height: '55px', width: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000000', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)' }}>
-          <Image src="/assets/logo.png" alt="GSA" width={80} height={28} style={{ height: '28px', width: 'auto' }} />
+        {/* SPOTLIGHT LOGO — always floating top-left */}
+        <Link 
+          href="/" 
+          className={`nav-logo spotlight-mode scroll-appear ${scrolled || !isHomePage ? 'visible' : ''}`} 
+          style={{ 
+            position: 'fixed', 
+            top: isMobileNav ? '12px' : '40px', 
+            left: isMobileNav ? '12px' : '40px', 
+            zIndex: 100000, 
+            height: isMobileNav ? '44px' : '55px', 
+            width: isMobileNav ? '44px' : '55px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            background: '#000000', 
+            borderRadius: '50%', 
+            border: '1px solid rgba(255,255,255,0.2)',
+            flexShrink: 0
+          }}
+        >
+          <Image src="/assets/logo.png" alt="GSA" width={80} height={28} style={{ height: isMobileNav ? '22px' : '28px', width: 'auto' }} />
         </Link>
         
         {/* Back to Experiences button (only on detail pages) */}
@@ -272,11 +293,11 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
             className={`nav-back-btn spotlight-mode scroll-appear ${scrolled || !isHomePage ? 'visible' : ''}`}
             style={{ 
               position: 'fixed', 
-              top: '40px', 
-              left: '110px', 
+              top: isMobileNav ? '12px' : '40px', 
+              left: isMobileNav ? '66px' : '110px', 
               zIndex: 100000, 
-              height: '55px',
-              padding: '0 24px',
+              height: isMobileNav ? '44px' : '55px',
+              padding: isMobileNav ? '0 14px' : '0 24px',
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'center', 
@@ -284,7 +305,7 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
               borderRadius: '100px', 
               border: '1px solid rgba(255,255,255,0.2)',
               color: 'white',
-              fontSize: '11px',
+              fontSize: isMobileNav ? '10px' : '11px',
               fontWeight: 500,
               letterSpacing: '0.05em',
               textTransform: 'uppercase',
@@ -295,13 +316,34 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
           </Link>
         )}
 
-        <nav className="nav-capsule navbar nav-menu" style={{ pointerEvents: 'auto', position: 'fixed', top: isMobileNav ? '14px' : '40px', right: isMobileNav ? '14px' : '40px', display: 'flex', flexDirection: 'row', alignItems: 'center', whiteSpace: 'nowrap', justifyContent: 'flex-end', gap: isMobileNav ? '10px' : '20px', padding: isMobileNav ? '10px 14px' : '12px 24px', zIndex: 100000, background: '#000000', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.2)', maxWidth: isMobileNav ? 'calc(100vw - 70px)' : 'none' }}>
-          <LangSwitcher />
-          <Link href="/#contact" className="nav-cta">{t('nav.contatti')}</Link>
+        {/* NAV CAPSULE — compact on mobile, full on desktop */}
+        <nav 
+          className="nav-capsule navbar nav-menu" 
+          style={{ 
+            pointerEvents: 'auto', 
+            position: 'fixed', 
+            top: isMobileNav ? '12px' : '40px', 
+            right: isMobileNav ? '12px' : '40px', 
+            display: 'flex', 
+            flexDirection: 'row', 
+            alignItems: 'center', 
+            whiteSpace: 'nowrap', 
+            justifyContent: 'flex-end', 
+            gap: isMobileNav ? '8px' : '20px', 
+            padding: isMobileNav ? '8px 12px' : '12px 24px', 
+            zIndex: 100000, 
+            background: '#000000', 
+            borderRadius: '100px', 
+            border: '1px solid rgba(255,255,255,0.2)', 
+            maxWidth: isMobileNav ? 'calc(100vw - 68px)' : 'none'
+          }}
+        >
+          {!isMobileNav && <LangSwitcher />}
+          {!isMobileNav && <Link href="/#contact" className="nav-cta">{t('nav.contatti')}</Link>}
           <div className="nav-auth-inline" style={{ display: 'flex', alignItems: 'center' }}>
             <SignedOut>
-              <Link href={`/login?redirect_url=${encodeURIComponent(pathname)}`} className="auth-icon-btn" title={t('nav.accedi')}>
-                <svg className="auth-icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <Link href={`/login?redirect_url=${encodeURIComponent(pathname)}`} className="auth-icon-btn" title={t('nav.accedi')} style={{ width: isMobileNav ? '32px' : '44px', height: isMobileNav ? '32px' : '44px' }}>
+                <svg className="auth-icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style={{ width: isMobileNav ? '16px' : '22px', height: isMobileNav ? '16px' : '22px' }}>
                   <path d="M20 21a8 8 0 0 0-16 0" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
                   <path d="M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
                 </svg>
@@ -312,7 +354,7 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
               <UserButton
                 appearance={{
                   elements: {
-                    avatarBox: 'width: 32px; height: 32px;',
+                    avatarBox: 'width: 28px; height: 28px;',
                     userButtonPopoverCard: 'background: #111 !important; border: 1px solid rgba(197,160,89,0.3) !important; box-shadow: 0 20px 60px rgba(0,0,0,0.8) !important;',
                     userButtonPopoverActionButton: 'color: #fff !important;',
                     userButtonPopoverActionButtonText: 'color: #fff !important;',
@@ -331,7 +373,7 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
               </UserButton>
             </SignedIn>
           </div>
-          <div className="desktop-menu-trigger McButton" id="menu-trigger" style={{ position: 'relative', width: '30px', height: '30px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="desktop-menu-trigger McButton" id="menu-trigger" style={{ position: 'relative', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <b style={{ pointerEvents: 'none' }} />
             <b style={{ pointerEvents: 'none' }} />
             <b style={{ pointerEvents: 'none' }} />

@@ -1898,7 +1898,7 @@ body.revealed .j-logo {
   transform: scale(1.1);
 }
 
-/* Window Reveal Effect */
+/* Window Reveal Effect — Desktop Only */
 .jesko-bg-layer {
   /* Initial Window State (Desktop: approx 84% width, CRT frame aesthetic) */
   -webkit-clip-path: inset(10vh 8vw round 120px);
@@ -1906,31 +1906,27 @@ body.revealed .j-logo {
   transition: clip-path 0.1s linear, -webkit-clip-path 0.1s linear;
 }
 
+/* On mobile/tablet: always expand to full screen immediately — no cinematic clip needed */
 @media (max-width: 1024px) {
   .jesko-bg-layer {
-    /* Taller & Narrower Mobile/Tablet Proportions */
-    -webkit-clip-path: inset(8vh 10vw round 80px) !important;
-    clip-path: inset(8vh 10vw round 80px) !important;
+    -webkit-clip-path: inset(0vh 0vw round 0px) !important;
+    clip-path: inset(0vh 0vw round 0px) !important;
     width: 100vw !important;
     height: 100vh !important;
     top: 0 !important;
     left: 0 !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-  }
-}
-
-@media (max-width: 768px) {
-  .jesko-bg-layer {
-    /* Slightly more aggressive rounding for smaller phones */
-    -webkit-clip-path: inset(8vh 10vw round 50px) !important;
-    clip-path: inset(8vh 10vw round 50px) !important;
   }
 }
 
 .jesko-bg-video {
-  filter: brightness(0.5) blur(5px);
+  filter: brightness(0.6) blur(0px); /* No blur by default — clarity for hero */
+}
+
+/* On desktop, initial blur is removed by GSAP animation after preloader */
+@media (min-width: 769px) {
+  .jesko-bg-video {
+    filter: brightness(0.5) blur(5px);
+  }
 }
 
 /* GLOBAL BACKGROUND FIX */
@@ -5270,55 +5266,57 @@ body {
   overflow: hidden;
   border-radius: 20px;
   box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
+  /* ALWAYS 16:9 — landscape ratio for images */
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  height: auto;
 }
 
 .academy-slide-img {
   width: 100%;
-  height: 550px;
+  height: 100%;
   object-fit: cover;
   transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-/* Internal Arrows - Editorial Style */
+/* Internal Arrows - Always Visible, Centered Vertically */
 .academy-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   color: white;
-  width: 50px;
-  height: 50px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 10;
-  transition: all 0.4s ease;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+  /* Always visible — opacity 1 */
+  opacity: 1;
 }
 
 .academy-arrow:hover {
-  background: var(--gold);
-  border-color: var(--gold);
+  background: var(--gold-accent);
+  border-color: var(--gold-accent);
   color: black;
-  transform: translateY(-50%) scale(1.1);
+  transform: translateY(-50%) scale(1.08);
 }
 
 .academy-arrow.prev {
-  left: 25px;
+  left: 16px;
 }
 
 .academy-arrow.next {
-  right: 25px;
+  right: 16px;
 }
 
 .academy-arrow i {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
 }
 
 /* Dots Below */
@@ -5426,10 +5424,15 @@ body {
   flex: 1.2;
 }
 
+/* Chi Siamo video card: ALWAYS 16:9 landscape — not portrait */
 .video-preview-card {
-  height: 450px !important;
-  /* Ensure visibility */
-  min-height: 400px;
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 */
+  overflow: hidden;
+  border-radius: 12px;
+  cursor: pointer;
 }
 
 .vision-headline {
@@ -5716,7 +5719,7 @@ body {
   transform: translateX(10px);
 }
 
-/* Controls */
+/* Controls — Always visible inside slider, centered vertically */
 .exp-controls-internal {
   position: absolute;
   top: 50%;
@@ -5724,32 +5727,33 @@ body {
   transform: translateY(-50%);
   display: flex;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 12px;
   pointer-events: none;
-  z-index: 5;
+  z-index: 10;
 }
 
 .exp-arrow-btn {
   pointer-events: auto;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   color: white;
-  width: 45px;
-  height: 45px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  transition: background 0.3s ease, border-color 0.3s ease;
+  /* Always visible */
+  opacity: 1;
+  flex-shrink: 0;
 }
 
 .exp-arrow-btn:hover {
-  background: transparent;
-  color: var(--gold);
-  border-color: var(--gold);
+  background: var(--gold-accent);
+  color: #000;
+  border-color: var(--gold-accent);
 }
 
 .exp-dots-pagination {
@@ -6042,25 +6046,27 @@ body {
   position: relative;
 }
 
+/* Founder video / Chi siamo video thumbnail must fill 16:9 wrapper */
 .video-preview-card {
   display: block;
   position: relative;
   width: 100%;
-  height: 500px;
-  /* Verticale tipo ritratto */
-  border-radius: 4px;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 — always landscape */
+  border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .video-thumbnail {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.8s ease;
-  filter: grayscale(100%);
-  /* Inizia in B&N */
+  filter: grayscale(60%);
 }
 
 .video-preview-card:hover .video-thumbnail {
@@ -6242,10 +6248,10 @@ body {
 
 .academy-image-wrapper {
   width: 100%;
-  height: 600px;
+  aspect-ratio: 16 / 9;
+  height: auto;
   position: relative;
   overflow: hidden;
-  /* Maschera elegante (angolo tagliato o semplice) */
   border: 1px solid rgba(197, 160, 89, 0.2);
   border-radius: 16px;
 }
@@ -7379,19 +7385,19 @@ video {
   transform: translateY(-2px);
 }
 
-/* --- SLIDER DOTS REFINEMENT --- */
+/* --- SLIDER DOTS — Below the slider, outside, horizontally centered --- */
+/* Default: dots sit BELOW the slider wrapper (not overlapping the image) */
 .slider-dots {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 12px;
-  z-index: 50;
-  padding: 10px 20px;
-  background: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(4px);
-  border-radius: 20px;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  width: 100%;
+  padding: 0;
+  background: none;
+  backdrop-filter: none;
+  position: static; /* Outside the slider, not overlaid */
   pointer-events: auto;
 }
 
@@ -7399,35 +7405,32 @@ video {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(197, 160, 89, 0.35);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(197, 160, 89, 0.4);
+  flex-shrink: 0;
 }
 
 .slider-dot.active {
   background: #C5A059;
   transform: scale(1.4);
-  box-shadow: 0 0 15px rgba(197, 160, 89, 0.5);
+  box-shadow: 0 0 12px rgba(197, 160, 89, 0.6);
 }
 
 .slider-dots:hover .slider-dot:not(.active) {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.4);
 }
 
-/* Ensure indicators don't overlap important text/controls in experiences */
+/* Experience sliders: dots outside below wrapper */
 .exp-slider-luxury .slider-dots {
-  bottom: 80px; /* Elevated to avoid cutting and overlap with city pills */
+  margin-top: 14px;
 }
 
-@media (max-width: 768px) {
-  .slider-dots {
-    bottom: 15px;
-    gap: 8px;
-  }
-  .exp-slider-luxury .slider-dots {
-    bottom: 100px; /* More space on mobile */
-  }
+/* Video/vision slider: dots inline with arrows — keep as flex row */
+.video-controls-flex .slider-dots {
+  margin-top: 0;
+  flex: 0 0 auto;
 }
 
 /* --- NAVBAR STABILITY ENGINE --- */
@@ -7487,29 +7490,35 @@ video {
    ================================================================ */
 @media (max-width: 768px) {
 
-  /* --- NAV: Compact capsule for mobile screens --- */
-  /* nav-capsule is position:fixed inline via JSX; override sizing */
+  /* --- NAV: Ultra-compact capsule — only essential elements --- */
   .nav-capsule {
-    top: 14px !important;
-    right: 14px !important;
-    padding: 10px 16px !important;
-    gap: 12px !important;
+    top: 12px !important;
+    right: 12px !important;
+    padding: 8px 12px !important;
+    gap: 8px !important;
+    max-width: calc(100vw - 80px) !important; /* Never touch the logo */
+    border-radius: 100px !important;
   }
 
-  /* Nav logo (spotlight) */
+  /* Nav logo floating left — smaller on mobile */
+  .nav-logo.spotlight-mode,
   .nav-logo {
-    top: 14px !important;
-    left: 14px !important;
+    top: 12px !important;
+    left: 12px !important;
     width: 44px !important;
     height: 44px !important;
   }
 
-  /* Hamburger touch target — minimum 44×44px for reliability */
+  /* Hamburger touch target — minimum 44×44px */
   .desktop-menu-trigger {
-    width: 44px !important;
-    height: 44px !important;
-    min-width: 44px !important;
-    cursor: pointer !important;
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+  }
+
+  /* Hide language switcher text on mobile to save space */
+  .lang-switcher span {
+    display: none !important;
   }
 
   /* --- HERO: Always show content on mobile --- */
@@ -7518,20 +7527,20 @@ video {
     height: 100dvh;
   }
 
+  .jesko-bg-layer {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
   .jesko-ui-layer {
-    opacity: 1 !important;  /* Never hide on mobile */
+    opacity: 1 !important;
     visibility: visible !important;
   }
 
   /* Hero headline sizing */
   .j-headline {
-    font-size: clamp(2.2rem, 8vw, 3.5rem) !important;
+    font-size: clamp(2rem, 8vw, 3.2rem) !important;
     line-height: 1.15 !important;
-  }
-
-  /* Hero bg video: always full-width on mobile */
-  .jesko-bg-layer {
-    clip-path: inset(0vh 0vw round 0px) !important;
   }
 
   /* --- FOUNDER VIDEO: Force 16:9 — no more portrait black bars --- */
@@ -7608,14 +7617,15 @@ video {
     height: 100% !important;
   }
 
-  /* --- EXPERIENCE SLIDER: Landscape ratio not 75vh portrait --- */
+
+  /* --- EXPERIENCE SLIDER: Landscape ratio --- */
   .experience-slider-luxury {
     height: auto !important;
     min-height: unset !important;
   }
 
   .experience-scroll-container {
-    height: 56vw !important; /* 16:9 of viewport width */
+    height: 56vw !important;
     min-height: 220px !important;
   }
 
@@ -7624,7 +7634,6 @@ video {
     min-height: 220px !important;
   }
 
-  /* Experience dots: always visible below slider, no blurry bar */
   .experience-pagination {
     position: static !important;
     margin-top: 12px !important;
@@ -7632,22 +7641,17 @@ video {
     backdrop-filter: none !important;
   }
 
-  /* --- SLIDER DOTS: Below image, not overlapping --- */
+  /* --- SLIDER DOTS: below image — already static, override any leftover rules --- */
   .slider-dots {
-    position: static !important;
-    display: flex !important;
-    justify-content: center !important;
     gap: 8px !important;
-    margin: 12px 0 !important;
-    padding: 0 !important;
-    background: none !important;
-    backdrop-filter: none !important;
+    margin-top: 12px !important;
   }
 
-  /* exp-image-wrapper: relative height for proper aspect ratio */
+  /* exp-image-wrapper: landscape 16:9 */
   .exp-image-wrapper {
     height: 56vw !important;
-    min-height: 220px !important;
+    min-height: 200px !important;
+    max-height: 280px !important;
   }
 
   /* --- BESAFE CARDS: Add gap between them --- */

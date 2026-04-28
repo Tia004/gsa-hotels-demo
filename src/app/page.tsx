@@ -119,11 +119,21 @@ export default function Home() {
 
   const [isPlayingIntro, setIsPlayingIntro] = React.useState(false);
 
-  // On mount: ensure loading state is active for preloader (preloader always plays)
+  // On mount: add loading class. On mobile, skip preloader entirely for speed.
   React.useEffect(() => {
-    document.documentElement.classList.add('loading');
-    document.body.classList.add('loading');
-    document.body.style.overflow = 'hidden';
+    const isMobileDevice = window.innerWidth <= 768 || ('ontouchstart' in window);
+    if (isMobileDevice) {
+      // Mobile: skip preloader, reveal immediately
+      document.documentElement.classList.remove('loading');
+      document.body.classList.remove('loading');
+      document.body.classList.add('revealed');
+      document.body.style.overflow = '';
+      setIsRevealed(true);
+    } else {
+      document.documentElement.classList.add('loading');
+      document.body.classList.add('loading');
+      document.body.style.overflow = 'hidden';
+    }
   }, []);
 
 
@@ -589,32 +599,23 @@ export default function Home() {
     // Hero Reveal (Updated Class)
     // const heroTitle = new SplitType('.j-headline', { types: 'chars' }); // Skipping SplitType for robustness/performance
 
-    // Jesko Text Statement Reveal — simple fade, no scrub (scrub on words = heavy SplitType + RAF)
-    const isMobileText = window.innerWidth <= 768;
-    if (!isMobileText) {
-      const textStats = new SplitType('.jesko-statement', { types: 'words' });
-      gsap.fromTo(textStats.words,
-        { opacity: 0.2, color: "rgba(255, 255, 255, 0.2)" },
-        {
-          opacity: 1,
-          color: "#FFFFFF",
-          stagger: 0.08,
-          duration: 0.6,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: ".jesko-statement-container",
-            start: "top 70%",
-            toggleActions: "play none none none"
-          }
+    // Jesko Text Statement Reveal — GSAP on Mobile too (as requested)
+    const textStats = new SplitType('.jesko-statement', { types: 'words' });
+    gsap.fromTo(textStats.words,
+      { opacity: 0.2, color: "rgba(255, 255, 255, 0.2)" },
+      {
+        opacity: 1,
+        color: "#FFFFFF",
+        stagger: 0.1,
+        duration: 0.8,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".jesko-statement-container",
+          start: "top 80%",
+          toggleActions: "play none none none"
         }
-      );
-    } else {
-      // Mobile: just fade in the whole block
-      gsap.from('.jesko-statement-container', {
-        opacity: 0, y: 30, duration: 0.8, ease: "power2.out",
-        scrollTrigger: { trigger: '.jesko-statement-container', start: 'top 80%', toggleActions: 'play none none none' }
-      });
-    }
+      }
+    );
 
     // Navbar Animation - REMOVED for Visibility Assurance
     gsap.set('.nav-capsule', { opacity: 1, y: 0 });
@@ -622,14 +623,13 @@ export default function Home() {
     // Parallax Images - Removed Conflicting Loop
 
 
-    // Hotel Parallax & Reveal — Remove parallax on mobile (too expensive)
-    // isMobile already declared above
+    // Hotel Parallax & Reveal — Enable parallax on mobile too
     (gsap.utils.toArray('.hotel-section') as HTMLElement[]).forEach(section => {
       const bg = section.querySelector('.hotel-bg');
       const content = section.querySelector('.hotel-content');
 
-      // Parallax BG — desktop only, scrub is too expensive on mobile
-      if (!isMobile && bg) {
+      // Parallax BG
+      if (bg) {
         gsap.to(bg, {
           y: "15%",
           ease: "none",
@@ -637,7 +637,7 @@ export default function Home() {
             trigger: section,
             start: "top bottom",
             end: "bottom top",
-            scrub: 2   // Higher scrub = less frequent updates = better FPS
+            scrub: 1   // Lower scrub for faster mobile reaction
           }
         });
       }
@@ -1096,15 +1096,15 @@ export default function Home() {
 
       <GlobalNav isHomePage={true} isRevealed={isRevealed} />
 
-      {/* GLOBAL BACKGROUND LAYER */}
-      <div className="jesko-bg-layer" style={{ opacity: isRevealed ? 1 : 0, visibility: isRevealed ? 'visible' : 'hidden', transition: 'opacity 1.5s ease' }}>
+      {/* GLOBAL BACKGROUND LAYER — always visible, no opacity gate on mobile */}
+      <div className="jesko-bg-layer" style={{ opacity: 1, visibility: 'visible' }}>
         <video id="hero-video" className="jesko-bg-video" autoPlay muted loop playsInline>
           <source src="assets/wallpaperherosection.mp4" type="video/mp4" />
         </video>
         <div className="jesko-overlay-layer" />
       </div>
 
-      {/* Main Content */}
+      {/* Main Content — always visible (opacity controlled by CSS .loading class) */}
       <main style={{ opacity: isRevealed ? 1 : 0, visibility: isRevealed ? 'visible' : 'hidden', transition: 'opacity 1.5s ease' }}>
         {/* Hero Section (Jesko Clone) */}
         {/* Hero Section (Senior Dev Repair) */}
@@ -1167,9 +1167,18 @@ export default function Home() {
             </div>
 
             <div className="spotlight-video-wrapper" style={{ flex: 1.2 }}>
-              <div className="video-preview-card" style={{ cursor: 'pointer', height: '100%' }} onClick={() => setIsPlayingIntro(true)} id="section1-video-container">
+              <div className="video-preview-card" style={{ cursor: 'pointer' }} onClick={() => setIsPlayingIntro(true)} id="section1-video-container">
                 {isPlayingIntro ? (
-                  <iframe width="100%" height="100%" src="https://www.youtube.com/embed/MFyef0yMQsY?autoplay=1" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen style={{ borderRadius: '12px' }}></iframe>
+                  <iframe 
+                    width="100%" 
+                    height="100%" 
+                    src="https://www.youtube.com/embed/MFyef0yMQsY?autoplay=1" 
+                    title="YouTube video player" 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowFullScreen 
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', borderRadius: '12px' }}
+                  ></iframe>
                 ) : (
                   <>
                     <div className="video-overlay" />
@@ -1477,7 +1486,15 @@ export default function Home() {
             </div>
             <div className="founder-media reveal">
               <div className="video-slider-wrapper">
-                <div className="slider-video-container">
+                <div className="slider-video-container" style={{ position: 'relative' }}>
+                  <div className="exp-controls-internal" style={{ zIndex: 10 }}>
+                    <button onClick={prevVideo} className="exp-arrow-btn" aria-label="Annulla">
+                      <i className="fas fa-chevron-left" />
+                    </button>
+                    <button onClick={nextVideo} className="exp-arrow-btn" aria-label="Avanti">
+                      <i className="fas fa-chevron-right" />
+                    </button>
+                  </div>
                   <div
                     className="video-responsive-wrapper shadow-luxury"
                     onMouseDown={() => setIsVideoPlaying(true)}
@@ -1504,11 +1521,7 @@ export default function Home() {
                 </p>
 
                 <div className="video-slider-controls">
-                  <div className="video-controls-flex" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '30px', marginTop: '20px' }}>
-                    <button onClick={prevVideo} className="slider-arrow" aria-label="Annulla" style={{ position: 'static', transform: 'none' }}>
-                      <i className="fas fa-chevron-left" />
-                    </button>
-
+                  <div className="video-controls-flex" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '20px' }}>
                     <div className="slider-dots" style={{ margin: 0 }}>
                       {videos.map((_, index) => (
                         <div
@@ -1518,10 +1531,6 @@ export default function Home() {
                         />
                       ))}
                     </div>
-
-                    <button onClick={nextVideo} className="slider-arrow" aria-label="Avanti" style={{ position: 'static', transform: 'none' }}>
-                      <i className="fas fa-chevron-right" />
-                    </button>
                   </div>
                 </div>
               </div>
@@ -1671,7 +1680,15 @@ export default function Home() {
             </div>
             <div className="vision-visual reveal">
               <div className="video-slider-wrapper">
-                <div className="slider-video-container" style={{ height: '100%', width: '100%' }}>
+                <div className="slider-video-container" style={{ height: '100%', width: '100%', position: 'relative' }}>
+                  <div className="exp-controls-internal" style={{ zIndex: 10 }}>
+                    <button onClick={prevVisionImage} className="exp-arrow-btn" aria-label="Annulla" disabled={visionImages.length === 0}>
+                      <i className="fas fa-chevron-left" />
+                    </button>
+                    <button onClick={nextVisionImage} className="exp-arrow-btn" aria-label="Avanti" disabled={visionImages.length === 0}>
+                      <i className="fas fa-chevron-right" />
+                    </button>
+                  </div>
                   <div className="visual-frame slider-frame" style={{ height: '70vh', border: 'none' }}>
                     {visionImages.length > 0 ? (
                       <Image
@@ -1693,11 +1710,7 @@ export default function Home() {
                 </div>
 
                 <div className="video-slider-controls">
-                  <div className="video-controls-flex" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '30px', marginTop: '20px' }}>
-                    <button onClick={prevVisionImage} className="slider-arrow" aria-label="Annulla" disabled={visionImages.length === 0} style={{ position: 'static', transform: 'none' }}>
-                      <i className="fas fa-chevron-left" />
-                    </button>
-
+                  <div className="video-controls-flex" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '20px' }}>
                     <div className="vision-scrubber-wrapper" style={{ flex: 1, maxWidth: '200px' }}>
                       {/* Floating Tooltip */}
                       {(visionImages.length > 0 && (scrubberHoverValue !== null || isScrubbing)) && (
@@ -1731,10 +1744,6 @@ export default function Home() {
                         className="vision-scrubber"
                       />
                     </div>
-
-                    <button onClick={nextVisionImage} className="slider-arrow" aria-label="Avanti" disabled={visionImages.length === 0} style={{ position: 'static', transform: 'none' }}>
-                      <i className="fas fa-chevron-right" />
-                    </button>
                   </div>
                 </div>
               </div>
