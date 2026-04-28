@@ -47,3 +47,12 @@ next-env.d.ts
 # clerk configuration (can include secrets)
 /.clerk/
 local.db
+
+/public/assets
+/public/assets/*
+/public/assets/esperienze
+/public/assets/esperienze/*
+/public/assets/esperienze/bologna
+/public/assets/esperienze/bologna/*
+/public/assets/esperienze/ferrara
+/public/assets/esperienze/ferrara/*

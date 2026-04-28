@@ -10,8 +10,8 @@ export async function GET() {
     // Filter for image files and map to relative URL paths
     const imageFiles = files
       .filter(file => /\.(jpg|jpeg|png|webp|avif)$/i.test(file))
-      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })) // Natural sort for 1, 2, 10
-      .map(file => `/assets/immagini-slider-autenticita/${file}`);
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }))
+      .map(file => `assets/immagini-slider-autenticita/${file.replace(/\.[^/.]+$/, "")}`);
 
     return NextResponse.json(imageFiles);
   } catch (error) {

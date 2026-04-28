@@ -9,6 +9,7 @@ import { UserButton, useAuth } from '@clerk/nextjs';
 import { usePathname, useRouter } from 'next/navigation';
 import LangSwitcher from '@/components/LangSwitcher';
 import { useLang } from '@/context/LangContext';
+import { getCloudinaryUrl } from '@/lib/cloudinary';
 
 
 // SignedIn / SignedOut shims
@@ -227,7 +228,7 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
       <div id="liquid-glass-menu" className="glass-menu-overlay">
         <div className="glass-menu-header">
           <Link href="/" className="glass-logo">
-            <Image src="/assets/logo.png" alt="GSA Logo" width={120} height={40} style={{ objectFit: 'contain' }} />
+            <Image src={getCloudinaryUrl("assets/logo")} alt="GSA Logo" width={120} height={40} style={{ objectFit: 'contain' }} />
           </Link>
           <div className="glass-close-btn mobile-close-btn">
             <div className="McButton active" id="menu-close-trigger">
@@ -283,7 +284,7 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
             flexShrink: 0
           }}
         >
-          <Image src="/assets/logo.png" alt="GSA" width={80} height={28} style={{ height: isMobileNav ? '22px' : '28px', width: 'auto' }} />
+          <Image src={getCloudinaryUrl("assets/logo")} alt="GSA" width={80} height={28} style={{ height: isMobileNav ? '22px' : '28px', width: 'auto' }} />
         </Link>
         
         {/* Back to Experiences button (only on detail pages) */}

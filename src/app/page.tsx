@@ -12,6 +12,7 @@ import { SignInButton, SignUpButton, UserButton, useAuth } from '@clerk/nextjs';
 import Image from 'next/image';
 import GlobalNav from '@/components/GlobalNav';
 import { useLang } from '@/context/LangContext';
+import { getCloudinaryUrl } from '@/lib/cloudinary';
 
 
 declare const particlesJS: any;
@@ -107,14 +108,14 @@ export default function Home() {
   }, []);
 
   const academyImages = [
-    "assets/formazione/1.jpg",
-    "assets/formazione/2.jpg",
-    "assets/formazione/3.jpg",
-    "assets/formazione/4.jpg",
-    "assets/formazione/5.jpg",
-    "assets/formazione/6.png",
-    "assets/formazione/7.jpeg",
-    "assets/formazione/8.jpeg"
+    getCloudinaryUrl("assets/formazione/1"),
+    getCloudinaryUrl("assets/formazione/2"),
+    getCloudinaryUrl("assets/formazione/3"),
+    getCloudinaryUrl("assets/formazione/4"),
+    getCloudinaryUrl("assets/formazione/5"),
+    getCloudinaryUrl("assets/formazione/6"),
+    getCloudinaryUrl("assets/formazione/7"),
+    getCloudinaryUrl("assets/formazione/8")
   ];
 
   const [isPlayingIntro, setIsPlayingIntro] = React.useState(false);
@@ -150,19 +151,19 @@ export default function Home() {
     {
       title: t('exp.bo1.title'),
       desc: t('exp.bo1.desc'),
-      img: "/assets/esperienze/bologna/1.jpg",
+      img: getCloudinaryUrl("assets/esperienze/bologna/1"),
       slug: "bologna-esp-1"
     },
     {
       title: t('exp.bo2.title'),
       desc: t('exp.bo2.desc'),
-      img: "/assets/esperienze/bologna/2.jpg",
+      img: getCloudinaryUrl("assets/esperienze/bologna/2"),
       slug: "bologna-esp-2"
     },
     {
       title: t('exp.bo3.title'),
       desc: t('exp.bo3.desc'),
-      img: "/assets/esperienze/bologna/3.jpg",
+      img: getCloudinaryUrl("assets/esperienze/bologna/3"),
       slug: "bologna-esp-3"
     }
   ];
@@ -171,37 +172,37 @@ export default function Home() {
     {
       title: t('exp.fe1.title'),
       desc: t('exp.fe1.desc'),
-      img: "/assets/esperienze/ferrara/1.jpg",
+      img: getCloudinaryUrl("assets/esperienze/ferrara/1"),
       slug: "ferrara-esp-1"
     },
     {
       title: t('exp.fe2.title'),
       desc: t('exp.fe2.desc'),
-      img: "/assets/esperienze/ferrara/2.jpg",
+      img: getCloudinaryUrl("assets/esperienze/ferrara/2"),
       slug: "ferr-esp-2"
     },
     {
       title: t('exp.fe3.title'),
       desc: t('exp.fe3.desc'),
-      img: "/assets/esperienze/ferrara/3.jpg",
+      img: getCloudinaryUrl("assets/esperienze/ferrara/3"),
       slug: "ferr-esp-3"
     },
     {
       title: t('exp.fe4.title'),
       desc: t('exp.fe4.desc'),
-      img: "/assets/esperienze/ferrara/4.png",
+      img: getCloudinaryUrl("assets/esperienze/ferrara/4"),
       slug: "ferr-esp-4"
     },
     {
       title: t('exp.fe5.title'),
       desc: t('exp.fe5.desc'),
-      img: "/assets/esperienze/ferrara/5.png",
+      img: getCloudinaryUrl("assets/esperienze/ferrara/5"),
       slug: "ferr-esp-5"
     },
     {
       title: t('exp.fe6.title'),
       desc: t('exp.fe6.desc'),
-      img: "/assets/esperienze/ferrara/6.jpg",
+      img: getCloudinaryUrl("assets/esperienze/ferrara/6"),
       slug: "ferr-esp-6"
     }
   ];
@@ -1072,7 +1073,7 @@ export default function Home() {
           {/* THE ONLY LAYER: THE ORIGINAL LOGO - Optimized for RAM */}
           <div id="logo-gold" className="gsa-huge-logo gsa-logo-layer gold" style={{ zIndex: 15 }}>
             <Image
-              src="/assets/logo.png"
+              src={getCloudinaryUrl("assets/logo")}
               alt="GSA Hotels"
               width={1200}
               height={450}
@@ -1099,7 +1100,7 @@ export default function Home() {
       {/* GLOBAL BACKGROUND LAYER — always visible, no opacity gate on mobile */}
       <div className="jesko-bg-layer" style={{ opacity: 1, visibility: 'visible' }}>
         <video id="hero-video" className="jesko-bg-video" autoPlay muted loop playsInline>
-          <source src="assets/wallpaperherosection.mp4" type="video/mp4" />
+          <source src={getCloudinaryUrl("assets/wallpaperherosection.mp4")} type="video/mp4" />
         </video>
         <div className="jesko-overlay-layer" />
       </div>
@@ -1114,7 +1115,7 @@ export default function Home() {
           <div className="jesko-ui-layer">
             {/* TOP LEFT: Logo */}
             <div className="j-logo-container">
-              <Link href="/" onClick={() => window.location.reload()}><Image src="/assets/logo.png" alt="GSA Logo" className="j-logo" style={{ transform: 'scale(1.1)', transformOrigin: 'left center', opacity: 0 }} width={140} height={50} priority quality={95} /></Link>
+              <Link href="/" onClick={() => window.location.reload()}><Image src={getCloudinaryUrl("assets/logo")} alt="GSA Logo" className="j-logo" style={{ transform: 'scale(1.1)', transformOrigin: 'left center', opacity: 0 }} width={140} height={50} priority quality={95} /></Link>
             </div>
             {/* CENTER LEFT: Headline */}
             <div className="j-headline-container">
@@ -1278,7 +1279,7 @@ export default function Home() {
                     </textPath>
                   </text>
                 </svg>
-                <div className="badge-center"><Image src="/assets/logo.png" alt="GSA Logo" fill style={{ objectFit: 'contain' }} /></div>
+                <div className="badge-center"><Image src={getCloudinaryUrl("assets/logo")} alt="GSA Logo" fill style={{ objectFit: 'contain' }} /></div>
               </div>
             </div>
           </div>
@@ -1294,7 +1295,7 @@ export default function Home() {
               <span className="label-gold">PREMIUM PROTECTION</span>
               <div className="besafe-header-flex" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '10px' }}>
                 <Image
-                  src="/assets/besafe-logo.png"
+                  src={getCloudinaryUrl("assets/besafe-logo")}
                   alt="BeSafe Rate"
                   width={150}
                   height={45}
@@ -1552,7 +1553,7 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src="/assets/duchessa_isabella.png"
+                  src={getCloudinaryUrl("assets/duchessa_isabella")}
                   alt="Hotel Duchessa Isabella"
                   fill
                   className="hotel-bg"
@@ -1572,7 +1573,7 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src="/assets/hotel_blumen.jpg"
+                  src={getCloudinaryUrl("assets/hotel_blumen")}
                   alt="Hotel Blumen"
                   fill
                   className="hotel-bg"
@@ -1592,7 +1593,7 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src="/assets/santorsola.png"
+                  src={getCloudinaryUrl("assets/santorsola")}
                   alt="Hotel Sant'Orsola"
                   fill
                   className="hotel-bg"
@@ -1612,7 +1613,7 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src="/assets/wellness.png"
+                  src={getCloudinaryUrl("assets/wellness")}
                   alt="Oasi Isabella Wellness SPA"
                   fill
                   className="hotel-bg"
@@ -1633,7 +1634,7 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src="/assets/eventi.jpg"
+                  src={getCloudinaryUrl("assets/eventi")}
                   alt="Duchessa Isabella Eventi"
                   fill
                   className="hotel-bg"
@@ -1693,7 +1694,7 @@ export default function Home() {
                     {visionImages.length > 0 ? (
                       <Image
                         key={activeVisionImage}
-                        src={visionImages[activeVisionImage].startsWith('assets/') ? `/${visionImages[activeVisionImage]}` : visionImages[activeVisionImage]}
+                        src={getCloudinaryUrl(visionImages[activeVisionImage])}
                         alt="Authenticity Highlight"
                         fill
                         className="vision-slide-img"
