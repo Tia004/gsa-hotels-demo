@@ -1755,8 +1755,9 @@ export default function Home() {
         </section>
 
         {/* PARTNER SECTION - Dynamic Business Models (B2B EXPERTISE) */}
-        <section id="b2b-section" className="partner-section" style={{ background: 'radial-gradient(circle at 80% 20%, rgba(197, 160, 89, 0.05), #0a0a0a)' }}>
-          <div className="container partner-container">
+        <section id="b2b-section" className="partner-section" style={{ background: '#000', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 70% 30%, rgba(197, 160, 89, 0.08), transparent), radial-gradient(circle at 30% 70%, rgba(197, 160, 89, 0.05), transparent)', pointerEvents: 'none' }} />
+          <div className="container partner-container" style={{ position: 'relative', zIndex: 1 }}>
             <div className="partner-header reveal">
               <span className="label-gold">{t('b2b.label')}</span>
               <h2 className="partner-headline">{t('b2b.title')}</h2>
@@ -1812,15 +1813,9 @@ export default function Home() {
 
 
         {/* CAREER SECTION - Talent Acquisition */}
-        <section id="career" className="career-section" style={{ position: 'relative', overflow: 'hidden' }}>
-          {/* Background Video Layer */}
-          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
-            <video autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
-              <source src="https://res.cloudinary.com/dtnqgx4vp/video/upload/q_auto/f_auto/v1777340278/wallpaperherosection_eehy67.mp4" type="video/mp4" />
-            </video>
-          </div>
-          {/* Transparent Overlay with Blur */}
-          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.65)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 0 }} />
+        <section id="career" className="career-section" style={{ position: 'relative', overflow: 'hidden', background: 'transparent' }}>
+          {/* Transparent Overlay with Blur - Shows the global background video */}
+          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.65)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', zIndex: 0 }} />
 
           <div className="container career-container" style={{ position: 'relative', zIndex: 1 }}>
             <div className="career-content reveal">
