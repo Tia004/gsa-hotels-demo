@@ -894,7 +894,10 @@ export default function Home() {
     // Timing tracking for cleanup
     let phase1Timeout: any, phase2Timeout: any, revealTimeout: any, recalculateTimeout: any, removeTimeout: any, shuffleInterval: any;
 
-    if (!preloaderPlayed) {
+    if (!preloaderPlayed && !(window as any)._hasStartedPreloader) {
+      (window as any)._hasStartedPreloader = true;
+      sessionStorage.setItem('gsa_preloader_played', 'true');
+
       const preloaderOverlay = document.getElementById('zoom-preloader');
       const shuffler = document.getElementById('shuffling-text');
       const logoGold = document.getElementById('logo-gold') as HTMLElement | null;
