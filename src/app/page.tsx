@@ -108,14 +108,14 @@ export default function Home() {
   }, []);
 
   const academyImages = [
-    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340556/1_u6avva.webp",
-    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340556/2_sk50ol.webp",
-    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340557/3_myv7tu.webp",
-    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340558/4_smwlm6.webp",
-    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340559/5_ag8l0y.webp",
-    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340560/6_n8gglw.webp",
-    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340560/7_v8fteh.webp",
-    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340561/8_mrj9xm.webp"
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto:best/f_auto/v1777395866/1_xnhpmd.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto:best/f_auto/v1777395877/2_iipyag.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto:best/f_auto/v1777395888/3_xywx9u.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto:best/f_auto/v1777395898/4_mp3ewl.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto:best/f_auto/v1777395909/5_r5y1p8.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto:best/f_auto/v1777395921/6_wmv3pa.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto:best/f_auto/v1777395932/7_s6gw5v.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto:best/f_auto/v1777395943/8_bwdamm.webp"
   ];
 
   const [isPlayingIntro, setIsPlayingIntro] = React.useState(false);
@@ -568,12 +568,8 @@ export default function Home() {
       delay: preloaderPlayed ? 1.0 : 6.8 // Synced to new 6.2s preloader
     });
 
-    // 4. Logo Fade In
-    gsap.from(".j-logo", {
-      opacity: 0,
-      duration: 1,
-      delay: preloaderPlayed ? 0.5 : 6.2 // Synced to new 6.2s preloader
-    });
+    // 4. Logo Fade In (REMOVED to prevent double appearance)
+    // Logo is now instantly visible when overlay disappears
 
 
 
@@ -1115,7 +1111,7 @@ export default function Home() {
           <div className="jesko-ui-layer">
             {/* TOP LEFT: Logo */}
             <div className="j-logo-container">
-              <Link href="/" onClick={() => window.location.reload()}><Image src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340257/logo_kcghtz.webp" alt="GSA Logo" className="j-logo" style={{ transform: 'scale(1.1)', transformOrigin: 'left center', opacity: 0 }} width={140} height={50} priority quality={95} /></Link>
+              <Link href="/" onClick={() => window.location.reload()}><Image src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340257/logo_kcghtz.webp" alt="GSA Logo" className="j-logo" style={{ transform: 'scale(1.1)', transformOrigin: 'left center' }} width={140} height={50} priority quality={95} /></Link>
             </div>
             {/* CENTER LEFT: Headline */}
             <div className="j-headline-container">
@@ -1243,7 +1239,7 @@ export default function Home() {
                     key={activeAcademyImage}
                     fill
                     className="academy-slide-img"
-                    style={{ objectFit: 'cover' }}
+                    style={{ objectFit: 'contain', objectPosition: 'center', background: 'transparent' }}
                     sizes="(max-width: 768px) 100vw, 80vw"
                   />
 
@@ -1759,17 +1755,8 @@ export default function Home() {
         </section>
 
         {/* PARTNER SECTION - Dynamic Business Models (B2B EXPERTISE) */}
-        <section id="b2b-section" className="partner-section" style={{ position: 'relative', overflow: 'hidden' }}>
-          {/* Background Video Layer */}
-          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
-            <video autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
-              <source src="https://res.cloudinary.com/dtnqgx4vp/video/upload/q_auto/f_auto/v1777340278/wallpaperherosection_eehy67.mp4" type="video/mp4" />
-            </video>
-          </div>
-          {/* Transparent Overlay with Blur */}
-          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.65)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 0 }} />
-          
-          <div className="container partner-container" style={{ position: 'relative', zIndex: 1 }}>
+        <section id="b2b-section" className="partner-section" style={{ background: 'radial-gradient(circle at 80% 20%, rgba(197, 160, 89, 0.05), #0a0a0a)' }}>
+          <div className="container partner-container">
             <div className="partner-header reveal">
               <span className="label-gold">{t('b2b.label')}</span>
               <h2 className="partner-headline">{t('b2b.title')}</h2>
@@ -1825,8 +1812,17 @@ export default function Home() {
 
 
         {/* CAREER SECTION - Talent Acquisition */}
-        <section id="career" className="career-section">
-          <div className="container career-container">
+        <section id="career" className="career-section" style={{ position: 'relative', overflow: 'hidden' }}>
+          {/* Background Video Layer */}
+          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
+            <video autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
+              <source src="https://res.cloudinary.com/dtnqgx4vp/video/upload/q_auto/f_auto/v1777340278/wallpaperherosection_eehy67.mp4" type="video/mp4" />
+            </video>
+          </div>
+          {/* Transparent Overlay with Blur */}
+          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.65)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 0 }} />
+
+          <div className="container career-container" style={{ position: 'relative', zIndex: 1 }}>
             <div className="career-content reveal">
               <span className="label-gold">{t('career.label')}</span>
               <h2 className="career-headline">{t('career.title')}</h2>
