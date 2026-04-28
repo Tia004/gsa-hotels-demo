@@ -1071,7 +1071,7 @@ export default function Home() {
           <div id="shuffling-text" className="shuffle-word" style={{ zIndex: 100 }}>{t('preloader.w1')}</div>
 
           {/* THE ONLY LAYER: THE ORIGINAL LOGO - Optimized for RAM */}
-          <div id="logo-gold" className="gsa-huge-logo gsa-logo-layer gold" style={{ zIndex: 15 }}>
+          <div id="logo-gold" className="gsa-huge-logo gsa-logo-layer gold" style={{ zIndex: 15, display: 'none', opacity: 0 }}>
             <Image
               src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340257/logo_kcghtz.webp"
               alt="GSA Hotels"
@@ -1238,7 +1238,7 @@ export default function Home() {
               <div className="academy-slider-wrapper">
                 <div className="academy-image-wrapper">
                   <Image
-                    src={`/${academyImages[activeAcademyImage]}`}
+                    src={academyImages[activeAcademyImage]}
                     alt="GSA Academy Highlight"
                     key={activeAcademyImage}
                     fill
@@ -1522,16 +1522,14 @@ export default function Home() {
                 </p>
 
                 <div className="video-slider-controls">
-                  <div className="video-controls-flex" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '20px' }}>
-                    <div className="slider-dots" style={{ margin: 0 }}>
-                      {videos.map((_, index) => (
-                        <div
-                          key={index}
-                          className={`slider-dot ${index === activeVideo ? 'active' : ''}`}
-                          onClick={() => setActiveVideo(index)}
-                        />
-                      ))}
-                    </div>
+                  <div className="slider-dots" style={{ marginTop: '20px', display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                    {videos.map((_, index) => (
+                      <div
+                        key={index}
+                        className={`slider-dot ${index === activeVideo ? 'active' : ''}`}
+                        onClick={() => setActiveVideo(index)}
+                      />
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1692,16 +1690,24 @@ export default function Home() {
                   </div>
                   <div className="visual-frame slider-frame" style={{ height: '70vh', border: 'none' }}>
                     {visionImages.length > 0 ? (
-                      <Image
-                        key={activeVisionImage}
-                        src={visionImages[activeVisionImage]}
-                        alt="Authenticity Highlight"
-                        fill
-                        className="vision-slide-img"
-                        style={{ objectFit: 'cover', objectPosition: 'center' }}
-                        sizes="100vw"
-                        priority={activeVisionImage === 0}
-                      />
+                      visionImages.map((src, index) => (
+                        <Image
+                          key={src}
+                          src={src}
+                          alt={`Authenticity Highlight ${index + 1}`}
+                          fill
+                          className={`vision-slide-img ${index === activeVisionImage ? 'active' : ''}`}
+                          style={{
+                            objectFit: 'contain',
+                            objectPosition: 'center',
+                            opacity: index === activeVisionImage ? 1 : 0,
+                            transition: 'opacity 0s',
+                            zIndex: index === activeVisionImage ? 2 : 1
+                          }}
+                          sizes="100vw"
+                          priority={index < 3}
+                        />
+                      ))
                     ) : (
                       <div className="loading-placeholder" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#111' }}>
                         <i className="fas fa-spinner fa-spin" style={{ color: 'var(--gold-accent)' }} />
@@ -1753,8 +1759,17 @@ export default function Home() {
         </section>
 
         {/* PARTNER SECTION - Dynamic Business Models (B2B EXPERTISE) */}
-        <section id="b2b-section" className="partner-section">
-          <div className="container partner-container">
+        <section id="b2b-section" className="partner-section" style={{ position: 'relative', overflow: 'hidden' }}>
+          {/* Background Video Layer */}
+          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
+            <video autoPlay muted loop playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }}>
+              <source src="https://res.cloudinary.com/dtnqgx4vp/video/upload/q_auto/f_auto/v1777340278/wallpaperherosection_eehy67.mp4" type="video/mp4" />
+            </video>
+          </div>
+          {/* Transparent Overlay with Blur */}
+          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.65)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', zIndex: 0 }} />
+          
+          <div className="container partner-container" style={{ position: 'relative', zIndex: 1 }}>
             <div className="partner-header reveal">
               <span className="label-gold">{t('b2b.label')}</span>
               <h2 className="partner-headline">{t('b2b.title')}</h2>

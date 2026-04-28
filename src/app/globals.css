@@ -2183,11 +2183,8 @@ body.revealed .j-logo {
 .vision-slide-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: top !important;
-  /* Final instruction: prioritizing faces */
-  transition: opacity 0.5s ease-in-out;
-  animation: slideFadeIn 0.8s ease-out;
+  object-fit: contain !important;
+  object-position: center !important;
 }
 
 @keyframes slideFadeIn {
