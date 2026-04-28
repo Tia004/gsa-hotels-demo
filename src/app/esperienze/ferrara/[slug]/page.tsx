@@ -19,12 +19,48 @@ const slugToKey: Record<string, string> = {
 };
 
 const slugToImages: Record<string, string[]> = {
-  "ferrara-esp-1": Array.from({length: 4}, (_,i) => `/assets/esperienze/ferrara-1/${i+1}.jpg`),
-  "ferr-esp-2": Array.from({length: 4}, (_,i) => `/assets/esperienze/ferrara-2/${i+1}.jpg`),
-  "ferr-esp-3": Array.from({length: 4}, (_,i) => `/assets/esperienze/ferrara-3/${i+1}.jpg`),
-  "ferr-esp-4": Array.from({length: 8}, (_,i) => `/assets/esperienze/ferrara-4/${i+1}.png`),
-  "ferr-esp-5": Array.from({length: 7}, (_,i) => `/assets/esperienze/ferrara-5/${i+1}.jpeg`),
-  "ferr-esp-6": Array.from({length: 5}, (_,i) => `/assets/esperienze/ferrara-6/${i+1}.jpg`)
+  "ferrara-esp-1": [
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340701/1_ngs2wy.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340703/2_wukpsk.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340705/3_qp1mua.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340707/4_u8gyj5.webp"
+  ],
+  "ferr-esp-2": [
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340714/1_mh8scp.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340717/2_cfv4p5.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340718/3_wqvhi1.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340720/4_xtafvl.webp"
+  ],
+  "ferr-esp-3": [
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340726/1_mdwxqb.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340731/2_z2texa.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340732/3_xmgdaz.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340734/4_o5fchx.webp"
+  ],
+  "ferr-esp-4": [
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340741/1_lxg1uf.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340743/2_rk0c2m.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340745/3_rbbols.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340746/4_y4ggmw.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340749/5_th5xbe.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340750/6_knp08c.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340752/7_r5ag29.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340754/8_uvuxoj.webp"
+  ],
+  "ferr-esp-5": [
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340757/1_qe1jzb.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340759/2_btpbbq.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340761/3_uobogu.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340762/4_vh8csr.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340764/5_nq4ps8.webp"
+  ],
+  "ferr-esp-6": [
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340766/1_xchncg.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340768/2_nsnlwg.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340771/3_cf2mhr.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340773/4_q1jrff.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340774/5_ti75xy.webp"
+  ]
 };
 
 export default function FerraraExperienceArticle() {

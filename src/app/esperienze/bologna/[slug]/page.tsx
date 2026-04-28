@@ -16,9 +16,29 @@ const slugToKey: Record<string, string> = {
 };
 
 const slugToImages: Record<string, string[]> = {
-  "bologna-esp-1": Array.from({length: 6}, (_,i) => `/assets/esperienze/bologna-1/${i+1}.jpg`),
-  "bologna-esp-2": Array.from({length: 5}, (_,i) => `/assets/esperienze/bologna-2/${i+1}.jpg`),
-  "bologna-esp-3": Array.from({length: 6}, (_,i) => `/assets/esperienze/bologna-3/${i+1}.jpg`)
+  "bologna-esp-1": [
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340646/1_mw176l.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340647/2_pavbzk.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340649/3_c5aykt.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340651/4_bx4i0p.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340652/5_fvsatj.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340653/6_a0dqcx.webp"
+  ],
+  "bologna-esp-2": [
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340660/1_cfdcqe.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340662/2_ltgldu.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340665/3_ujygw3.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340666/4_xdtf1k.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340668/5_wistyv.webp"
+  ],
+  "bologna-esp-3": [
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340676/1_binv0d.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340677/2_hrloxx.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340680/3_fmnovt.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340681/4_i7g0hp.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340682/5_huo6bg.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340683/6_mp4kvh.webp"
+  ]
 };
 
 export default function BolognaExperienceArticle() {

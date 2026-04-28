@@ -108,14 +108,14 @@ export default function Home() {
   }, []);
 
   const academyImages = [
-    getCloudinaryUrl("assets/formazione/1"),
-    getCloudinaryUrl("assets/formazione/2"),
-    getCloudinaryUrl("assets/formazione/3"),
-    getCloudinaryUrl("assets/formazione/4"),
-    getCloudinaryUrl("assets/formazione/5"),
-    getCloudinaryUrl("assets/formazione/6"),
-    getCloudinaryUrl("assets/formazione/7"),
-    getCloudinaryUrl("assets/formazione/8")
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340556/1_u6avva.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340556/2_sk50ol.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340557/3_myv7tu.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340558/4_smwlm6.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340559/5_ag8l0y.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340560/6_n8gglw.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340560/7_v8fteh.webp",
+    "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340561/8_mrj9xm.webp"
   ];
 
   const [isPlayingIntro, setIsPlayingIntro] = React.useState(false);
@@ -151,19 +151,19 @@ export default function Home() {
     {
       title: t('exp.bo1.title'),
       desc: t('exp.bo1.desc'),
-      img: getCloudinaryUrl("assets/esperienze/bologna/1"),
+      img: "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340618/1_ntxtzk.webp",
       slug: "bologna-esp-1"
     },
     {
       title: t('exp.bo2.title'),
       desc: t('exp.bo2.desc'),
-      img: getCloudinaryUrl("assets/esperienze/bologna/2"),
+      img: "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340618/2_dmltr4.webp",
       slug: "bologna-esp-2"
     },
     {
       title: t('exp.bo3.title'),
       desc: t('exp.bo3.desc'),
-      img: getCloudinaryUrl("assets/esperienze/bologna/3"),
+      img: "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340618/3_hyssbx.webp",
       slug: "bologna-esp-3"
     }
   ];
@@ -172,37 +172,37 @@ export default function Home() {
     {
       title: t('exp.fe1.title'),
       desc: t('exp.fe1.desc'),
-      img: getCloudinaryUrl("assets/esperienze/ferrara/1"),
+      img: "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340690/1_zb8ccv.webp",
       slug: "ferrara-esp-1"
     },
     {
       title: t('exp.fe2.title'),
       desc: t('exp.fe2.desc'),
-      img: getCloudinaryUrl("assets/esperienze/ferrara/2"),
+      img: "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340692/2_o87i9a.webp",
       slug: "ferr-esp-2"
     },
     {
       title: t('exp.fe3.title'),
       desc: t('exp.fe3.desc'),
-      img: getCloudinaryUrl("assets/esperienze/ferrara/3"),
+      img: "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340693/3_lapioj.webp",
       slug: "ferr-esp-3"
     },
     {
       title: t('exp.fe4.title'),
       desc: t('exp.fe4.desc'),
-      img: getCloudinaryUrl("assets/esperienze/ferrara/4"),
+      img: "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340695/4_fhtjgb.webp",
       slug: "ferr-esp-4"
     },
     {
       title: t('exp.fe5.title'),
       desc: t('exp.fe5.desc'),
-      img: getCloudinaryUrl("assets/esperienze/ferrara/5"),
+      img: "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340695/5_mmg4s1.webp",
       slug: "ferr-esp-5"
     },
     {
       title: t('exp.fe6.title'),
       desc: t('exp.fe6.desc'),
-      img: getCloudinaryUrl("assets/esperienze/ferrara/6"),
+      img: "https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340697/6_vb1o1t.webp",
       slug: "ferr-esp-6"
     }
   ];
@@ -1073,7 +1073,7 @@ export default function Home() {
           {/* THE ONLY LAYER: THE ORIGINAL LOGO - Optimized for RAM */}
           <div id="logo-gold" className="gsa-huge-logo gsa-logo-layer gold" style={{ zIndex: 15 }}>
             <Image
-              src={getCloudinaryUrl("assets/logo")}
+              src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340257/logo_kcghtz.webp"
               alt="GSA Hotels"
               width={1200}
               height={450}
@@ -1100,7 +1100,7 @@ export default function Home() {
       {/* GLOBAL BACKGROUND LAYER — always visible, no opacity gate on mobile */}
       <div className="jesko-bg-layer" style={{ opacity: 1, visibility: 'visible' }}>
         <video id="hero-video" className="jesko-bg-video" autoPlay muted loop playsInline>
-          <source src={getCloudinaryUrl("assets/wallpaperherosection.mp4")} type="video/mp4" />
+          <source src="https://res.cloudinary.com/dtnqgx4vp/video/upload/q_auto/f_auto/v1777340278/wallpaperherosection_eehy67.mp4" type="video/mp4" />
         </video>
         <div className="jesko-overlay-layer" />
       </div>
@@ -1115,7 +1115,7 @@ export default function Home() {
           <div className="jesko-ui-layer">
             {/* TOP LEFT: Logo */}
             <div className="j-logo-container">
-              <Link href="/" onClick={() => window.location.reload()}><Image src={getCloudinaryUrl("assets/logo")} alt="GSA Logo" className="j-logo" style={{ transform: 'scale(1.1)', transformOrigin: 'left center', opacity: 0 }} width={140} height={50} priority quality={95} /></Link>
+              <Link href="/" onClick={() => window.location.reload()}><Image src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340257/logo_kcghtz.webp" alt="GSA Logo" className="j-logo" style={{ transform: 'scale(1.1)', transformOrigin: 'left center', opacity: 0 }} width={140} height={50} priority quality={95} /></Link>
             </div>
             {/* CENTER LEFT: Headline */}
             <div className="j-headline-container">
@@ -1279,7 +1279,7 @@ export default function Home() {
                     </textPath>
                   </text>
                 </svg>
-                <div className="badge-center"><Image src={getCloudinaryUrl("assets/logo")} alt="GSA Logo" fill style={{ objectFit: 'contain' }} /></div>
+                <div className="badge-center"><Image src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340257/logo_kcghtz.webp" alt="GSA Logo" fill style={{ objectFit: 'contain' }} /></div>
               </div>
             </div>
           </div>
@@ -1295,7 +1295,7 @@ export default function Home() {
               <span className="label-gold">PREMIUM PROTECTION</span>
               <div className="besafe-header-flex" style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '10px' }}>
                 <Image
-                  src={getCloudinaryUrl("assets/besafe-logo")}
+                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340256/besafe-logo_jrppny.webp"
                   alt="BeSafe Rate"
                   width={150}
                   height={45}
@@ -1553,7 +1553,7 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src={getCloudinaryUrl("assets/duchessa_isabella")}
+                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340257/duchessa_isabella_t5vqe1.webp"
                   alt="Hotel Duchessa Isabella"
                   fill
                   className="hotel-bg"
@@ -1573,7 +1573,7 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src={getCloudinaryUrl("assets/hotel_blumen")}
+                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340259/hotel_blumen_hnrjbi.webp"
                   alt="Hotel Blumen"
                   fill
                   className="hotel-bg"
@@ -1593,7 +1593,7 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src={getCloudinaryUrl("assets/santorsola")}
+                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340256/santorsola_sh9ynf.webp"
                   alt="Hotel Sant'Orsola"
                   fill
                   className="hotel-bg"
@@ -1613,7 +1613,7 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src={getCloudinaryUrl("assets/wellness")}
+                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340256/wellness_nqwhzc.webp"
                   alt="Oasi Isabella Wellness SPA"
                   fill
                   className="hotel-bg"
@@ -1634,7 +1634,7 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src={getCloudinaryUrl("assets/eventi")}
+                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340402/eventi_dtnsic.webp"
                   alt="Duchessa Isabella Eventi"
                   fill
                   className="hotel-bg"

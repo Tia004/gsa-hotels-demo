@@ -228,7 +228,7 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
       <div id="liquid-glass-menu" className="glass-menu-overlay">
         <div className="glass-menu-header">
           <Link href="/" className="glass-logo">
-            <Image src={getCloudinaryUrl("assets/logo")} alt="GSA Logo" width={120} height={40} style={{ objectFit: 'contain' }} />
+            <Image src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340257/logo_kcghtz.webp" alt="GSA Logo" width={120} height={40} style={{ objectFit: 'contain' }} />
           </Link>
           <div className="glass-close-btn mobile-close-btn">
             <div className="McButton active" id="menu-close-trigger">
@@ -284,7 +284,7 @@ const GlobalNav: React.FC<GlobalNavProps> = ({ isHomePage = false, isRevealed = 
             flexShrink: 0
           }}
         >
-          <Image src={getCloudinaryUrl("assets/logo")} alt="GSA" width={80} height={28} style={{ height: isMobileNav ? '22px' : '28px', width: 'auto' }} />
+          <Image src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340257/logo_kcghtz.webp" alt="GSA" width={80} height={28} style={{ height: isMobileNav ? '22px' : '28px', width: 'auto' }} />
         </Link>
         
         {/* Back to Experiences button (only on detail pages) */}
