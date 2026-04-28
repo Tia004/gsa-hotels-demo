@@ -289,7 +289,7 @@ export default function Home() {
     if (visionImages.length === 0) return;
     timersRef.current.vision = setInterval(() => {
       setActiveVisionImage((prev) => (prev + 1) % visionImages.length);
-    }, 3500);
+    }, 6000);
     return () => clearInterval(timersRef.current.vision);
   }, [visionImages.length]);
 
@@ -532,26 +532,26 @@ export default function Home() {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: ".jesko-hero-final",
-          start: "top 80%",
-          toggleActions: "play none none none"
+          start: "top top",
+          end: "+=100%",
+          scrub: true
         }
       });
 
       tl.to(".jesko-bg-layer", {
         clipPath: "inset(0vh 0vw round 0px)",
-        ease: "power2.out",
-        duration: 1.2
-      })
+        ease: "none"
+      }, 0)
         .to(".jesko-ui-layer", {
           opacity: 0,
           y: -50,
-          duration: 0.5
-        }, "<")
+          ease: "none"
+        }, 0)
         .to(".jesko-bg-video", {
           filter: "blur(0px)",
           scale: 1.0,
-          duration: 1
-        });
+          ease: "none"
+        }, 0);
     } else {
       // Mobile: just expand the bg-layer fully, leave UI layer visible
       gsap.set(".jesko-bg-layer", { clipPath: "inset(0vh 0vw round 0px)" });
@@ -608,12 +608,12 @@ export default function Home() {
         opacity: 1,
         color: "#FFFFFF",
         stagger: 0.1,
-        duration: 0.8,
-        ease: "power2.out",
+        ease: "none",
         scrollTrigger: {
           trigger: ".jesko-statement-container",
           start: "top 80%",
-          toggleActions: "play none none none"
+          end: "bottom 60%",
+          scrub: true
         }
       }
     );
@@ -1553,7 +1553,7 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340257/duchessa_isabella_t5vqe1.webp"
+                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto,f_auto,w_1920/v1777385703/duchessa-isabella_oohhdg.webp"
                   alt="Hotel Duchessa Isabella"
                   fill
                   className="hotel-bg"
@@ -1573,7 +1573,7 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340259/hotel_blumen_hnrjbi.webp"
+                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto,f_auto,w_1920/v1777385715/blumen_sq4ldu.webp"
                   alt="Hotel Blumen"
                   fill
                   className="hotel-bg"
@@ -1593,7 +1593,7 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340256/santorsola_sh9ynf.webp"
+                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto,f_auto,w_1920/v1777385726/santorsola_ebtwpm.webp"
                   alt="Hotel Sant'Orsola"
                   fill
                   className="hotel-bg"
@@ -1613,7 +1613,7 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340256/wellness_nqwhzc.webp"
+                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto,f_auto,w_1920/v1777385737/wellness_joxcwr.webp"
                   alt="Oasi Isabella Wellness SPA"
                   fill
                   className="hotel-bg"
@@ -1634,7 +1634,7 @@ export default function Home() {
             <section className="hotel-section">
               <div className="hotel-bg-wrapper">
                 <Image
-                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto/f_auto/v1777340402/eventi_dtnsic.webp"
+                  src="https://res.cloudinary.com/dtnqgx4vp/image/upload/q_auto,f_auto,w_1920/v1777340402/eventi_dtnsic.webp"
                   alt="Duchessa Isabella Eventi"
                   fill
                   className="hotel-bg"
@@ -1694,7 +1694,7 @@ export default function Home() {
                     {visionImages.length > 0 ? (
                       <Image
                         key={activeVisionImage}
-                        src={getCloudinaryUrl(visionImages[activeVisionImage])}
+                        src={visionImages[activeVisionImage]}
                         alt="Authenticity Highlight"
                         fill
                         className="vision-slide-img"
