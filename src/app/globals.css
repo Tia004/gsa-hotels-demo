@@ -1354,7 +1354,7 @@ img {
   height: 100%;
   -o-object-fit: cover;
   object-fit: cover;
-  filter: brightness(0.7);
+  filter: brightness(0.85);
   /* Performance fix */
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -2230,7 +2230,7 @@ body.revealed .j-logo {
 .video-responsive-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  aspect-ratio: 16 / 9;
   background: #000;
   border-radius: 12px;
   overflow: hidden;
@@ -5630,7 +5630,10 @@ body {
 
 .exp-image-wrapper {
   position: relative;
-  height: 550px;
+  aspect-ratio: 3 / 4;
+  height: auto;
+  min-height: 550px;
+  background: #050505; /* Fallback se l'immagine è contain */
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
@@ -5640,13 +5643,14 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center top; /* Mostra la parte alta/importante */
   transition: transform 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .exp-overlay-luxury {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.4) 40%, transparent 100%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.6) 35%, transparent 80%);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -6240,10 +6244,12 @@ body {
 }
 
 .academy-slide-img {
-  width: 100% !important;
-  height: auto !important;
   max-width: 100% !important;
+  max-height: 60vh !important;
+  height: auto !important;
+  width: auto !important;
   display: block !important;
+  margin: 0 auto !important;
   object-fit: contain !important;
   border: 1px solid rgba(197, 160, 89, 0.4) !important;
   border-radius: 16px !important;
@@ -7113,9 +7119,19 @@ body.cursor-hover-active .luxury-cursor-dot {
   }
 
   /* Force vertical stacking on flexible containers */
-  main, section, .corporate-content, .exp-list-item, .luxury-form-container, .academy-container, .besafe-container {
+  main, section, .corporate-content, .exp-list-item, .luxury-content {
     flex-direction: column !important;
     gap: 40px !important;
+  }
+
+  /* --- EXPERIENCES: Stack columns vertically --- */
+  .experience-dual-columns {
+    flex-direction: column !important;
+    gap: 40px !important;
+  }
+
+  .exp-image-wrapper {
+    min-height: unset !important;
   }
 
   .corporate-content, .exp-list-item, .luxury-form-container, .academy-container, .besafe-container {
@@ -7537,8 +7553,8 @@ video {
   .video-responsive-wrapper {
     position: relative !important;
     width: 100% !important;
-    height: 0 !important;
-    padding-bottom: 56.25% !important; /* 16:9 */
+    height: auto !important;
+    aspect-ratio: 16 / 9 !important;
     overflow: hidden !important;
     border-radius: 12px !important;
   }
@@ -7552,10 +7568,11 @@ video {
     height: 100% !important;
   }
 
-  /* --- VISION SLIDER: Landscape aspect ratio, not 70vh tall --- */
+  /* --- VISION SLIDER: Adjust aspect ratio for vertical images --- */
   .visual-frame.slider-frame {
-    height: 0 !important;
-    padding-bottom: 60% !important; /* ~16:10 feels better than 16:9 for photos */
+    height: auto !important;
+    padding-bottom: 0 !important;
+    aspect-ratio: 4 / 5 !important;
     position: relative !important;
     overflow: hidden !important;
   }
@@ -7566,7 +7583,7 @@ video {
     left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    object-fit: cover !important;
+    object-fit: contain !important; /* Ensure image is not cropped or shifted */
   }
 
   /* --- VISION SECTION: Stack vertically on mobile --- */
@@ -7745,11 +7762,11 @@ video {
     line-height: 1.5 !important;
   }
 
-  /* --- HOTEL SECTIONS: Landscape ratio not 100vh --- */
+  /* --- HOTEL SECTIONS: Full screen on mobile --- */
   .hotel-section {
-    height: 60vw !important;
-    min-height: 260px !important;
-    max-height: 420px !important;
+    height: 100dvh !important;
+    min-height: unset !important;
+    max-height: unset !important;
   }
 
   /* Force images in sliders to fill correctly */

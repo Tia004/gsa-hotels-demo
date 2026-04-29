@@ -1266,7 +1266,6 @@ export default function Home() {
                     width={1200}
                     height={675}
                     className="academy-slide-img"
-                    style={{ width: 'auto', height: 'auto', maxWidth: '100%', maxHeight: '100%', display: 'block', margin: 'auto' }}
                     sizes="(max-width: 768px) 100vw, 80vw"
                   />
 
