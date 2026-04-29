@@ -38,13 +38,15 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
   const [imageUrl, setImageUrl] = useState('');
   const [publishedAt, setPublishedAt] = useState(new Date().toISOString().split('T')[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [youtubeUrl, setYoutubeUrl] = useState('');
-  const [youtubeError, setYoutubeError] = useState('');
 
   // Link management
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [savedSelection, setSavedSelection] = useState<Range | null>(null);
+
+  // YouTube Inline Modal
+  const [showYoutubeModal, setShowYoutubeModal] = useState(false);
+  const [youtubeInput, setYoutubeInput] = useState('');
 
   const editorRef = useRef<HTMLDivElement>(null);
 
@@ -69,18 +71,6 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
     setIsSubmitting(true);
     let content = editorRef.current.innerHTML;
 
-    // Append YouTube iframe if provided
-    if (youtubeUrl.trim()) {
-      const videoId = extractYouTubeId(youtubeUrl.trim());
-      if (!videoId) {
-        setYoutubeError('URL YouTube non valido. Inserisci un link YouTube valido.');
-        setIsSubmitting(false);
-        return;
-      }
-      content += buildYouTubeHtml(videoId);
-      setYoutubeError('');
-    }
-
     try {
       const response = await fetch('/api/blog', {
         method: 'POST',
@@ -98,7 +88,6 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
         setIsOpen(false);
         setTitle('');
         setImageUrl('');
-        setYoutubeUrl('');
         if (editorRef.current) editorRef.current.innerHTML = '';
         router.refresh();
         if (onSuccess) onSuccess();
@@ -162,6 +151,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
         </header>
 
         <form onSubmit={handleSubmit} className="editor-form">
+          <div className="editor-scrollable-body">
           {/* TITLE */}
           <input
             type="text"
@@ -271,6 +261,50 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
                 </div>
               )}
             </div>
+
+            {/* YouTube */}
+            <div className="link-tool-wrapper" style={{ position: 'relative' }}>
+              <button type="button" onClick={() => {
+                const selection = window.getSelection();
+                if (selection && selection.rangeCount > 0) {
+                  setSavedSelection(selection.getRangeAt(0));
+                }
+                setShowYoutubeModal(!showYoutubeModal);
+                setShowLinkModal(false);
+              }} title="Inserisci Video YouTube">
+                <i className="fab fa-youtube" style={{ color: '#ff5555' }} />
+              </button>
+
+              {showYoutubeModal && (
+                <div className="inline-link-modal">
+                  <input
+                    type="text"
+                    placeholder="https://youtube.com/..."
+                    value={youtubeInput}
+                    onChange={(e) => setYoutubeInput(e.target.value)}
+                    autoFocus
+                  />
+                  <div className="link-modal-actions">
+                    <button type="button" onClick={() => {
+                      if (youtubeInput) {
+                        const videoId = extractYouTubeId(youtubeInput);
+                        if (videoId) {
+                          const selection = window.getSelection();
+                          if (selection && savedSelection) {
+                            selection.removeAllRanges();
+                            selection.addRange(savedSelection);
+                          }
+                          execCommand('insertHTML', buildYouTubeHtml(videoId));
+                        }
+                      }
+                      setShowYoutubeModal(false);
+                      setYoutubeInput('');
+                    }}>Inserisci</button>
+                    <button type="button" onClick={() => setShowYoutubeModal(false)}>Annulla</button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* RICH TEXT EDITOR */}
@@ -281,35 +315,13 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
             className="rich-editor"
             data-placeholder="Scrivi qui il tuo articolo..."
           />
+          </div> {/* end scrollable body */}
 
-          {/* YOUTUBE EMBED SECTION */}
-          <div className="youtube-section">
-            <label className="youtube-label">
-              <i className="fab fa-youtube" style={{ color: '#ff0000', marginRight: 8 }} />
-              Video YouTube (opzionale — verrà aggiunto alla fine dell'articolo)
-            </label>
-            <input
-              type="text"
-              placeholder="https://www.youtube.com/watch?v=..."
-              value={youtubeUrl}
-              onChange={(e) => { setYoutubeUrl(e.target.value); setYoutubeError(''); }}
-              className="youtube-input"
-            />
-            {youtubeError && <p className="youtube-error">{youtubeError}</p>}
-            {youtubeUrl && extractYouTubeId(youtubeUrl) && (
-              <div className="youtube-preview">
-                <img
-                  src={`https://img.youtube.com/vi/${extractYouTubeId(youtubeUrl)}/mqdefault.jpg`}
-                  alt="YouTube preview"
-                />
-                <span>✓ Anteprima video trovata</span>
-              </div>
-            )}
+          <div className="editor-footer">
+            <button type="submit" className="submit-btn" disabled={isSubmitting}>
+              {isSubmitting ? 'Pubblicazione...' : 'Pubblica Articolo'}
+            </button>
           </div>
-
-          <button type="submit" className="submit-btn" disabled={isSubmitting}>
-            {isSubmitting ? 'Pubblicazione...' : 'Pubblica Articolo'}
-          </button>
         </form>
       </div>
 
@@ -373,16 +385,31 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
         }
         .close-btn:hover { color: var(--gold-accent); }
 
-        /* ---- FORM (scrollable body) ---- */
+        /* ---- FORM (scrollable body layout) ---- */
         .editor-form {
-          flex: 1 1 0;          /* take remaining height */
-          min-height: 0;        /* critical: allows flex child to shrink below content size */
+          flex: 1 1 0;
           display: flex;
           flex-direction: column;
-          padding: 28px 36px;
-          overflow-y: auto;     /* THE scroll — applies to the WHOLE form body */
+          overflow: hidden; /* Only the inner body scrolls */
+        }
+        
+        .editor-scrollable-body {
+          flex: 1;
+          overflow-y: auto;
+          padding: 24px 36px;
+          display: flex;
+          flex-direction: column;
           gap: 20px;
           scroll-behavior: smooth;
+        }
+
+        .editor-footer {
+          padding: 16px 36px;
+          background: #0a0a0a;
+          border-top: 1px solid rgba(255,255,255,0.05);
+          flex-shrink: 0;
+          display: flex;
+          justify-content: flex-end;
         }
 
         /* ---- TITLE ---- */
@@ -406,24 +433,25 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
         .form-row {
           display: flex;
           gap: 16px;
-          align-items: center;
+          align-items: flex-end; /* Align bottom edges properly */
           flex-wrap: wrap;
           flex-shrink: 0;
         }
         .category-select {
           background: #0f1111;
           color: white;
-          padding: 10px 16px;
+          padding: 12px 16px;
           border-radius: 6px;
           border: 1px solid rgba(255,255,255,0.1);
           font-family: var(--font-body);
           outline: none;
           cursor: pointer;
+          height: 44px;
         }
         .file-upload label {
           background: rgba(197,160,89,0.1);
           color: var(--gold-accent);
-          padding: 10px 22px;
+          padding: 0 22px;
           border-radius: 6px;
           border: 1px solid rgba(197,160,89,0.2);
           cursor: pointer;
@@ -433,6 +461,9 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
           letter-spacing: 0.1em;
           transition: all 0.3s ease;
           white-space: nowrap;
+          height: 44px;
+          display: inline-flex;
+          align-items: center;
         }
         .file-upload label:hover { background: var(--gold-accent); color: black; }
         .file-upload input { display: none; }
@@ -448,10 +479,20 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
           background: #0f1111;
           border: 1px solid rgba(255,255,255,0.1);
           color: white;
-          padding: 8px 10px;
+          padding: 0 16px;
           border-radius: 6px;
           font-family: inherit;
           outline: none;
+          height: 44px;
+        }
+        /* Invert calendar icon to make it white */
+        .date-input::-webkit-calendar-picker-indicator {
+          filter: invert(1);
+          cursor: pointer;
+          opacity: 0.6;
+        }
+        .date-input::-webkit-calendar-picker-indicator:hover {
+          opacity: 1;
         }
 
         /* ---- IMAGE PREVIEW ---- */
@@ -503,11 +544,31 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
           align-items: center;
           justify-content: center;
           font-size: 0.85rem;
+          position: relative;
         }
         .toolbar button:hover {
           background: rgba(255,255,255,0.06);
           color: white;
           border-color: rgba(255,255,255,0.1);
+        }
+        /* Custom Tooltip */
+        .toolbar button:hover::after {
+          content: attr(title);
+          position: absolute;
+          bottom: 110%;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #000;
+          color: white;
+          padding: 6px 10px;
+          border-radius: 4px;
+          font-size: 0.7rem;
+          font-family: var(--font-body);
+          white-space: nowrap;
+          pointer-events: none;
+          z-index: 100;
+          border: 1px solid rgba(255,255,255,0.1);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
         .toolbar-heading {
           font-family: var(--font-display) !important;
@@ -568,73 +629,19 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
         .rich-editor a { color: var(--gold-accent); text-decoration: underline; }
         .rich-editor p { margin: 0 0 16px; }
 
-        /* ---- YOUTUBE SECTION ---- */
-        .youtube-section {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          flex-shrink: 0;
-          padding: 20px;
-          border: 1px solid rgba(255,0,0,0.12);
-          border-radius: 8px;
-          background: rgba(255,0,0,0.04);
-        }
-        .youtube-label {
-          font-size: 0.8rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: rgba(255,255,255,0.55);
-        }
-        .youtube-input {
-          background: #0f1111;
-          border: 1px solid rgba(255,255,255,0.1);
-          color: white;
-          padding: 12px 16px;
-          border-radius: 6px;
-          font-family: var(--font-body);
-          font-size: 0.95rem;
-          outline: none;
-          transition: border-color 0.3s ease;
-          width: 100%;
-        }
-        .youtube-input:focus { border-color: rgba(255,0,0,0.4); }
-        .youtube-input::placeholder { color: rgba(255,255,255,0.2); }
-        .youtube-error {
-          color: #ff5555;
-          font-size: 0.82rem;
-          margin: 0;
-        }
-        .youtube-preview {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-        .youtube-preview img {
-          width: 120px;
-          height: 68px;
-          object-fit: cover;
-          border-radius: 4px;
-          border: 1px solid rgba(255,255,255,0.1);
-        }
-        .youtube-preview span {
-          font-size: 0.82rem;
-          color: #55ff88;
-        }
-
         /* ---- SUBMIT ---- */
         .submit-btn {
           background: var(--gold-accent);
           color: black;
           border: none;
-          padding: 16px;
+          padding: 16px 40px;
           border-radius: 6px;
           font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.2em;
           cursor: pointer;
           transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-          flex-shrink: 0;
+          width: auto;
         }
         .submit-btn:hover {
           background: #d4b57a;
@@ -646,6 +653,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
           color: #666;
           cursor: not-allowed;
           transform: none;
+          box-shadow: none;
         }
 
         /* ---- INLINE LINK MODAL ---- */
@@ -689,6 +697,38 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ onSuccess }) => {
           background: var(--gold-accent);
           color: black;
           font-weight: bold;
+        }
+
+        /* ---- MOBILE OPTIMIZATIONS ---- */
+        @media (max-width: 768px) {
+          .blog-modal-overlay {
+            padding: 10px;
+          }
+          .blog-modal-content {
+            height: 100%;
+            border-radius: 12px;
+          }
+          .modal-header {
+            padding: 16px 20px;
+          }
+          .editor-scrollable-body {
+            padding: 16px 20px;
+          }
+          .form-row {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+          }
+          .category-select, .file-upload label, .date-input {
+            width: 100%;
+            justify-content: center;
+          }
+          .editor-footer {
+            padding: 16px 20px;
+          }
+          .submit-btn {
+            width: 100%;
+          }
         }
       `}</style>
     </div>

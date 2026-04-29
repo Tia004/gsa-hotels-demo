@@ -296,6 +296,10 @@ export default function Home() {
 
 
   useEffect(() => {
+    // Timing tracking for cleanup
+    let phase1Timeout: any, phase2Timeout: any, phase2InnerTimeout: any, revealTimeout: any, recalculateTimeout: any, removeTimeout: any, shuffleInterval: any;
+    let innerFadeTimeout: any;
+
     const ctx = gsap.context(() => {
       // Register GSAP once
       gsap.registerPlugin(ScrollTrigger);
@@ -891,11 +895,8 @@ export default function Home() {
     };
     document.addEventListener('keydown', onEscKey);
 
-    // Timing tracking for cleanup
-    let phase1Timeout: any, phase2Timeout: any, revealTimeout: any, recalculateTimeout: any, removeTimeout: any, shuffleInterval: any;
 
-    if (!preloaderPlayed && !(window as any)._hasStartedPreloader) {
-      (window as any)._hasStartedPreloader = true;
+    if (!preloaderPlayed) {
       sessionStorage.setItem('gsa_preloader_played', 'true');
 
       const preloaderOverlay = document.getElementById('zoom-preloader');
@@ -934,13 +935,13 @@ export default function Home() {
         if (shuffler) {
           shuffler.style.transition = 'opacity 0.5s ease-out';
           shuffler.style.opacity = '0';
-          setTimeout(() => {
+          innerFadeTimeout = setTimeout(() => {
             if (shuffler) shuffler.style.display = 'none';
           }, 500);
         }
 
         // PHASE 2: Wait 0.8s in pure black, then logo appears (ZERO OVERLAP)
-        setTimeout(() => {
+        phase2InnerTimeout = setTimeout(() => {
           if (logoGold) {
             logoGold.style.filter = 'blur(20px)';
             logoGold.style.transform = 'translate(-50%, -50%) scale(0.7)';
@@ -995,6 +996,16 @@ export default function Home() {
     return () => {
       ctx.revert();
       if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
+      
+      clearInterval(shuffleInterval);
+      clearTimeout(phase1Timeout);
+      clearTimeout(phase2Timeout);
+      clearTimeout(phase2InnerTimeout);
+      clearTimeout(revealTimeout);
+      clearTimeout(innerFadeTimeout);
+      clearTimeout(recalculateTimeout);
+      clearTimeout(removeTimeout);
+
       if (lenisRef.current) {
         try {
           lenisRef.current.destroy();
