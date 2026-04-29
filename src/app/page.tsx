@@ -985,7 +985,22 @@ export default function Home() {
               if (navWrapper) navWrapper.classList.add('revealed');
 
               setIsRevealed(true);
-              setTimeout(() => ScrollTrigger.refresh(), 200);
+              
+              // Handle scroll to hash if coming from another page
+              setTimeout(() => {
+                ScrollTrigger.refresh();
+                const hash = window.location.hash;
+                if (hash) {
+                  const target = document.querySelector(hash);
+                  if (target) {
+                    if ((window as any).lenis) {
+                      (window as any).lenis.scrollTo(target, { offset: -100, duration: 1.5 });
+                    } else {
+                      target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }
+                }
+              }, 300);
             }, 1800);
           }, 2000);
         }, 800); // Pure black wait
